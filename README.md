@@ -1,4 +1,4 @@
-# Shinobi Project 🗡️
+# Shinobi Project 🗡️ 
 
 ![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-orange)
 ![GameMaker](https://img.shields.io/badge/Engine-GameMaker%20Studio%202-blueviolet)
