@@ -51,6 +51,7 @@
   "resources":[
     {"id":{"name":"fnt_asian_ninja","path":"fonts/fnt_asian_ninja/fnt_asian_ninja.yy",},},
     {"id":{"name":"fnt_menu","path":"fonts/fnt_menu/fnt_menu.yy",},},
+    {"id":{"name":"Note1_1","path":"notes/Note1_1/Note1_1.yy",},},
     {"id":{"name":"Note1","path":"notes/Note1/Note1.yy",},},
     {"id":{"name":"obj_ambiente","path":"objects/obj_ambiente/obj_ambiente.yy",},},
     {"id":{"name":"obj_block","path":"objects/obj_block/obj_block.yy",},},
