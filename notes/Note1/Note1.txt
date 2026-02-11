@@ -1,0 +1,5 @@
+estou tentando implementar o sistema de pause durante o jogo 
+& 
+o sistema que irá salvar as configurações alteradas no menu
+&
+depois quero melhorar os controles adicionar mais controles para teclado e para controle

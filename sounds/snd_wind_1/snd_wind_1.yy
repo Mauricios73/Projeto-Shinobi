@@ -1,0 +1,26 @@
+{
+  "$GMSound":"v2",
+  "%Name":"snd_wind_1",
+  "audioGroupId":{
+    "name":"audiogroup_soundeffects",
+    "path":"audiogroups/audiogroup_soundeffects",
+  },
+  "bitDepth":1,
+  "channelFormat":0,
+  "compression":0,
+  "compressionQuality":4,
+  "conversionMode":0,
+  "duration":8.606508,
+  "exportDir":"",
+  "name":"snd_wind_1",
+  "parent":{
+    "name":"Sons Ambiente",
+    "path":"folders/Sounds/Sons Ambiente.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"snd_wind_1.wav",
+  "volume":1.0,
+}
