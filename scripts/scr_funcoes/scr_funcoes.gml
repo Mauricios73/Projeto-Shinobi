@@ -2,18 +2,6 @@ function scr_funcoes(){
 
 }
 
-//enumerator para definir as possiveis ações
-enum menu_acoes
-{
-	roda_metodo,
-	carrega_menu
-}
-
-enum menus_lista
-{
-	principal,
-	opcoes 
-}
 
 //screenshake
 ///@function screenshake(valor_da_tremida)

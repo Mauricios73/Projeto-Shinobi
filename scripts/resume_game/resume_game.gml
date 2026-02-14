@@ -4,9 +4,3 @@ function resume_game() {
 
 
 }
-/*
-function resume_game() {
-    global.pause = false;
-    instance_activate_all(); 
-    show_debug_message("Jogo Retomado");
-}

@@ -1,1 +1,0 @@
-controla_menu(menus[pag]);
