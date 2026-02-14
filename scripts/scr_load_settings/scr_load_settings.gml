@@ -9,7 +9,7 @@ function scr_load_settings(){
         var _win  = ini_read_real("Graphics", "WindowMode", 1);
         
         // Aplica os volumes usando sua lógica de Audio Groups
-        audio_master_gain(_mstr);
+        audio_master_gain(_mstr, 0);
         audio_group_set_gain(audiogroup_soundeffects, _snd, 0);
         audio_group_set_gain(audiogroup_music, _mus, 0);
         
