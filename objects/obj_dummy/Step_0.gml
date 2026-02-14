@@ -20,22 +20,10 @@ switch(estado)
  	#region hit
 	case "hit":
 	{
-		if (sprite_index != spr_dummy_hit2){
-			image_index = 0;
-			sprite_index = spr_dummy_hit2;
-		}
-		if (image_index > image_number -1){
-				estado = "parado";
-				mid_velh = 0;
-			}
-			/*if (vida_atual > 0)
-			{
-				if (image_index > image_number -1)
-				{
-					estado = "parado";
-					mid_velh = 0;
-				}
-			}*/
+	    sprite_index = sprites_hit[hit_index]; // Usa o índice sorteado pelo obj_dano
+	    if (image_index >= image_number - 1) {
+	        estado = "parado";
+	    }
 		break;
 	}
 	#endregion

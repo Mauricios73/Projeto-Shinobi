@@ -4,12 +4,20 @@ global.pause		= true;
 global.view_width	= camera_get_view_width(view_camera[0]);
 global.view_height	= camera_get_view_height(view_camera[0]);
 
+var _deadzone = 0.3;
+// Teclado ou Controle
+global.key_up		= ord("W")     //|| gamepad_button_check_pressed(0, gp_padu) || (gamepad_axis_value(0, gp_axislv) < -_deadzone);
+global.key_down		= ord("S")   //|| keyboard_check_pressed(ord("S")) || gamepad_button_check_pressed(0, gp_padd) || (gamepad_axis_value(0, gp_axislv) > _deadzone);
+global.key_left		= ord("A")   //|| keyboard_check_pressed(ord("A")) || gamepad_button_check_pressed(0, gp_padl) || (gamepad_axis_value(0, gp_axislh) < -_deadzone);
+global.key_right	= ord("D")  //|| keyboard_check_pressed(ord("D")) || gamepad_button_check_pressed(0, gp_padr) || (gamepad_axis_value(0, gp_axislh) > _deadzone);
+global.key_enter	= vk_enter  //|| keyboard_check_pressed(ord("E")) || gamepad_button_check_pressed(0, gp_face1);
+global.key_back		= vk_escape
+global.key_fire		= ord("F");
+global.key_chakra	= ord("R");
+global.key_dash		= ord("L")
+global.key_chidori  = ord("J");
+global.key_ataque	= ord("K");
 global.key_revert	= ord("X");
-global.key_enter	= vk_enter;
-global.key_left		= vk_left;
-global.key_right	= vk_right;
-global.key_up		= vk_up;
-global.key_down		= vk_down;
 
 display_set_gui_size(global.view_width, global.view_height);
 

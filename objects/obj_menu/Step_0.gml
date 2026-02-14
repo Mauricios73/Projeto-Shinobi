@@ -17,6 +17,9 @@ if(inputting){
 				ds_[# 3, menu_option[page]] += hinput;
 				ds_[# 3, menu_option[page]] = clamp(ds_[# 3, menu_option[page]], 0, array_length_1d(ds_[# 4, menu_option[page]])-1);
 			}
+						// CHAMADA DO SAVE:
+		    scr_save_settings(); 
+		    show_debug_message("Valor alterado e salvo!");
 		break;
 		
 		case menu_element_type.slider:
@@ -32,6 +35,9 @@ if(inputting){
 				ds_[# 3, menu_option[page]] = clamp(ds_[# 3, menu_option[page]], 0, 1);
 				script_execute(ds_[# 2, menu_option[page]], ds_[# 3, menu_option[page]]);
 			}
+			// CHAMADA DO SAVE:
+		    scr_save_settings(); 
+		    show_debug_message("Valor alterado e salvo!");
 			
 		break;
 		
@@ -42,6 +48,9 @@ if(inputting){
 				ds_[# 3, menu_option[page]] += hinput;
 				ds_[# 3, menu_option[page]] = clamp(ds_[# 3, menu_option[page]], 0, 1);
 			}
+						// CHAMADA DO SAVE:
+		    scr_save_settings(); 
+		    show_debug_message("Valor alterado e salvo!");
 		break;
 		
 		case menu_element_type.input:

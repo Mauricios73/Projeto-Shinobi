@@ -13,16 +13,19 @@ else
 }
 //Iniciando variaveis
 var chao = place_meeting(x, y + 1, obj_block);
-var right, left, jump, attack, dash, dashatk;
+var right, left, jump, attack, dash, chidori, fire, chakra;
 
 //controles
 // Teclado
-right		= keyboard_check(ord("D"));
-left		= keyboard_check(ord("A"));
-jump		= keyboard_check_pressed(ord("W"));
-attack		= keyboard_check_pressed(ord("K"));
-dash		= keyboard_check_pressed(ord("L"));
-dashatk		= keyboard_check_pressed(ord("J"));
+right			= keyboard_check(global.key_right);
+left			= keyboard_check(global.key_left);
+jump			= keyboard_check(global.key_up);
+attack			= keyboard_check_pressed(global.key_ataque);
+dash			= keyboard_check_pressed(global.key_dash);
+chidori			= keyboard_check_pressed(global.key_chidori);
+chakra			= keyboard_check_pressed(global.key_chakra);
+fire			= keyboard_check_pressed(global.key_fire);
+
 
 // Joystick (id = 0 para o primeiro controle)
 if (gamepad_is_connected(0)) {
@@ -43,6 +46,53 @@ if (gamepad_is_connected(0)) {
 velh = (right - left) * max_velh * global.vel_mult;
 
 if (dash_timer > 0)dash_timer--;
+
+// Regeneração
+//if (estado != "fire_breath" || "chidori")
+//{
+//    energia = clamp(energia, 0, energia_max);
+
+//}
+#region inputs
+// ==========================
+// INPUT DE SKILLS
+// ==========================
+if (!instance_exists(skillc)) skillc = instance_find(obj_skill_controller, 0);
+if (keyboard_check_pressed(global.key_fire) && instance_exists(skillc))
+{
+    if (skillc.can_use_fire(self))
+    {
+        skillc.start_fire(self);
+        estado = "fire_breath";
+    }
+}
+
+var sc = instance_find(obj_skill_controller, 0);
+if (keyboard_check_pressed(global.key_chidori) && sc != noone)
+{
+    if (sc.chidori.unlocked && sc.chidori.energy_cost <= energia)
+    {
+        energia -= sc.chidori.energy_cost;
+        energia = clamp(energia, 0, energia_max);
+
+        estado = "chidori";
+    }
+}
+
+if (keyboard_check(global.key_chakra))
+{
+    if (estado == "parado" || estado == "movendo")
+    {
+        estado = "chakra";
+    }
+}
+else
+{
+    // soltou: se estava canalizando, volta
+    if (estado == "chakra") estado = "parado";
+}
+
+#endregion
 
 //iniciando a maquina de estados
 switch(estado){
@@ -75,9 +125,9 @@ switch(estado){
 			image_index = 0;
 			
 		}
-		else if (dashatk && global.power_ups[0])
+		else if (chidori && global.power_ups[0])
 		{
-			estado = "dashatk";
+			estado = "chidori";
 			image_index = 0;
 			
 		}
@@ -109,9 +159,9 @@ switch(estado){
 			estado = "dash";
 			image_index = 0;
 		}
-		else if (dashatk && global.power_ups[0])
+		else if (chidori && global.power_ups[0])
 		{
-			estado = "dashatk";
+			estado = "chidori";
 			image_index = 0;
 		}
 		
@@ -148,9 +198,9 @@ switch(estado){
 		{
 			estado = "dash aereo";
 		}
-		else if (dashatk && global.power_ups[0])
+		else if (chidori && global.power_ups[0])
 		{
-			estado = "dashatk";
+			estado = "chidori";
 		}
 		break;
 	}
@@ -176,7 +226,9 @@ switch(estado){
 			dano = instance_create_layer(x + sprite_width/6, y - sprite_height/9, layer, obj_dano);
 			dano.dano = ataque * ataque_mult;
 			dano.pai = id;
+			dano.persistente = false;
 			posso = false;
+			
 			
 		}
 		
@@ -219,6 +271,32 @@ switch(estado){
 	}
 	#endregion
 	
+	#region fire breath
+	case "fire_breath":
+		{
+		    velh = 0;
+
+		    if (sprite_index != spr_player_jutsu)
+		    {
+		        sprite_index = spr_player_jutsu;
+		        image_index = 0;
+		        image_speed = 1;
+		    }
+
+		    // NÃO encerra pelo sprite do player.
+		    // Quem encerra é o obj_skill_fire_breath quando a animação dele terminar.
+    
+		    // Segurança: se por algum motivo o fogo sumir, volta pro parado
+		    if (!instance_exists(fire_instance))
+		    {
+		        var sc = instance_find(obj_skill_controller, 0);
+		        if (sc != noone) sc.end_fire(self);
+		        estado = "parado";
+		    }
+		}
+		break;
+	#endregion
+	
 	#region ataque aereo
 	case "ataque aereo":
 	{
@@ -245,7 +323,7 @@ switch(estado){
 		if (chao)
 		{
 			estado = "parado";
-			aaposso = true;
+			posso = true;
 			if (dano){
 				instance_destroy(dano, false);
 				dano = noone;
@@ -255,36 +333,98 @@ switch(estado){
 	}
 	
 	#endregion
-	
-	#region dash ataque
-	case "dashatk":
+
+	#region chidori
+	case "chidori":
+{
+    aplica_gravidade();
+    if (sprite_index != spr_player_dash_ataque)
+    {
+        sprite_index = spr_player_dash_ataque;
+        image_index = 0;
+        hit_criado = false;
+    }
+
+    // 🔥 cria só no frame 2 (ajuste se quiser)
+		if (floor(image_index) == 2 && !hit_criado)show_debug_message("CHIDORI HITBOX CRIADO: " + string(chidori_hit));
+
+		{
+		    var dir = image_xscale;
+
+		    // cria na frente do player
+		    chidori_hit = instance_create_layer(x + dir * 55, y - 42, layer, obj_dano);
+
+		    chidori_hit.pai = id;
+		    chidori_hit.persistente = false;
+		    chidori_hit.skill_id = "chidori"; // ✅ XP vai pro chidori
+
+		    // dano = base + bônus por level do chidori (puxando do controller)
+		    var sc = instance_find(obj_skill_controller, 0);
+		    var lv = 1;
+		    var bonus_per_lv = 2;
+
+		    if (sc != noone) {
+		        lv = sc.chidori.level;
+		        bonus_per_lv = sc.chidori.dmg_bonus_per_level;
+		    }
+
+		    chidori_hit.dano = ataque + (lv - 1) * bonus_per_lv;
+		    hit_criado = true;
+		}
+		    mid_velh = image_xscale * dash_vel_ataque;
+
+		if (image_index >= image_number - 1)
+			{
+			    if (instance_exists(chidori_hit)) with (chidori_hit) instance_destroy();
+			    chidori_hit = noone;
+
+			    estado = "parado";
+				velh = 0;
+			    mid_velh = 0;
+			    finaliza_ataque();
+			}
+		    break;
+		}
+	#endregion
+
+	#region chakra
+	case "chakra":
 	{
-		aplica_gravidade();
-		if (sprite_index != spr_player_dash_ataque)
-		 {
-			 sprite_index = spr_player_dash_ataque;
-			 image_index = 0;
-		 }
-		 
-		dano = instance_create_layer(x + sprite_width/6, y - sprite_height/6, layer, obj_dano);
-		dano.pai = id;
-		dano.dano = ataque;
-		dano.morrer = false;
-		posso = false;
-				 
-		 //velocidade
-		 mid_velh = image_xscale * dash_vel_ataque;
-		 
-		if (image_index >= image_number -1){
-			image_index = image_number -1;
-			estado = "parado";
-			mid_velh = 0;
-			finaliza_ataque();
-		 }
+		velh = 0; // fica parado canalizando
+
+		// sprite de “preparação / concentração”
+		if (sprite_index != spr_player_jutsu)
+		{
+		    sprite_index = spr_player_jutsu;
+		    image_index = 0;
+		    image_speed = 1;
+		    chakra_timer = 0;
+		}
+
+		chakra_timer++;
+
+		// após o delay, começa a regenerar
+		if (chakra_timer >= chakra_delay)
+		{
+		    // regen por segundo (delta_time)
+		    var dt = delta_time / 1000000; // segundos
+		    energia += chakra_regen_rate * dt;
+		    energia = clamp(energia, 0, energia_max);
+
+		    // opcional: trocar sprite para “canalizando de verdade”
+		    // if (sprite_index != spr_player_chakra_loop) sprite_index = spr_player_chakra_loop;
+		}
+		// se chegou ao máximo, pode encerrar automaticamente
+		if (energia >= energia_max)
+		{
+		    energia = energia_max;
+		    // continua canalizando se você quiser, ou volta:
+		    // estado = "parado";
+		}
 		break;
 	}
 	#endregion
-	
+
 	#region dash
 	case "dash":
 	{
@@ -341,6 +481,7 @@ switch(estado){
 			tempo_invencivel = invencivel_timer;	
 		}
 		velh = 0;
+		mid_velh = 0;
 		
 		if (vida_atual > 0)
 		{

@@ -3,8 +3,8 @@
   "%Name":"Note1",
   "name":"Note1",
   "parent":{
-    "name":"Sounds",
-    "path":"folders/Sounds.yy",
+    "name":"Ultimo Uchiha",
+    "path":"Ultimo Uchiha.yyp",
   },
   "resourceType":"GMNotes",
   "resourceVersion":"2.0",

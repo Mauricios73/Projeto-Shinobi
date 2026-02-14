@@ -6,7 +6,7 @@ randomise();
 
 event_inherited();
 
-vida_max = 1;
+vida_max = 5;
 vida_atual = vida_max;
 
 max_velh = 4;
@@ -22,12 +22,32 @@ dash_timer = 0;
 
 mostra_estado = true;
 
+fire_instance = noone;
+
+energia_max = 100;
+energia_regen = 10;
+energia = energia_max;
+chakra_regen_rate = 18;      // por segundo (ajuste)
+chakra_delay = room_speed * 1.5; // 1.5s antes de começar a regenerar
+
+chakra_timer = 0;
+
+skills = instance_find(obj_skill_controller, 0);
+skillc = noone;
+
+
 combo = 0;
 dano = noone;
 ataque = 1;
 posso = true; 
 ataque_mult = 1;
 ataque_dash = false;
+hit_criado = false;
+chidori_criado = false;
+hitbox_dash = noone;
+chidori_hit = noone;
+
+
 
 //controle dos power ups
 global.power_ups = [false];

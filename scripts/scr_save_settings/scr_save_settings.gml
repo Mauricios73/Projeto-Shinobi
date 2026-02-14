@@ -1,5 +1,5 @@
 function scr_save_settings(){
-    if (!instance_exists(obj_menu)) exit;
+    //if (!instance_exists(obj_menu)) exit;
 
     ini_open("settings.ini");
     
