@@ -6,4 +6,5 @@ game_over = false;
 valor = 0;
 contador = 0;	
 
-//scr_load_settings();
+persistent = true;
+scr_load_settings();

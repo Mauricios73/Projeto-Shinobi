@@ -4,7 +4,7 @@ if (instance_exists(obj_transicao)) exit;
 if (invencivel && tempo_invencivel > 0)
 {
 	tempo_invencivel --;
-	image_alpha= max(sin(get_timer()/50000), 0.2);
+	image_alpha = 0.2 + 0.8 * abs(sin(get_timer()/50000))
 }
 else
 {
@@ -13,7 +13,7 @@ else
 }
 //Iniciando variaveis
 var chao = place_meeting(x, y + 1, obj_block);
-var right, left, jump, attack, dash, chidori, fire, chakra;
+var right, left, jump, attack, dash, chidori, fire, chakra, start;
 
 //controles
 // Teclado
@@ -25,21 +25,25 @@ dash			= keyboard_check_pressed(global.key_dash);
 chidori			= keyboard_check_pressed(global.key_chidori);
 chakra			= keyboard_check_pressed(global.key_chakra);
 fire			= keyboard_check_pressed(global.key_fire);
+//start			= keyboard_check_pressed(global.key_start);
 
 
 // Joystick (id = 0 para o primeiro controle)
-if (gamepad_is_connected(0)) {
-    var axis_h = gamepad_axis_value(0, gp_axislh); // analógico esquerdo horizontal
-    var axis_v = gamepad_axis_value(0, gp_axislv); // analógico esquerdo vertical    
-    // movimento horizontal
-    if (axis_h > 0.3) right = 1;
-    if (axis_h < -0.3) left = 1;
-    // pulo (botão A)
-    if (gamepad_button_check_pressed(0, gp_face1)) jump = true;
-    // ataque (botão X)
-    if (gamepad_button_check_pressed(0, gp_face2)) attack = true;
-    // dash (botão B)
-    if (gamepad_button_check_pressed(0, gp_face3)) dash = true;
+if (gamepad_is_connected(0))
+{
+    var axis_h = gamepad_axis_value(0, gp_axislh);
+
+    if (axis_h >  0.3) right = 1;
+    if (axis_h < -0.3) left  = 1;
+
+    if (gamepad_button_check_pressed(0, gp_face1)) jump		= true; // A
+    if (gamepad_button_check_pressed(0, gp_face2)) attack	= true; // X
+    if (gamepad_button_check_pressed(0, gp_face3)) dash		= true; // B
+	if (gamepad_button_check_pressed(0, gp_face4)) chakra	= true; // Y
+	if (gamepad_button_check_pressed(0, gp_shoulderr)) chidori	= true; // 
+	if (gamepad_button_check_pressed(0, gp_shoulderl)) fire		= true; // 
+	//if (gamepad_button_check_pressed(0, gp_start)) start		= true; // Start
+	
 }
 
 //Codigo de movimentação 
@@ -47,12 +51,6 @@ velh = (right - left) * max_velh * global.vel_mult;
 
 if (dash_timer > 0)dash_timer--;
 
-// Regeneração
-//if (estado != "fire_breath" || "chidori")
-//{
-//    energia = clamp(energia, 0, energia_max);
-
-//}
 #region inputs
 // ==========================
 // INPUT DE SKILLS
@@ -99,7 +97,7 @@ switch(estado){
 	 
 	#region parado
 	case "parado":
-	{
+	
 		if (chao) dash_aereo = true;
 		//comportamento do estado
 		sprite_index = spr_player_idle;
@@ -353,7 +351,6 @@ switch(estado){
 
 		    // cria na frente do player
 		    chidori_hit = instance_create_layer(x + dir * 55, y - 42, layer, obj_dano);
-
 		    chidori_hit.pai = id;
 		    chidori_hit.persistente = false;
 		    chidori_hit.skill_id = "chidori"; // ✅ XP vai pro chidori
@@ -530,4 +527,4 @@ switch(estado){
 	}
 }
 
-if (keyboard_check(vk_enter)) game_restart();
+if (keyboard_check(ord("P"))) game_restart();

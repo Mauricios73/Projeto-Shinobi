@@ -3,7 +3,6 @@ var cam = instance_create_layer(x, y, layer, obj_camera);
 cam.alvo = id;
 
 randomise();
-
 event_inherited();
 
 vida_max = 5;
@@ -20,11 +19,19 @@ dash_aereo = true;
 dash_delay = 30;
 dash_timer = 0;
 
+on_ground = false;
+was_on_ground = false;
+// cooldown (opcional, mas recomendado)
+chidori_cd = 0;
+chidori_cd_max = room_speed * 0.35; // ~0.35s
+
+// trava de uso no ar (1 por pulo)
+chidori_aereo = true
 mostra_estado = true;
 
 fire_instance = noone;
 
-energia_max = 100;
+energia_max = 1000;
 energia_regen = 10;
 energia = energia_max;
 chakra_regen_rate = 18;      // por segundo (ajuste)
@@ -34,7 +41,6 @@ chakra_timer = 0;
 
 skills = instance_find(obj_skill_controller, 0);
 skillc = noone;
-
 
 combo = 0;
 dano = noone;
@@ -46,8 +52,6 @@ hit_criado = false;
 chidori_criado = false;
 hitbox_dash = noone;
 chidori_hit = noone;
-
-
 
 //controle dos power ups
 global.power_ups = [false];
@@ -77,7 +81,6 @@ finaliza_ataque = function(){
 		dano = noone;
 	}
 }
-
 //gravidade
 aplica_gravidade = function(){
 	var chao = place_meeting(x, y + 1, obj_block);

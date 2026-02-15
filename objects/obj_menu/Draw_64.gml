@@ -1,4 +1,11 @@
-if(!global.pause) exit;
+// Só trava pelo pause quando este menu estiver em modo PAUSE.
+// No menu principal (main) ele deve rodar normal.
+if (variable_global_exists("menu_mode")) {
+    if (global.menu_mode == "pause" && !global.pause) exit;
+} else {
+    // fallback antigo
+    if (!global.pause) exit;
+}
 
 var gwidth = global.view_width, gheight = global.view_height;
 
@@ -74,8 +81,8 @@ yy = 0; repeat(ds_height){
 			if(current_val == 0){ c1 = c; c2 = c_dkgray; }
 			else				{ c1 = c_dkgray; c2 = c; }
 			
-			draw_text_color(rtx, rty, "ON", c1,c1,c1,c1, 1);
-			draw_text_color(rtx + 32, rty, "OFF", c2,c2,c2,c2, 1);
+			draw_text_color(rtx, rty, "FULLSCREEN", c1,c1,c1,c1, 1);
+			draw_text_color(rtx + 110, rty, "WINDOWED", c2,c2,c2,c2, 1);
 
 		break;
 		

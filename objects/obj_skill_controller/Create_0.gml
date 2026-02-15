@@ -29,11 +29,9 @@ fire_breath = {
     fx_offset_y: -54,
 	
 	// XP tuning (difícil de upar)
-	xp_dummy_chance: 15,        // 15%
+	xp_dummy_chance: 30,        // 15%
 	xp_dummy_amount: 1,         // +1 quando cair
-
 	xp_enemy_kill: 3,           // bônus ao matar (opcional)
-
 };
 
 chidori = {
@@ -51,7 +49,6 @@ chidori = {
     // XP tuning
 	xp_dummy_chance: 15,        // 15%
 	xp_dummy_amount: 1,         // +1 quando cair
-
 	xp_enemy_kill: 3,           // bônus ao matar (opcional)
 };
 
