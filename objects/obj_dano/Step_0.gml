@@ -1,3 +1,10 @@
+if (life != 999999)  // opcional: só conta quando você setar um valor curto
+{
+    life--;
+    if (life <= 0) instance_destroy();
+}
+
+
 if (!instance_exists(pai)) { instance_destroy(); exit; }
 
 // lista de colisões

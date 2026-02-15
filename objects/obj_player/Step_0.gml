@@ -23,7 +23,7 @@ jump			= keyboard_check(global.key_up);
 attack			= keyboard_check_pressed(global.key_ataque);
 dash			= keyboard_check_pressed(global.key_dash);
 chidori			= keyboard_check_pressed(global.key_chidori);
-chakra			= keyboard_check_pressed(global.key_chakra);
+chakra			= keyboard_check(global.key_chakra);
 fire			= keyboard_check_pressed(global.key_fire);
 //start			= keyboard_check_pressed(global.key_start);
 
@@ -39,7 +39,7 @@ if (gamepad_is_connected(0))
     if (gamepad_button_check_pressed(0, gp_face1)) jump		= true; // A
     if (gamepad_button_check_pressed(0, gp_face2)) attack	= true; // X
     if (gamepad_button_check_pressed(0, gp_face3)) dash		= true; // B
-	if (gamepad_button_check_pressed(0, gp_face4)) chakra	= true; // Y
+	if (gamepad_button_check(0, gp_face4)) chakra	= true; // Y
 	if (gamepad_button_check_pressed(0, gp_shoulderr)) chidori	= true; // 
 	if (gamepad_button_check_pressed(0, gp_shoulderl)) fire		= true; // 
 	//if (gamepad_button_check_pressed(0, gp_start)) start		= true; // Start
@@ -51,42 +51,47 @@ velh = (right - left) * max_velh * global.vel_mult;
 
 if (dash_timer > 0)dash_timer--;
 
+
 #region inputs
 // ==========================
-// INPUT DE SKILLS
+// INPUT DE SKILLS (via controller)
 // ==========================
-if (!instance_exists(skillc)) skillc = instance_find(obj_skill_controller, 0);
-if (keyboard_check_pressed(global.key_fire) && instance_exists(skillc))
-{
-    if (skillc.can_use_fire(self))
-    {
-        skillc.start_fire(self);
-        estado = "fire_breath";
-    }
-}
-
 var sc = instance_find(obj_skill_controller, 0);
-if (keyboard_check_pressed(global.key_chidori) && sc != noone)
-{
-    if (sc.chidori.unlocked && sc.chidori.energy_cost <= energia)
-    {
-        energia -= sc.chidori.energy_cost;
-        energia = clamp(energia, 0, energia_max);
 
-        estado = "chidori";
+// FIRE
+if (fire && sc != noone)
+{
+    if (sc.can_use_fire(self))
+    {
+        if (sc.start_fire(self))
+        {
+            estado = "fire_breath";
+            image_index = 0;
+        }
     }
 }
 
+// CHIDORI
+if (chidori && sc != noone)
+{
+    if (sc.can_use_chidori(self))
+    {
+        if (sc.start_chidori(self))
+        {
+            estado = "chidori";
+            image_index = 0;
+        }
+    }
+}
+
+// CHAKRA (segurar)
 if (keyboard_check(global.key_chakra))
 {
     if (estado == "parado" || estado == "movendo")
-    {
         estado = "chakra";
-    }
 }
 else
 {
-    // soltou: se estava canalizando, volta
     if (estado == "chakra") estado = "parado";
 }
 
@@ -97,7 +102,7 @@ switch(estado){
 	 
 	#region parado
 	case "parado":
-	
+	{
 		if (chao) dash_aereo = true;
 		//comportamento do estado
 		sprite_index = spr_player_idle;
@@ -123,12 +128,12 @@ switch(estado){
 			image_index = 0;
 			
 		}
-		else if (chidori && global.power_ups[0])
-		{
-			estado = "chidori";
-			image_index = 0;
+		//else if (chidori && global.power_ups[0])
+		//{
+		//	estado = "chidori";
+		//	image_index = 0;
 			
-		}
+		//}
 		break;
 	}
 	#endregion	
@@ -157,11 +162,11 @@ switch(estado){
 			estado = "dash";
 			image_index = 0;
 		}
-		else if (chidori && global.power_ups[0])
-		{
-			estado = "chidori";
-			image_index = 0;
-		}
+		//else if (chidori && global.power_ups[0])
+		//{
+		//	estado = "chidori";
+		//	image_index = 0;
+		//}
 		
 		break;
 	}
@@ -196,10 +201,10 @@ switch(estado){
 		{
 			estado = "dash aereo";
 		}
-		else if (chidori && global.power_ups[0])
-		{
-			estado = "chidori";
-		}
+		//else if (chidori && global.power_ups[0])
+		//{
+		//	estado = "chidori";
+		//}
 		break;
 	}
 	#endregion
@@ -344,13 +349,15 @@ switch(estado){
     }
 
     // 🔥 cria só no frame 2 (ajuste se quiser)
-		if (floor(image_index) == 2 && !hit_criado)show_debug_message("CHIDORI HITBOX CRIADO: " + string(chidori_hit));
+		//if (image_index >= 2 && image_index < 3 && !hit_criado)show_debug_message("CHIDORI HITBOX CRIADO: " + string(chidori_hit));
 
-		{
+		
+			show_debug_message("CHIDORI HITBOX CRIADO: " + string(chidori_hit));
 		    var dir = image_xscale;
 
 		    // cria na frente do player
 		    chidori_hit = instance_create_layer(x + dir * 55, y - 42, layer, obj_dano);
+
 		    chidori_hit.pai = id;
 		    chidori_hit.persistente = false;
 		    chidori_hit.skill_id = "chidori"; // ✅ XP vai pro chidori
@@ -367,7 +374,7 @@ switch(estado){
 
 		    chidori_hit.dano = ataque + (lv - 1) * bonus_per_lv;
 		    hit_criado = true;
-		}
+		
 		    mid_velh = image_xscale * dash_vel_ataque;
 
 		if (image_index >= image_number - 1)
@@ -527,4 +534,5 @@ switch(estado){
 	}
 }
 
-if (keyboard_check(ord("P"))) game_restart();
+if (keyboard_check_pressed(ord("P"))) game_restart();
+

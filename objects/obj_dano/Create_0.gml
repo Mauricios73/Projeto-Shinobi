@@ -10,6 +10,8 @@ max_hits_por_alvo = -1;
 skill_id = ""; // vazio = ataque normal (sem XP de skill)
 xp_lock = ds_map_create(); // key: skill_id + "_" + alvo.id -> true
 
+life = 999999;   // padrão infinito (ou grande)
 
 tick_map = ds_map_create();
 hits_map = ds_map_create();
+show_debug_message("OBJ_DANO CREATE id=" + string(id) + " skill=" + string(skill_id));
