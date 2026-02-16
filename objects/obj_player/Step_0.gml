@@ -57,31 +57,19 @@ if (dash_timer > 0)dash_timer--;
 // INPUT DE SKILLS (via controller)
 // ==========================
 var sc = instance_find(obj_skill_controller, 0);
+var estado_anterior = estado;
+
 
 // FIRE
 if (fire && sc != noone)
 {
-    if (sc.can_use_fire(self))
-    {
-        if (sc.start_fire(self))
-        {
-            estado = "fire_breath";
-            image_index = 0;
-        }
-    }
+    sc.start_fire(self);
 }
 
 // CHIDORI
 if (chidori && sc != noone)
 {
-    if (sc.can_use_chidori(self))
-    {
-        if (sc.start_chidori(self))
-        {
-            estado = "chidori";
-            image_index = 0;
-        }
-    }
+    sc.start_chidori(self);
 }
 
 // CHAKRA (segurar)
@@ -128,12 +116,14 @@ switch(estado){
 			image_index = 0;
 			
 		}
-		//else if (chidori && global.power_ups[0])
-		//{
-		//	estado = "chidori";
-		//	image_index = 0;
-			
-		//}
+		if (estado != "chidori")
+			{
+		    if (instance_exists(chidori_hit))
+			    {
+			        with (chidori_hit) instance_destroy();
+			        chidori_hit = noone;
+			    }
+			}
 		break;
 	}
 	#endregion	
@@ -286,18 +276,14 @@ switch(estado){
 		        image_speed = 1;
 		    }
 
-		    // NÃO encerra pelo sprite do player.
-		    // Quem encerra é o obj_skill_fire_breath quando a animação dele terminar.
-    
-		    // Segurança: se por algum motivo o fogo sumir, volta pro parado
 		    if (!instance_exists(fire_instance))
 		    {
 		        var sc = instance_find(obj_skill_controller, 0);
 		        if (sc != noone) sc.end_fire(self);
 		        estado = "parado";
 		    }
+			break;
 		}
-		break;
 	#endregion
 	
 	#region ataque aereo
@@ -339,56 +325,29 @@ switch(estado){
 
 	#region chidori
 	case "chidori":
-{
-    aplica_gravidade();
-    if (sprite_index != spr_player_dash_ataque)
-    {
-        sprite_index = spr_player_dash_ataque;
-        image_index = 0;
-        hit_criado = false;
-    }
+	{
+	    aplica_gravidade();
 
-    // 🔥 cria só no frame 2 (ajuste se quiser)
-		//if (image_index >= 2 && image_index < 3 && !hit_criado)show_debug_message("CHIDORI HITBOX CRIADO: " + string(chidori_hit));
+	    if (sprite_index != spr_player_dash_ataque)
+	    {
+	        sprite_index = spr_player_dash_ataque;
+	        image_index = 0;
+	    }
 
-		
-			show_debug_message("CHIDORI HITBOX CRIADO: " + string(chidori_hit));
-		    var dir = image_xscale;
+	    // Movimento do dash
+	    mid_velh = image_xscale * dash_vel_ataque;
 
-		    // cria na frente do player
-		    chidori_hit = instance_create_layer(x + dir * 55, y - 42, layer, obj_dano);
+	    // Final da animação encerra estado
+	    if (image_index >= image_number - 1)
+	    {
+	        estado = "parado";
+	        velh = 0;
+	        mid_velh = 0;
+	    }
 
-		    chidori_hit.pai = id;
-		    chidori_hit.persistente = false;
-		    chidori_hit.skill_id = "chidori"; // ✅ XP vai pro chidori
+	    break;
+	}
 
-		    // dano = base + bônus por level do chidori (puxando do controller)
-		    var sc = instance_find(obj_skill_controller, 0);
-		    var lv = 1;
-		    var bonus_per_lv = 2;
-
-		    if (sc != noone) {
-		        lv = sc.chidori.level;
-		        bonus_per_lv = sc.chidori.dmg_bonus_per_level;
-		    }
-
-		    chidori_hit.dano = ataque + (lv - 1) * bonus_per_lv;
-		    hit_criado = true;
-		
-		    mid_velh = image_xscale * dash_vel_ataque;
-
-		if (image_index >= image_number - 1)
-			{
-			    if (instance_exists(chidori_hit)) with (chidori_hit) instance_destroy();
-			    chidori_hit = noone;
-
-			    estado = "parado";
-				velh = 0;
-			    mid_velh = 0;
-			    finaliza_ataque();
-			}
-		    break;
-		}
 	#endregion
 
 	#region chakra

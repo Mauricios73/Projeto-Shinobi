@@ -29,7 +29,10 @@ chidori_cd_max = room_speed * 0.35; // ~0.35s
 chidori_aereo = true
 mostra_estado = true;
 
+fire_hit = noone;
 fire_instance = noone;
+fire_hitbox = noone;
+
 
 energia_max = 1000;
 energia_regen = 10;

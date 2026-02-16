@@ -21,7 +21,7 @@ fire_breath = {
     fx_offset_x: 48,
     fx_offset_y: -54,
 
-    xp_dummy_chance: 30,
+    xp_dummy_chance: 7,
     xp_dummy_amount: 1,
     xp_enemy_kill: 3,
 };
@@ -125,11 +125,22 @@ function start_fire(_player)
     _player.energia -= fire_breath.energy_cost;
     _player.energia = clamp(_player.energia, 0, _player.energia_max);
 
+    fire_breath.cooldown_left = fire_breath.cooldown_max;
+
+    // 🔥 ativa estado
+    _player.estado = "fire_breath";
+    _player.image_index = 0;
+
+    // 🔥 cria efeito visual
     var fx = instance_create_layer(_player.x, _player.y, _player.layer, obj_skill_fire_breath);
     fx.owner = _player;
     _player.fire_instance = fx;
 
-    fire_breath.cooldown_left = fire_breath.cooldown_max;
+    // 💥 cria hitbox profissional
+    var hb = instance_create_layer(_player.x, _player.y, _player.layer, obj_hitbox);
+    hb.setup_fire(_player);
+    _player.fire_hit = hb;
+
     return true;
 }
 
@@ -159,10 +170,23 @@ function start_chidori(_player)
 {
     if (!can_use_chidori(_player)) return false;
 
+    // Consome energia
     _player.energia -= chidori.energy_cost;
     _player.energia = clamp(_player.energia, 0, _player.energia_max);
 
+    // Ativa estado
+    _player.estado = "chidori";
+    _player.image_index = 0;
+
+    // Cria hitbox profissional
+    var hb = instance_create_layer(_player.x, _player.y, _player.layer, obj_hitbox);
+    hb.setup_chidori(_player);
+
+    _player.chidori_hit = hb;
+
+    // Cooldown
     chidori.cooldown_left = chidori.cooldown_max;
+
     return true;
 }
 
