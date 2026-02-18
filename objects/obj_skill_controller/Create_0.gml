@@ -4,7 +4,7 @@
 fire_breath = {
     id: "fire_breath",
 
-    level: 1,
+    level: 20,
     xp: 0,
     xp_next: 20,
     unlocked: true,
@@ -32,7 +32,7 @@ fire_breath = {
 chidori = {
     id: "chidori",
 
-    level: 1,
+    level: 5,
     xp: 0,
     xp_next: 20,
     unlocked: false,   // ✅ começa bloqueado (mude se quiser)

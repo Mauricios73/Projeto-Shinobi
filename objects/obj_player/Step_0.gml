@@ -268,6 +268,7 @@ switch(estado){
 	case "fire_breath":
 		{
 		    velh = 0;
+			velv = 0;
 
 		    if (sprite_index != spr_player_jutsu)
 		    {
@@ -278,8 +279,8 @@ switch(estado){
 
 		    if (!instance_exists(fire_instance))
 		    {
-		        var sc = instance_find(obj_skill_controller, 0);
-		        if (sc != noone) sc.end_fire(self);
+		        var _sc = instance_find(obj_skill_controller, 0);
+		        if (_sc != noone) _sc.end_fire(self);
 		        estado = "parado";
 		    }
 			break;
