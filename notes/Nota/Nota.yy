@@ -1,7 +1,7 @@
 {
   "$GMNotes":"v1",
-  "%Name":"Note1",
-  "name":"Note1",
+  "%Name":"Nota",
+  "name":"Nota",
   "parent":{
     "name":"Ultimo Uchiha",
     "path":"Ultimo Uchiha.yyp",

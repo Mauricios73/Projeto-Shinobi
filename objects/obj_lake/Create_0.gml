@@ -1,6 +1,9 @@
+depth = -1000;
+
+
 // Tamanho do lago (retângulo)
 w = 1362;
-h = 180;
+h = 150;
 
 // Se quiser que x,y sejam o TOPO-ESQUERDA do lago, deixe assim.
 // Se quiser x,y como centro, use: left = x - w/2; top = y - h/2; (no Draw)

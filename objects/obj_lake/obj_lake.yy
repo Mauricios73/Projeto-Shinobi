@@ -11,8 +11,8 @@
   "name":"obj_lake",
   "overriddenProperties":[],
   "parent":{
-    "name":"Controlador",
-    "path":"folders/Objetos/Controlador.yy",
+    "name":"Clima",
+    "path":"folders/Objetos/Clima.yy",
   },
   "parentObjectId":null,
   "persistent":false,

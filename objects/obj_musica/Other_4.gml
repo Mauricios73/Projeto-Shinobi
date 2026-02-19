@@ -1,4 +1,10 @@
 show_debug_message("ROOM START - OBJ_MUSICA");
+if (instance_number(obj_weather_manager) == 0)
+{
+    var inst = instance_create_depth(0, 0, -10000000, obj_weather_manager);
+    inst.persistent = true; // opcional (mantém entre rooms)
+    show_debug_message("CRIOU OBJ_WEATHER (room=" + room_get_name(room) + ")");
+}
 
 // se já tem música ativa, NÃO reinicia nada
 if (musica_ativa) {

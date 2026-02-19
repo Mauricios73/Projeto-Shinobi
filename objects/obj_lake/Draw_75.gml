@@ -8,7 +8,10 @@ var guiH = display_get_gui_height();
 // LAGO FIXO NA TELA
 // Ajuste como você quiser:
 var left = (guiW - w) * 0.5;   // centralizado
-var top  = guiH - h;           // encostado embaixo (linha d’água = top)
+var top  = guiH - h; 
+
+
+// encostado embaixo (linha d’água = top)
 
 // --------------------
 // Surface do reflexo (mesma altura do lago -> sem distorção)
@@ -100,3 +103,6 @@ for (var i = 0; i < foam_n; i++)
 
 draw_set_alpha(1);
 draw_set_color(c_white);
+
+global.lake_gui_top = top; // linha d'água (top do lago)
+global.lake_gui_h   = h;   // altura do lago

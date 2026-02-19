@@ -1,0 +1,13 @@
+1- A fog não esta funcionando. Arrumar
+
+2- Transições de cenário na mesma room (floresta → campo → deserto) com parallax diferente por trecho
+
+3- Sistema de clima mais simples (sem fog por enquanto): chuva/neve com toggle + persistência por room
+
+4- Polimento do lago: borda, espuma mais “Kingdom”, profundidade/escurecimento, ondas melhores
+
+5- UI/HUD: barras, fontes, organização, menu pause
+
+6- Ambiente: luzes, partículas, pássaros, vento, som de chuva/água
+
+7- Criar inicialização 
