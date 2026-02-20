@@ -63,3 +63,41 @@ auto_lock_to_ground = true;
 waterline_offset_px = 22; // ajuste fino: 6..16
 probe_extra_up = 200;
 probe_extra_down = 600;
+
+// ===== RIPPLES (chuva na água) =====
+ripple_max   = 90;
+ripple_x     = array_create(ripple_max);
+ripple_t     = array_create(ripple_max);
+ripple_str   = array_create(ripple_max);
+
+// NOVO: profundidade e “tipo”
+ripple_yoff  = array_create(ripple_max); // 0..lake_h
+ripple_deep  = array_create(ripple_max); // true/false
+
+ripple_life  = 0.35;  // segundos
+ripple_size  = 14;    // px (tamanho final do oval)
+ripple_alpha = 0.35;  // intensidade
+
+ripple_head  = 0;
+
+for (var i = 0; i < ripple_max; i++)
+{
+    ripple_t[i] = -1; // inativo
+}
+
+// helper: cria ripple no mundo
+add_ripple = function(_wx, _strength, _yoff, _deep)
+{
+    if (is_undefined(_yoff)) _yoff = 2;
+    if (is_undefined(_deep)) _deep = false;
+
+    var i = ripple_head;
+    ripple_head = (ripple_head + 1) mod ripple_max;
+
+    ripple_x[i]   = _wx;
+    ripple_t[i]   = 0;
+    ripple_str[i] = _strength;
+
+    ripple_yoff[i] = _yoff;   // ← agora cada ripple pode nascer “no meio”
+    ripple_deep[i] = _deep;
+};

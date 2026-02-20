@@ -1,0 +1,26 @@
+{
+  "$GMSound":"v2",
+  "%Name":"snd_rain",
+  "audioGroupId":{
+    "name":"audiogroup_soundeffects",
+    "path":"audiogroups/audiogroup_soundeffects",
+  },
+  "bitDepth":1,
+  "channelFormat":0,
+  "compression":0,
+  "compressionQuality":4,
+  "conversionMode":0,
+  "duration":60.000362,
+  "exportDir":"",
+  "name":"snd_rain",
+  "parent":{
+    "name":"Sons Ambiente",
+    "path":"folders/Sounds/Sons Ambiente.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"snd_rain.wav",
+  "volume":1.0,
+}

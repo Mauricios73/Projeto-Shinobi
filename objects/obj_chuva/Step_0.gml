@@ -1,5 +1,9 @@
-var w = display_get_gui_width();
-var h = display_get_gui_height();
+var cam = view_camera[0];
+var w = camera_get_view_width(cam);
+var h = camera_get_view_height(cam);
+var vx = camera_get_view_x(cam);
+var vy = camera_get_view_y(cam);
+
 
 if (w <= 1) w = camera_get_view_width(view_camera[0]);
 if (h <= 1) h = camera_get_view_height(view_camera[0]);
@@ -39,28 +43,40 @@ for (var i = 0; i < rain_n; i++)
     rx[i] += wx;
     ry[i] += rv[i];
 
-    // Se atingiu a água
-    if (variable_global_exists("lake_gui_top"))
+// Se atingiu a água (lake_gui_top está em coords da VIEW)
+if (variable_global_exists("lake_gui_top"))
+{
+    if (ry[i] >= global.lake_gui_top)
     {
-        if (ry[i] >= global.lake_gui_top)
+        // não é toda gota (Kingdom é sutil)
+        if (irandom(99) < 28)
         {
-            if (instance_exists(obj_lake_v2))
+            if (instance_exists(obj_lake_v3))
             {
-                with (obj_lake_v2)
+                var drop_wx = vx + rx[i]; // X no mundo
+                var strength = 1.0;
+
+                with (obj_lake_v3)
                 {
-                    var id_ripple = irandom(ripple_max - 1);
-                    ripple_x[id_ripple] = other.rx[i];
-                    ripple_y[id_ripple] = 2;
-                    ripple_r[id_ripple] = 1;
-                    ripple_a[id_ripple] = 0.6;
+                    // 1) ripple na superfície (sempre quando passar no sorteio)
+                    //add_ripple(drop_wx, strength, 2, true);
+
+                    // 2) ripple no meio do lago (mais fraco e mais profundo)
+                    if (irandom(99) < 55) // chance do “meio”
+                    {
+                        var mid = irandom_range(floor(lake_h * 0.20), floor(lake_h * 0.85));
+                        add_ripple(drop_wx, strength * 0.85, mid, true);
+                    }
                 }
             }
-
-            ry[i] = -20;
-            rx[i] = random(gw);
-            continue;
         }
+
+        // respawn
+        ry[i] = -20;
+        rx[i] = random(gw);
+        continue;
     }
+}
 
     if (ry[i] > gh + 20)
     {

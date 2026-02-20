@@ -26,3 +26,16 @@ for (var i = 0; i < spark_n; i++)
     if (spark_x[i] < 0)      spark_x[i] += lake_w;
     else if (spark_x[i] > lake_w) spark_x[i] -= lake_w;
 }
+
+// ===== update ripples =====
+var dt = 1 / room_speed;
+
+for (var i = 0; i < ripple_max; i++)
+{
+    if (ripple_t[i] >= 0)
+    {
+        ripple_t[i] += dt;
+        if (ripple_t[i] >= ripple_life)
+            ripple_t[i] = -1;
+    }
+}

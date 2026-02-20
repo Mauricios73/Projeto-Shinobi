@@ -10,4 +10,4 @@
 
 6- Ambiente: luzes, partículas, pássaros, vento, som de chuva/água
 
-7- Criar inicialização 
+7- Criar inicialização - OK

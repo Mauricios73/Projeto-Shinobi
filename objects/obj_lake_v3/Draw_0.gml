@@ -148,6 +148,50 @@ draw_set_alpha(1);
 draw_set_color(c_white);
 
 // ============================
+// 4.5) RIPPLES DA CHUVA (Kingdom-like)
+// ============================
+gpu_set_blendmode(bm_add);
+draw_set_color(make_color_rgb(210, 225, 255));
+
+for (var i = 0; i < ripple_max; i++)
+{
+    if (ripple_t[i] < 0) continue;
+
+    var wx = ripple_x[i];
+    if (wx < vis_x0 || wx > vis_x1) continue;
+
+    var p = ripple_t[i] / ripple_life; // 0..1
+
+    // cresce e some
+    var r = lerp(1, ripple_size * ripple_str[i], p);
+
+    // y onde desenha (linha d’água + offset)
+    var ry = y + ripple_yoff[i];
+
+    // deep ripples são mais fracos
+    var a = ripple_alpha * (1 - p);
+    if (ripple_deep[i]) a *= 0.80;
+
+    draw_set_alpha(a);
+
+    // oval “pixel”
+    draw_rectangle(wx - r,         ry,     wx + r,         ry + 1, false);
+    draw_rectangle(wx - r * 0.65,  ry - 1, wx + r * 0.65,  ry,     false);
+    draw_rectangle(wx - r * 0.65,  ry + 1, wx + r * 0.65,  ry + 1, false);
+
+    // splash só na superfície
+    if (!ripple_deep[i] && p < 0.18)
+    {
+        draw_set_alpha(a * 0.85);
+        draw_rectangle(wx, ry - 2, wx + 1, ry - 1, false);
+    }
+}
+
+gpu_set_blendmode(bm_normal);
+draw_set_alpha(1);
+draw_set_color(c_white);
+
+// ============================
 // 5) BORDA KINGDOM (sem “corte duro”)
 // ============================
 for (var i = 0; i < 6; i++)

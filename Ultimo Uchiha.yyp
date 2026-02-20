@@ -138,6 +138,8 @@
     {"id":{"name":"snd_crow","path":"sounds/snd_crow/snd_crow.yy",},},
     {"id":{"name":"snd_lotus_pond","path":"sounds/snd_lotus_pond/snd_lotus_pond.yy",},},
     {"id":{"name":"snd_passo","path":"sounds/snd_passo/snd_passo.yy",},},
+    {"id":{"name":"snd_rain_forest","path":"sounds/snd_rain_forest/snd_rain_forest.yy",},},
+    {"id":{"name":"snd_rain","path":"sounds/snd_rain/snd_rain.yy",},},
     {"id":{"name":"snd_raven","path":"sounds/snd_raven/snd_raven.yy",},},
     {"id":{"name":"snd_senya_itachi","path":"sounds/snd_senya_itachi/snd_senya_itachi.yy",},},
     {"id":{"name":"snd_wind_1","path":"sounds/snd_wind_1/snd_wind_1.yy",},},

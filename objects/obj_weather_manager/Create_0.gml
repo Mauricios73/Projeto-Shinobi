@@ -52,3 +52,9 @@ debug_popup  = false;    // show_message quando mudar (TEMPORÁRIO)
 // só pra evitar popup repetido
 _last_precip = -1;
 _last_fog    = -1;
+
+
+// ====== SOM DA CHUVA ======
+rain_sound_handle = -1; // Handle do som de chuva
+rain_fade_ms = 400;   // Tempo de fade em milissegundos
+rain_target_volume = 0;   // Volume alvo do som da chuva

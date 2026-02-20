@@ -91,3 +91,34 @@ if (fog_left <= 0)
 
     alarm[0] = 1;
 }
+
+// ... (seu código existente)
+
+// === CONTROLE DO SOM DE CHUVA ===
+if (precip_mode == 2) {
+    // Se está chovendo, define o volume alvo (mais alto para chuva forte)
+    rain_target_volume = 1.0; // Volume máximo, ajuste se quiser mais baixo
+} else {
+    // Se não está chovendo, volume alvo é zero
+    rain_target_volume = 0;
+}
+
+// Se o som deve tocar
+if (rain_target_volume > 0) {
+    if (rain_sound_handle == -1 || !audio_is_playing(rain_sound_handle)) {
+        rain_sound_handle = audio_play_sound(snd_rain, 0, true);
+        // Começa com volume zero para fazer fade-in
+        audio_sound_gain(rain_sound_handle, 0, 0);
+    }
+
+    // Ajusta o volume com um fade suave
+    audio_sound_gain(rain_sound_handle, rain_target_volume, rain_fade_ms);
+} else {
+    // Se o volume alvo é zero, faz fade-out e para depois do fade
+    if (rain_sound_handle != -1 && audio_is_playing(rain_sound_handle)) {
+        audio_sound_gain(rain_sound_handle, 0, rain_fade_ms);
+
+        // Para o som após o fade-out
+        alarm[1] = ceil((rain_fade_ms / 1000.0) * room_speed);
+    }
+}

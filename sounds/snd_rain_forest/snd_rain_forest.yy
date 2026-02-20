@@ -1,0 +1,26 @@
+{
+  "$GMSound":"v2",
+  "%Name":"snd_rain_forest",
+  "audioGroupId":{
+    "name":"audiogroup_default",
+    "path":"audiogroups/audiogroup_default",
+  },
+  "bitDepth":1,
+  "channelFormat":0,
+  "compression":0,
+  "compressionQuality":4,
+  "conversionMode":0,
+  "duration":60.76467,
+  "exportDir":"",
+  "name":"snd_rain_forest",
+  "parent":{
+    "name":"Sons Ambiente",
+    "path":"folders/Sounds/Sons Ambiente.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"snd_rain_forest.wav",
+  "volume":1.0,
+}
