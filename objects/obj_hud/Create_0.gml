@@ -1,7 +1,7 @@
 persistent = true;
 
 // toggle do debug
-dbg_show = true;     // começa ligado
+dbg_show = false;     // começa ligado
 dbg_key  = vk_f3;    // F3 liga/desliga
 
 // fonte (opcional)

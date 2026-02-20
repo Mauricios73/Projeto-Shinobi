@@ -30,6 +30,9 @@ precip_max = 45;
 fog_min    = 25;
 fog_max    = 70;
 
+snow_accum_speed   = 0.015;
+snow_melt_speed    = 0.005;
+
 // chances (0..100)
 chance_none = 50;
 chance_snow = 25;
@@ -44,7 +47,7 @@ fog_left    = 0;
 
 // ====== DEBUG (TEMPORÁRIO) ======
 debug_keys   = true;    // deixe true agora
-debug_popup  = true;    // show_message quando mudar (TEMPORÁRIO)
+debug_popup  = false;    // show_message quando mudar (TEMPORÁRIO)
 
 // só pra evitar popup repetido
 _last_precip = -1;

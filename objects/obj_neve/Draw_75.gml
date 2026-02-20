@@ -18,4 +18,3 @@ for (var i = 0; i < snow_n; i++)
 }
 
 draw_set_alpha(1);
-draw_set_color(c_white);
