@@ -16,7 +16,14 @@ if (musica_ativa) {
 // ======================
 musicas = [
     snd_senya_itachi,
-    snd_lotus_pond
+    snd_lotus_pond,
+	Amos_Roddy___Kingdom_Two_Crowns_OST___01_Into_the_Green_Vale,
+	Amos_Roddy___Kingdom_Two_Crowns_OST___02_Driftwood,
+	Amos_Roddy___Kingdom_Two_Crowns_OST___03_Kodama_Sunset,
+	Amos_Roddy___Kingdom_Two_Crowns_OST___04_Kami_of_the_Dust,
+	Amos_Roddy___Kingdom_Two_Crowns_OST___05_Kojin,
+	Amos_Roddy___Kingdom_Two_Crowns_OST___06_Vellum,
+	Amos_Roddy___Kingdom_Two_Crowns_OST___07_Bushi
 ];
 
 mus_atual = noone;

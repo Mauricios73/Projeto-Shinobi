@@ -2,9 +2,9 @@
   "$GMSprite":"v2",
   "%Name":"grass_1",
   "bboxMode":0,
-  "bbox_bottom":2,
+  "bbox_bottom":15,
   "bbox_left":0,
-  "bbox_right":7,
+  "bbox_right":42,
   "bbox_top":0,
   "collisionKind":1,
   "collisionTolerance":0,
@@ -16,7 +16,7 @@
   ],
   "gridX":0,
   "gridY":0,
-  "height":3,
+  "height":16,
   "HTile":false,
   "layers":[
     {"$GMImageLayer":"","%Name":"cd2a578a-e708-4945-94bb-91cb30948f46","blendMode":0,"displayName":"default","isLocked":false,"name":"cd2a578a-e708-4945-94bb-91cb30948f46","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
@@ -86,5 +86,5 @@
   },
   "type":0,
   "VTile":false,
-  "width":8,
+  "width":43,
 }

@@ -1,0 +1,26 @@
+{
+  "$GMSound":"v2",
+  "%Name":"Amos_Roddy___Kingdom_Two_Crowns_OST___06_Vellum",
+  "audioGroupId":{
+    "name":"audiogroup_music",
+    "path":"audiogroups/audiogroup_music",
+  },
+  "bitDepth":1,
+  "channelFormat":0,
+  "compression":0,
+  "compressionQuality":4,
+  "conversionMode":0,
+  "duration":44.590656,
+  "exportDir":"",
+  "name":"Amos_Roddy___Kingdom_Two_Crowns_OST___06_Vellum",
+  "parent":{
+    "name":"Trilha Sonora",
+    "path":"folders/Sounds/Trilha Sonora.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"Amos_Roddy___Kingdom_Two_Crowns_OST___06_Vellum.mp3",
+  "volume":1.0,
+}

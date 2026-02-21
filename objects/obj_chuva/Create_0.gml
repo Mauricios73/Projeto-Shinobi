@@ -1,8 +1,10 @@
-depth = 100000;
+depth = 10000;
 
 safe_top = 90;
 
-rain_n = 320; // 200~450
+rain_max    = 320;      // máximo de gotas
+rain_active = rain_max; // quantas estão ativas agora
+
 init = false;
 gw = 0;
 gh = 0;
@@ -10,4 +12,3 @@ gh = 0;
 wind_base  = 1.2;
 wind_amp   = 1.4;
 wind_speed = 0.00035;
-

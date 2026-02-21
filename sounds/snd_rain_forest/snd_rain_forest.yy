@@ -2,8 +2,8 @@
   "$GMSound":"v2",
   "%Name":"snd_rain_forest",
   "audioGroupId":{
-    "name":"audiogroup_default",
-    "path":"audiogroups/audiogroup_default",
+    "name":"audiogroup_soundeffects",
+    "path":"audiogroups/audiogroup_soundeffects",
   },
   "bitDepth":1,
   "channelFormat":0,

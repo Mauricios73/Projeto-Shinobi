@@ -31,7 +31,7 @@ var fog_allowed = outdoor || fog_in_indoor;
 if (fog_on && fog_allowed)
 {
     if (!instance_exists(obj_fog))
-        instance_create_depth(0, 0, -2000, obj_fog); // FOG na frente do lago
+        instance_create_depth(0, 0, -2000, obj_fog);
 }
 else
 {
@@ -46,9 +46,19 @@ if (!outdoor)
     exit;
 }
 
-// exclusão neve/chuva
-if (instance_exists(obj_neve))  with (obj_neve) instance_destroy();
-if (instance_exists(obj_chuva)) with (obj_chuva) instance_destroy();
-
-if (precip_mode == 1) instance_create_depth(0, 0, -3000, obj_neve);  // neve na frente da fog
-if (precip_mode == 2) instance_create_depth(0, 0, -3000, obj_chuva); // chuva na frente da fog
+// neve / chuva sem destruir-recriar à toa
+if (precip_mode == 1)
+{
+    if (!instance_exists(obj_neve)) instance_create_depth(0, 0, -3000, obj_neve);
+    if (instance_exists(obj_chuva)) with (obj_chuva) instance_destroy();
+}
+else if (precip_mode == 2 || precip_mode == 3)
+{
+    if (!instance_exists(obj_chuva)) instance_create_depth(0, 0, -3000, obj_chuva);
+    if (instance_exists(obj_neve))  with (obj_neve) instance_destroy();
+}
+else
+{
+    if (instance_exists(obj_neve))  with (obj_neve) instance_destroy();
+    if (instance_exists(obj_chuva)) with (obj_chuva) instance_destroy();
+}

@@ -7,7 +7,7 @@ var vy = camera_get_view_y(cam);
 
 var wind = wind_base + sin(current_time * wind_speed) * wind_amp;
 
-for (var i = 0; i < rain_n; i++)
+for (var i = 0; i < rain_active; i++)
 {
     draw_set_alpha(ra[i]);
 
