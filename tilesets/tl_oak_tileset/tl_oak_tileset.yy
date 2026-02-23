@@ -5,11 +5,14 @@
   "macroPageTiles":{
     "SerialiseHeight":44,
     "SerialiseWidth":84,
-    "TileCompressedData":[-7,3,-77,0,-7,34,-501,0,-9,33,-3095,0,],
+    "TileCompressedData":[
+      -86,0,16,2,1,2,3,4,3,4,1,2,3,4,1,2,3,4,5,-68,0,16,34,33,34,35,36,35,36,33,34,35,36,33,34,35,36,37,-68,
+      0,-2,66,14,67,66,67,66,67,66,67,66,67,66,67,66,68,69,-3426,0,
+    ],
     "TileDataFormat":1,
   },
   "name":"tl_oak_tileset",
-  "out_columns":26,
+  "out_columns":32,
   "out_tilehborder":2,
   "out_tilevborder":2,
   "parent":{
@@ -19,8 +22,8 @@
   "resourceType":"GMTileSet",
   "resourceVersion":"2.0",
   "spriteId":{
-    "name":"oak_woods_tileset",
-    "path":"sprites/oak_woods_tileset/oak_woods_tileset.yy",
+    "name":"TX_Tileset_Ground",
+    "path":"sprites/TX_Tileset_Ground/TX_Tileset_Ground.yy",
   },
   "spriteNoExport":false,
   "textureGroupId":{
@@ -35,5 +38,5 @@
   "tileWidth":16,
   "tilexoff":0,
   "tileyoff":0,
-  "tile_count":682,
+  "tile_count":1024,
 }

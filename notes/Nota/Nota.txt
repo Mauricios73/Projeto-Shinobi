@@ -1,8 +1,9 @@
-1- A fog não esta funcionando. Arrumar
+1- Neblina dinâmica com chuva
+Fog ficar mais densa quando chove fraco e “quebrar” quando chove forte (vento).
 
 2- Transições de cenário na mesma room (floresta → campo → deserto) com parallax diferente por trecho
 
-3- Sistema de clima mais simples (sem fog por enquanto): chuva/neve com toggle + persistência por room
+3- Sistema de clima mais simples (sem fog por enquanto): chuva/neve com toggle + persistência por room - OK
 
 4- Polimento do lago: borda, espuma mais “Kingdom”, profundidade/escurecimento, ondas melhores
 
