@@ -357,9 +357,9 @@ switch(estado){
 		velh = 0; // fica parado canalizando
 
 		// sprite de “preparação / concentração”
-		if (sprite_index != spr_player_jutsu)
+		if (sprite_index != Summon_Ally)
 		{
-		    sprite_index = spr_player_jutsu;
+		    sprite_index = Summon_Ally;
 		    image_index = 0;
 		    image_speed = 1;
 		    chakra_timer = 0;
@@ -494,5 +494,5 @@ switch(estado){
 	}
 }
 
-if (keyboard_check_pressed(ord("P"))) game_restart();
+
 

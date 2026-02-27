@@ -184,11 +184,21 @@ else {
 draw_sky_fullscreen(skyA, 1.0);
 if (skyMix > 0) draw_sky_fullscreen(skyB, skyMix);
 
+// DRAW 1.3 — Landscape 2 (mais ao fundo, MAIS alta, repete horizontalmente)
+if (sprite_exists(sprLandscapeFar2))
+{
+    var y2 = camh * land2_y_ratio;
+
+    // loop horizontal: repete na largura
+    // drift = land2_offx (0 = totalmente parado; pode usar um valor pequeno se quiser)
+    draw_band(sprLandscapeFar2, land2_px, y2, land2_offx, land2_alpha, land2_tint);
+}
+
 // DRAW 1.5 — Paisagem distante centralizada
 var y_land = camh * land_far_y_ratio;
 var x_center = camw * 0.5;
 
-draw_parallax_single_center(sprLandscapeFar, land_far_px, x_center, y_land, land_far_alpha, true);
+//draw_parallax_single_center(sprLandscapeFar, land_far_px, x_center, y_land, land_far_alpha, true);
 
 // DRAW 2 — Estrelas
 var useStars = (night_factor > 0.65) ? sprStarsB : sprStarsA;

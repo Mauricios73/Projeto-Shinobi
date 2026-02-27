@@ -5,7 +5,7 @@ cam.alvo = id;
 randomise();
 event_inherited();
 
-vida_max = 5;
+vida_max = 1;
 vida_atual = vida_max;
 
 max_velh = 4;

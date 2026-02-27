@@ -1,5 +1,5 @@
 /// obj_lake_v3 - Create
-depth = -1000;
+depth = 1000;
 
 // cobre a room toda
 x = 0;

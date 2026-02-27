@@ -1,0 +1,135 @@
+Regras rápidas de pontos
+
+1: ajuste pequeno (≤1–2h)
+
+2: tarefa simples (meio período)
+
+3: tarefa média (1 dia)
+
+5: tarefa grande (2–3 dias)
+
+8: tarefa bem grande (3–5 dias, risco alto)
+
+Prioridade: P0 (crítico), P1 (alto), P2 (médio)
+
+Sprint 0 — Base do projeto (P0) — 13 pts
+
+Objetivo: parar de quebrar o jogo com variáveis não inicializadas e ter base sólida.
+
+GameState / SaveManager central (P0) — 5
+
+Um lugar único pra guardar e aplicar opções, progresso, checkpoint, colecionáveis.
+
+Bootstrap correto (ordem de criação) (P0) — 3
+
+Controller nasce antes do player/UI, eventos de init garantidos.
+
+Pipeline de cena “safe” (enter/exit room) (P0) — 3
+
+Hooks: ao entrar na sala, valida dados (checkpoint, destino), cria player se necessário.
+
+Log + debug overlay mínimo (P1) — 2
+
+Mostrar estado: sala atual, último checkpoint, essência, energia, input ativo.
+
+Pronto quando: você não consegue mais reproduzir erro “variable not set before reading”.
+
+Sprint 1 — Opções persistentes + Input unificado (P0) — 21 pts
+
+Objetivo: qualquer coisa que envolva menu/controle já nasce certo.
+
+Salvar/Carregar opções (volume, etc.) (P0) — 5
+
+Aplicar áudio (master/music/sfx) em runtime (P0) — 3
+
+Sistema de input por ações (teclado) + rebinding (P0) — 8
+
+Gamepad: ações espelhadas + deadzone + rumble off/on (P0) — 5
+
+Pronto quando: abre jogo com configs certas e dá pra jogar “só no controle” (gameplay, não UI ainda).
+
+Sprint 2 — Checkpoint + Morte/Respawn com transição (P0) — 21 pts
+
+Objetivo: vertical slice “não quebra” e loop básico existe.
+
+Checkpoint/santuário (ativação + save) (P0) — 5
+
+Persistência: sala + x/y + estado mínimo (P0) — 5
+
+Morte → respawn (sequência completa) (P0) — 8
+
+Transição visual (fade out/in) + lock de input (P0) — 3
+
+Pronto quando: morreu em qualquer sala → volta no último checkpoint com fade, sem teleporte seco.
+
+Sprint 3 — Pause menu (blur + música) + UI no controle (P0) — 18 pts
+
+Objetivo: UX de jogo “completo”.
+
+Pause state (congela gameplay de forma limpa) (P0) — 5
+
+Blur via surface + captura do frame (P1) — 5
+
+Música/SFX do pause + mix (P1) — 3
+
+Navegação UI 100% no gamepad (P0) — 5
+
+Pronto quando: pause abre/fecha perfeito, e você navega em tudo sem mouse/teclado.
+
+Sprint 4 — Hub + 2 áreas + transições (P0/P1) — 26 pts
+
+Objetivo: mundo mínimo jogável.
+
+Hub (vila segura) — layout + regras de segurança (P0) — 8
+
+Área 1 (Floresta) — começo ao fim funcional (P0) — 8
+
+Área 2 (Deserto) — começo ao fim funcional (P0) — 8
+
+Transições contínuas (fade/scroll/corredor) padronizadas (P1) — 2
+
+Pronto quando: você sai do hub → vai em 2 direções → volta pro hub sem fricção.
+
+Sprint 5 — Colecionáveis + Upgrades + Save do progresso (P0) — 21 pts
+
+Objetivo: progressão aberta e loop de recompensa.
+
+Colecionáveis (essência/pergaminhos) + UI (P0) — 5
+
+Save de coletáveis e gastos (P0) — 3
+
+Sistema de upgrades (2 habilidades, níveis, custos) (P0) — 8
+
+NPC/estação no hub (fluxo de compra e feedback) (P1) — 5
+
+Pronto quando: explorar → coletar → voltar → comprar upgrade → sentir diferença.
+
+Sprint 6 — Inimigos novos + balance de energia/cooldown (P0) — 21 pts
+
+Objetivo: combate com variedade e decisões.
+
+Inimigo ranged (IA + projétil + telegráfo) (P0) — 8
+
+Inimigo tanque (IA + defesa/armadura + opening) (P0) — 8
+
+Balance energia/cooldowns (tuning + UI feedback) (P0) — 5
+
+Pronto quando: spammar punição existe; jogador tem que pensar.
+
+Sprint 7 — Mini-boss + segredos (P1) — 18 pts
+
+Objetivo: fechar o slice com um “momento marcante”.
+
+Mini-boss (2–3 padrões + states + HP + drops) (P1) — 13
+
+Segredos (3–6 por área) + recompensas (P1) — 5
+
+Pronto quando: uma área termina com mini-boss e tem exploração opcional valiosa.
+
+Resumo rápido (ordem e foco)
+
+Sprint 0–2 (P0 total): estabilidade + input + respawn → base do jogo
+
+Sprint 3–5: UX + mundo mínimo + progressão
+
+Sprint 6–7: variedade de combate + mini-boss + segredos

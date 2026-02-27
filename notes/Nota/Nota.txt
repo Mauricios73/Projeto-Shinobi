@@ -7,8 +7,49 @@ Fog ficar mais densa quando chove fraco e “quebrar” quando chove forte (vent
 
 4- Polimento do lago: borda, espuma mais “Kingdom”, profundidade/escurecimento, ondas melhores
 
-5- UI/HUD: barras, fontes, organização, menu pause
+5- UI/HUD: barras, fontes, organização, menu pause 
 
 6- Ambiente: luzes, partículas, pássaros, vento, som de chuva/água
 
 7- Criar inicialização - OK
+
+
+Bônus: checklist em formato “ticável” (bem direto)
+
+ Save/load opções (volume/controles)
+
+ Aplicar opções no boot
+
+ Input abstrato (ações) + teclado
+
+ Input abstrato (ações) + gamepad
+
+ UI 100% navegável no gamepad
+
+ Checkpoint grava sala + posição
+
+ Morte → respawn com fade
+
+ Pause com blur + música própria
+
+ Hub (vila) funcional (upgrades + segurança)
+
+ Área floresta conectada ao hub
+
+ Área deserto conectada ao hub
+
+ Transições contínuas entre salas
+
+ Colecionáveis com save
+
+ Upgrades (2 habilidades) com níveis e custo
+
+ Segredos opcionais (mín. 3 por área)
+
+ Inimigo ranged
+
+ Inimigo tanque
+
+ Balance energia/cooldowns
+
+ Mini-boss com padrões variados
