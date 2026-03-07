@@ -1,18 +1,19 @@
-///@arg player
+///@arg player_object
 ///@arg dist
 ///@arg xscale
+function scr_ataca_player(_player_object, _dist, _xscale) {
+    // linha de visão (NOTA: não considera paredes)
+    var player = collision_line(
+        x,
+        y - sprite_height / 2,
+        x + (_dist * _xscale),
+        y - sprite_height / 2,
+        _player_object,
+        false,
+        true
+    );
 
-var outro = argument0;
-var dist = argument1;
-var xscale = argument2;
-
-//checando linha de visão 
-
-function scr_ataca_player(outro, dist, xscale) {
-    //checando linha de visão 
-    var player = collision_line(x, y - sprite_height/2, x + (dist * xscale), y - sprite_height/2, outro, false, true);
-
-    if (player){
-        estado = "ataque";  
+    if (player) {
+        estado = "ataque";
     }
 }

@@ -1,15 +1,42 @@
-if (life != 999999)  // opcional: só conta quando você setar um valor curto
+// obj_dano - Step
+// Engine única de dano (ataques normais + skills)
+// Regras:
+// - respeita invencível
+// - tick por alvo em ms (current_time)
+// - NÃO interrompe inimigo em 'ataque' com hits fracos (combo 1/2)
+//   mas permite interrupção por skill ou dano >= 3.
+
+if (life != 999999)
 {
     life--;
     if (life <= 0) instance_destroy();
 }
 
-
 if (!instance_exists(pai)) { instance_destroy(); exit; }
 
 // lista de colisões
 var lista = ds_list_create();
-var qtd = instance_place_list(x, y, obj_entidade, lista, 0);
+var qtd;
+
+// Suporta AOE (range>0) e ponto (range==0)
+if (variable_instance_exists(self, "range") && range > 0)
+{
+    var shape_local = 0;
+    if (variable_instance_exists(self, "shape")) shape_local = shape;
+
+    if (shape_local == 1)
+    {
+        qtd = collision_circle_list(x, y, range, obj_entidade, false, false, lista, false);
+    }
+    else
+    {
+        qtd = collision_rectangle_list(x - range, y - range, x + range, y + range, obj_entidade, false, false, lista, false);
+    }
+}
+else
+{
+    qtd = instance_place_list(x, y, obj_entidade, lista, 0);
+}
 
 var pai_parent = object_get_parent(pai.object_index);
 var f = current_time; // ms
@@ -17,7 +44,7 @@ var f = current_time; // ms
 for (var i = 0; i < qtd; i++)
 {
     var alvo = lista[| i];
-    if (!instance_exists(alvo)) continue;	
+    if (!instance_exists(alvo)) continue;
 
     // não acertar aliados (mesma “família”)
     if (object_get_parent(alvo.object_index) == pai_parent) continue;
@@ -45,49 +72,48 @@ for (var i = 0; i < qtd; i++)
     if (variable_instance_exists(alvo, "vida_atual"))
     {
         alvo.vida_atual -= dano;
-		
-		var morreu = (alvo.vida_atual <= 0);
 
-		if (skill_id != "" && alvo.object_index == obj_dummy)
-			{
-				show_debug_message("HIT de skill: " + skill_id);
-				var key = skill_id + "_" + string(alvo.id);
-				if (!ds_map_exists(xp_lock, key))
-				{
-				    ds_map_add(xp_lock, key, 1);
+        var morreu = (alvo.vida_atual <= 0);
 
-				    var sc = instance_find(obj_skill_controller, 0);
-				    if (sc != noone) sc.grant_xp_on_hit(skill_id, alvo, morreu);
-				}
-			}
-			else if (skill_id != "")
-			{
-				var sc2 = instance_find(obj_skill_controller, 0);
-				if (sc2 != noone) sc2.grant_xp_on_hit(skill_id, alvo, morreu);
-			}
-
-
-        // reação (se existir)
-        if (variable_instance_exists(alvo, "estado"))
+        // XP skill
+        if (skill_id != "")
         {
-            alvo.estado = "hit";
-            alvo.image_index = 0;
+            var sc = instance_find(obj_skill_controller, 0);
+            if (sc != noone) sc.grant_xp_on_hit(skill_id, alvo, morreu);
         }
 
-        // número de dano (vai aparecer 3x por alvo, o que condiz com “queimando”)
-		var base_x = alvo.x;
-		var base_y = alvo.y - (alvo.sprite_height/2);
-		var num = instance_create_layer(base_x, base_y, layer, obj_dano_num);
-		num.texto = string(dano);
-		num.cor = (alvo.object_index == obj_dummy) ? c_white : c_orange;
+        // reação: não cancelar ataque fraco em inimigo
+        if (variable_instance_exists(alvo, "estado"))
+        {
+            var is_enemy = (object_get_parent(alvo.object_index) == obj_entidade_inimigo) || (alvo.object_index == obj_entidade_inimigo);
+            var can_interrupt = true;
 
+            if (is_enemy && alvo.estado == "ataque")
+            {
+                // skill sempre pode interromper; normal só se dano >= 3
+                if (skill_id == "" && dano < 3) can_interrupt = false;
+            }
+
+            if (can_interrupt)
+            {
+                alvo.estado = "hit";
+                alvo.image_index = 0;
+            }
+        }
+
+        // número de dano
+        var base_x = alvo.x;
+        var base_y = alvo.y - (alvo.sprite_height / 2);
+        var num = instance_create_layer(base_x, base_y, layer, obj_dano_num);
+        num.texto = string(dano);
+        num.cor = (alvo.object_index == obj_dummy) ? c_white : c_orange;
     }
 
     // agenda próximo tick (ms)
     var ms = (tick_frames * 1000) / room_speed;
     tick_map[? k] = f + ms;
 
-    // morte do inimigo (se for inimigo)
+    // morte do inimigo
     if (object_get_parent(alvo.object_index) == obj_entidade_inimigo)
     {
         if (alvo.vida_atual <= 0) alvo.estado = "dead";

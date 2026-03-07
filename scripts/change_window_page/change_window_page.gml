@@ -1,8 +1,5 @@
-function change_window_mode(mode){
-    global.window_mode = mode;
-
-    switch(mode){
-        case 0: window_set_fullscreen(true); break;
-        case 1: window_set_fullscreen(false); break;
-    }
+function change_window_page(_page){
+    // Placeholder: if você quiser trocar páginas do menu via script.
+    // Mantido para não quebrar referências antigas.
+    return _page;
 }

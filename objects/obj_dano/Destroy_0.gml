@@ -7,4 +7,6 @@ if (instance_exists(pai) && variable_instance_exists(pai, "dano"))
 {
     pai.dano = noone;
 }
-show_debug_message("OBJ_DANO DESTROY id=" + string(id) + " skill=" + string(skill_id));
+
+if (variable_global_exists("debug") && global.debug)
+    show_debug_message("OBJ_DANO DESTROY id=" + string(id) + " skill=" + string(skill_id));

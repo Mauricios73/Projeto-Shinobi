@@ -1,7 +1,5 @@
-if (crow_id != -1 && audio_is_playing(crow_id)) {
-    audio_sound_gain(crow_id, 0, fade_out_tempo);
-} else {
-    crow_id = -1;
+if (crow_voice != -1 && audio_is_playing(crow_voice)) {
+    audio_sound_gain(crow_voice, 0, fade_out_ms);
 }
-// próximo
+crow_voice = -1;
 alarm[1] = room_speed * irandom_range(12, 25);

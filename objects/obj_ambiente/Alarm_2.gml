@@ -1,18 +1,15 @@
 if (vento_ativo) exit;
 
 var snd = sons_vento[irandom(array_length(sons_vento) - 1)];
-
-vento_id = audio_play_sound(snd, 0, true);
+vento_voice = audio_play_sound(snd, 1, true);
 vento_ativo = true;
 
-// começa totalmente mudo
-audio_sound_gain(vento_id, 0, 0);
+var mult = 1.0;
+if (variable_global_exists("ambient_mult")) mult = global.ambient_mult;
 
-// fade in longo
-audio_sound_gain(vento_id, vol_vento, fade_in_tempo);
+audio_sound_gain(vento_voice, 0, 0);
+audio_sound_gain(vento_voice, vol_vento * mult, fade_in_ms);
 
-// tempo total do vento cheio
-var duracao = irandom_range(vento_min, vento_max);
-
-// agenda fade out
+// schedule fade out
+var duracao = irandom_range(vento_min_s, vento_max_s);
 alarm[3] = room_speed * duracao;

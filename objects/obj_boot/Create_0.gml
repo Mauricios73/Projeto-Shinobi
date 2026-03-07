@@ -33,3 +33,4 @@ if (!instance_exists(obj_weather_manager)) instance_create_depth(0, 0, 0, obj_we
 
 // IMPORTANTE: rm_init deve ser tratado como "menu" pro weather
 // No obj_weather_manager Create, coloque: menu_rooms = ["rm_init","rm_menu"];
+if (!instance_exists(obj_input)) instance_create_depth(0, 0, -999999, obj_input);

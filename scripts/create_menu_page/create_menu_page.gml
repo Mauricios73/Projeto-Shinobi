@@ -2,24 +2,22 @@
 ///@arg ["Name1",type1,entries1...]
 ///@arg ["Name2",type2,entries2...]
 function create_menu_page() {
+    var args = array_create(argument_count);
+    for (var i = 0; i < argument_count; i++) {
+        args[i] = argument[i];
+    }
 
-	var arg, i = 0;
-	repeat(argument_count){
-		arg[i] = argument[i];
-		i++;
-	}
+    var cols = 6;
+    var rows = argument_count;
+    var grid = ds_grid_create(cols, rows);
 
-	var ds_grid_id = ds_grid_create(6, argument_count);
-	i = 0; repeat(argument_count){
-		var array = arg[i];
-		var array_len = array_length_1d(array);
-	
-		var xx = 0; repeat(array_len){
-			ds_grid_id[# xx, i] = array[xx];
-			xx++;
-		}
-	
-		i++;
-	}
-	return ds_grid_id;
+    for (var r = 0; r < rows; r++) {
+        var rowArr = args[r];
+        var rowLen = array_length(rowArr);
+        for (var c = 0; c < min(cols, rowLen); c++) {
+            grid[# c, r] = rowArr[c];
+        }
+    }
+
+    return grid;
 }

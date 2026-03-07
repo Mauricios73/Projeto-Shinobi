@@ -1,13 +1,6 @@
-if (keyboard_check_pressed(ord("O")))
-{
-    show_debug_message("ROOM=" + room_get_name(room)
-        + " fog_on=" + string(fog_on)
-        + " fog_exists=" + string(instance_exists(obj_fog))
-        + " fog_count=" + string(instance_number(obj_fog)));
-
     if (instance_exists(obj_fog))
         show_debug_message("FOG DEPTH=" + string(obj_fog.depth));
-}
+
 
 
 // evita duplicar
@@ -86,4 +79,6 @@ ensure_loop = function(_h, _snd)
         audio_sound_gain(_h, 0, 0);
     }
     return _h;
-};_volume = 0;   // Volume alvo do som da chuva
+};
+
+_volume = 0;   // Volume alvo do som da chuva
