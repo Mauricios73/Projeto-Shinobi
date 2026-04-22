@@ -8,40 +8,33 @@ cam.alvo = id;
 randomise();
 event_inherited();
 
-/// -----------------------------
-/// State constants (int)
-/// -----------------------------
-#macro PST_IDLE        0
-#macro PST_RUN         1
-#macro PST_JUMP        2
-#macro PST_DASH        3
-#macro PST_DASH_AIR    4
-#macro PST_ATK         5
-#macro PST_ATK_AIR     6
-#macro PST_HIT         7
-#macro PST_DEAD        8
-#macro PST_CHAKRA      9
-#macro PST_FIRE        10
-#macro PST_CHIDORI     11
+
 
 /// -----------------------------
 /// Core stats / config
 /// -----------------------------
-vida_max = 1;
+vida_max = 5;
 vida_atual = vida_max;
 
-max_velh = 4;
-max_velv = 8;
+max_velh = 3;
+max_velv = 6;
 
 dash_vel = 20;
 dash_vel_aereo = 10;
 dash_vel_ataque = 30;
-
 dash_aereo_timer = 0;
 dash_aereo = true;
-
 dash_delay = 30;
 dash_timer = 0;
+
+// --- Variáveis de Double Tap
+dash_timer_lateral = 0;
+tempo_double_tap = 15; // Tempo em frames para registrar o segundo toque
+ultima_tecla_pressionada = 0; // 0 = nenhuma, 1 = direita, 2 = esquerda
+is_running = false; // Estado para saber se ativamos a corrida pelo toque duplo
+
+crouch_fase = 0; // 0 = descendo, 1 = segurando, 2 = levantando
+defesa_fase = 0; // 0 = entrando na defesa, 1 = segurando, 2 = saindo
 
 on_ground = false;
 was_on_ground = false;
@@ -60,12 +53,21 @@ chidori_hit = noone;
 fire_instance = noone;
 fire_hitbox = noone;
 
+// <- NOVO: Variáveis para Andar/Correr e Duplo Salto
+// Velocidades de locomoção
+vel_caminhar = 1.2;      // Mais lento, para exploração
+vel_correr = 2.5;       // Velocidade padrão de deslocamento
+vel_sprint = 4.5;       // Corrida rápida (ex: Ninja Run)
+pode_duplo_salto = true;
+vel_escalar = 2; // <- NOVO: Velocidade de subir e descer a parede
+
 /// ataques
 combo = 0;
 ataque = 1;
 ataque_mult = 1;
 posso = true;
 dano = noone;
+
 
 /// controle de power ups (evite resetar global a cada respawn, mas mantive pra compat)
 if (!variable_global_exists("power_ups")) global.power_ups = [false];
@@ -99,15 +101,20 @@ estado_to_pstate = function(_estado)
         case "parado":        return PST_IDLE;
         case "movendo":       return PST_RUN;
         case "pulando":       return PST_JUMP;
+		case "agachar":       return PST_CROUCH; // <- NOVO
+		case "roll":          return PST_ROLL; // <- NOVO
         case "dash":          return PST_DASH;
         case "dash aereo":    return PST_DASH_AIR;
         case "ataque":        return PST_ATK;
         case "ataque aereo":  return PST_ATK_AIR;
+		case "defend":        return PST_DEFEND; // <- NOVO
         case "hit":           return PST_HIT;
         case "dead":          return PST_DEAD;
         case "chakra":        return PST_CHAKRA;
         case "fire_breath":   return PST_FIRE;
         case "chidori":       return PST_CHIDORI;
+		case "ground_slam":   return PST_GROUND_SLAM; // <- NOVO
+		case "wall":          return PST_WALL; // <- NOVO
         default:              return PST_IDLE;
     }
 };
@@ -119,15 +126,20 @@ pstate_to_estado = function(_ps)
         case PST_IDLE:      return "parado";
         case PST_RUN:       return "movendo";
         case PST_JUMP:      return "pulando";
+		case PST_CROUCH:    return "agachar"; // <- NOVO
+		case PST_ROLL:      return "roll"; // <- NOVO
         case PST_DASH:      return "dash";
         case PST_DASH_AIR:  return "dash aereo";
         case PST_ATK:       return "ataque";
         case PST_ATK_AIR:   return "ataque aereo";
+		case PST_DEFEND:    return "defend"; // <- NOVO
         case PST_HIT:       return "hit";
         case PST_DEAD:      return "dead";
         case PST_CHAKRA:    return "chakra";
         case PST_FIRE:      return "fire_breath";
         case PST_CHIDORI:   return "chidori";
+		case PST_GROUND_SLAM: return "ground_slam"; // <- NOVO
+		case PST_WALL:      return "wall"; // <- NOVO
         default:            return "parado";
     }
 };
@@ -170,12 +182,20 @@ aplica_gravidade = function()
 // visuals
 _apply_attack_visuals = function(_force)
 {
+    /*if (!_force && _vis_combo == combo && _vis_state == pstate) return;
+
+    if (combo == 0)      sprite_index = spr_player_punch1;
+    else if (combo == 1) sprite_index = spr_player_punch2;
+    else                 sprite_index = spr_player_kick;
+*/
     if (!_force && _vis_combo == combo && _vis_state == pstate) return;
 
-    if (combo == 0)      sprite_index = spr_player_ataque1;
-    else if (combo == 1) sprite_index = spr_player_ataque2;
-    else                 sprite_index = spr_player_ataque3;
-
+    // Lógica de Sprites do Combo
+    switch(combo) {
+        case 0: sprite_index = spr_player_punch1; break; // Punch 1
+        case 1: sprite_index = spr_player_punch2; break; // Punch 2
+        case 2: sprite_index = spr_player_kick; break; // Kick
+    }
     image_index = 0;
     _vis_combo = combo;
     _vis_state = pstate;
@@ -202,6 +222,26 @@ _apply_state_visuals_enter = function(_ps)
             _air_phase = (velv >= 0) ? 1 : 0;
             sprite_index = (_air_phase == 0) ? spr_player_jump : spr_player_fall;
             image_index = 0;
+        break;
+		
+		case PST_CROUCH:
+            sprite_index = spr_player_crouch; // (Certifica-te que crias este sprite no GameMaker)
+            image_index = 0;
+        break;
+		
+		case PST_ROLL: // <- NOVO
+            sprite_index = spr_player_roll; // (Tens de criar este sprite!)
+            image_index = 0;
+            
+            // Opcional: Dar invencibilidade rápida durante o rolar
+           // invencivel = true;
+           // tempo_invencivel = room_speed * 0.5; // Meio segundo de invencibilidade
+        break;
+		
+		case PST_DEFEND: // <- NOVO
+            sprite_index = spr_player_defend; // (Vais precisar criar este sprite a defender)
+            image_index = 0;
+            // Se for um Magic Shield, podes criar um efeito visual aqui no futuro!
         break;
 
         case PST_DASH:
@@ -234,9 +274,19 @@ _apply_state_visuals_enter = function(_ps)
             image_index = 0;
             image_speed = 1;
         break;
+		
+		case PST_GROUND_SLAM: // <- NOVO
+            sprite_index = spr_player_ground_slam; // (Cria este sprite caindo com a arma/pé para baixo)
+            image_index = 0;
+        break;
+		
+		case PST_WALL: // <- NOVO
+            sprite_index = Wall_Jump; // (Terás de criar este sprite a agarrar a parede)
+            image_index = 0;
+        break;
 
         case PST_CHAKRA:
-            sprite_index = Summon_Ally;
+            sprite_index = spr_player_chakra;
             image_index = 0;
             image_speed = 1;
             chakra_timer = 0;
@@ -263,6 +313,10 @@ _apply_state_visuals_enter = function(_ps)
 // exit hook
 _on_exit_state = function(_old, _new)
 {
+	if (_old == PST_DEFEND) {
+	    defesa_fase = 0;
+	    image_speed = 1;
+	}
     // saindo de ataque: reset total de combo/mult e limpa dano
     if (_old == PST_ATK && _new != PST_ATK)
     {
@@ -295,6 +349,11 @@ _on_exit_state = function(_old, _new)
             fire_hitbox = noone;
         }
     }
+	// NOVO: Ao sair do estado de Chakra
+	if (_old == PST_CHAKRA) {
+        image_index = 0; // Reseta para a pose inicial ao soltar o botão
+        image_speed = 1; 
+    } 
 };
 
 // central transition
@@ -328,3 +387,4 @@ if (!variable_instance_exists(self, "estado")) estado = "parado";
 pstate = estado_to_pstate(estado);
 pstate_prev = pstate;
 _apply_state_visuals_enter(pstate);
+

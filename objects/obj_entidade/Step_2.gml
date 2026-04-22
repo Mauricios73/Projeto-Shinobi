@@ -1,31 +1,33 @@
-if (abs(velh) <= max_velh){
-	velh += mid_velh;
-}
-else
-{
-	velh = 0 ;
-}
+// obj_entidade - End Step
 
-// Sistema de colisão e  movimentação
-var _velh = sign(velh);
-var _velv = sign(velv);
-
-
-//Horizontal
-repeat(abs(velh)){
-	if (place_meeting(x + _velh, y, obj_block))	{
-		velh = 0;
-		break;
-	}
-	x += _velh;
+// Horizontal
+if (velh != 0) {
+    var _sign = sign(velh);
+    var _move = abs(velh);
+    // Tenta mover tudo de uma vez, se não colidir
+    if (!place_meeting(x + velh, y, obj_block)) {
+        x += velh;
+    } else {
+        // Move até colidir
+        while (_move > 0 && !place_meeting(x + _sign, y, obj_block)) {
+            x += _sign;
+            _move--;
+        }
+        velh = 0; // para após colidir
+    }
 }
 
-// Vertical 
-repeat(abs(velv)){
-	if (place_meeting(x, y + _velv, obj_block))	{
-		velv = 0;
-		break;
-	}
-	y += _velv;
+// Vertical
+if (velv != 0) {
+    var _sign = sign(velv);
+    var _move = abs(velv);
+    if (!place_meeting(x, y + velv, obj_block)) {
+        y += velv;
+    } else {
+        while (_move > 0 && !place_meeting(x, y + _sign, obj_block)) {
+            y += _sign;
+            _move--;
+        }
+        velv = 0;
+    }
 }
-

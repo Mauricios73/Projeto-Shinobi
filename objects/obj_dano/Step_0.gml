@@ -69,9 +69,24 @@ for (var i = 0; i < qtd; i++)
     }
 
     // aplica dano
+	// --- NOVO BLOCO DE APLICAÇÃO DE DANO COM SUPORTE A DEFESA ---
     if (variable_instance_exists(alvo, "vida_atual"))
     {
-        alvo.vida_atual -= dano;
+        // 1. Verificar se o alvo tem a função de receber dano (que criamos no obj_player)
+        if (variable_instance_exists(alvo, "recebe_dano")) 
+        {
+            // Chamamos a função passando o dano e a posição X da fonte do dano
+            alvo.recebe_dano(dano, x);
+        } 
+        else 
+        {
+            // Fallback: Se for um alvo simples (como o obj_dummy), aplica o dano normal
+            alvo.vida_atual -= dano;
+            if (variable_instance_exists(alvo, "estado")) {
+                 alvo.estado = "hit";
+                 alvo.image_index = 0;
+            }
+        }
 
         var morreu = (alvo.vida_atual <= 0);
 

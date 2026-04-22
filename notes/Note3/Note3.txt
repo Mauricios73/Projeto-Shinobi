@@ -1,0 +1,68 @@
+1. Já Existentes (No teu código original)
+Estas são as mecânicas que já estavam no ficheiro que me enviaste. Elas já têm o seu próprio estado ou lógica a funcionar:
+
+Idle / Parado (PST_IDLE)
+
+Running / Correr (PST_RUN)
+
+Jumping / Saltar (PST_JUMP)
+
+Falling / Cair (Gerido pela função aplica_gravidade())
+
+Dash & Air Dash (PST_DASH e PST_DASH_AIR)
+
+Atacar / Combo (PST_ATK e PST_ATK_AIR - Cobre Punch, Kick, Aerial Strike)
+
+Tomar Dano / Hit (PST_HIT)
+
+Death / Morte (PST_DEAD)
+
+Habilidades Especiais:
+
+Chakra / Carregar Energia (PST_CHAKRA)
+
+Sopro de Fogo (PST_FIRE)
+
+Chidori (PST_CHIDORI)
+
+2. Adicionados Recentemente (Pacote 1 e 2)
+Estas são as mecânicas que estruturámos nos nossos passos anteriores. Nota: Precisas de adicionar os sprites no GameMaker para que funcionem a 100%!
+
+Walk / Caminhar: Integrado no PST_RUN usando uma tecla para alternar velocidades.
+
+Speed Boost / Stop Running: Integrados na lógica de aceleração e paragem do PST_RUN.
+
+Crouch / Agachar: Novo estado (PST_CROUCH).
+
+Double Jump / Duplo Salto: Nova variável (pode_duplo_salto) dentro do PST_JUMP.
+
+Roll / Dodge / Slide: Novo estado (PST_ROLL) que te empurra para a frente e dá invencibilidade temporária.
+
+🔵 3. Na Fila para Adicionar (O que falta)
+Como conversámos, não vamos criar um estado novo para cada um destes itens. Vamos agrupá-los em categorias e implementá-los aos poucos.
+
+A. Movimento Avançado & Exploração (Próximos Passos)
+
+Interação com Paredes: Wall Jump, Wall Climbing.
+
+Escadas: Climbing Ladder, Descending Ladder.
+
+Água: Swimming, Swimming Dive.
+
+Aterragens e Pulos Específicos: Landing with Impact, Gliding Jump, Crawl (Rastejar), Platform/Obstacle Jump.
+
+B. Combate & Habilidades
+
+Defesa: Protect, Counter Attack, Defensive Stance, Magic shield.
+
+Novos Ataques: Ground Slam, Ice Strike, Explosive Strike, Jump Strike, Power Strike.
+
+Magias e Utilidades: Healing, Drinking potion, Teleport, Summon ally, Time slow, Stealth mode.
+
+C. Emotes & Cinemáticas (Variações de Animação)
+
+Diálogos: Talk neutral, Talk angry, Talk happy, Nod (Yes), Shake head (no).
+
+Ações Casuais: Facepalm, Crossed arms, Head scratching, Hands on hips, Tossing object, Carrying Object.
+
+(Nota: Todos estes farão parte de um único estado chamado PST_CINEMATIC, mudando apenas o sprite!)

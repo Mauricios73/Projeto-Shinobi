@@ -3,7 +3,7 @@
 // ==========================
 fire_breath = {
     id: "fire_breath",
-    level: 20,
+    level: 1,
     xp: 0,
     xp_next: 20,
     unlocked: true,
@@ -24,7 +24,7 @@ fire_breath = {
 // ==========================
 chidori = {
     id: "chidori",
-    level: 5,
+    level: 1,
     xp: 0,
     xp_next: 20,
     unlocked: false,

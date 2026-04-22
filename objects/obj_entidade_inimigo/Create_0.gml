@@ -1,6 +1,11 @@
 // Inherit the parent event
 event_inherited();
 
+/// --- FSM do Inimigo ---
+pstate = 0; // Estado inicial (IDLE)
+
+// Garante que o estado em string também comece correto
+if (!variable_instance_exists(id, "estado")) estado = "parado";
 
 ///@method atacando()
 ///@args _sprite_index _image_index_min _image_index_max _dist_x _dist_y

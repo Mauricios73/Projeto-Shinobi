@@ -21,6 +21,7 @@ if (!variable_global_exists("key_chakra"))  global.key_chakra  = ord("R");
 if (!variable_global_exists("key_dash"))    global.key_dash    = ord("L");
 if (!variable_global_exists("key_chidori")) global.key_chidori = ord("J");
 if (!variable_global_exists("key_ataque"))  global.key_ataque  = ord("K");
+if (!variable_global_exists("key_defend"))  global.key_defesa  = ord("U");
 
 // pause bind usually set by obj_pause, but keep fallback
 if (!variable_global_exists("key_pause"))   global.key_pause   = vk_escape;

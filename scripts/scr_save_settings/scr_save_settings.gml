@@ -45,4 +45,8 @@ function scr_save_settings()
 
     if (variable_global_exists("debug") && global.debug)
         show_debug_message("Configurações Salvas!");
+
+    // Atualiza o input com os novos binds
+    var inp = instance_find(obj_input, 0);
+    if (inp != noone) inp.reload_binds();
 }

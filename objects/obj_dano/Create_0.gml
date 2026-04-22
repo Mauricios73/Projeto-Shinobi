@@ -1,3 +1,4 @@
+// obj_dano - Create
 dano = 0;
 pai = noone;
 
@@ -9,7 +10,7 @@ max_hits_por_alvo = -1;
 range = 0; // 0=point, >0=rectangle half-size
 
 skill_id = ""; // vazio = ataque normal (sem XP de skill)
-xp_lock = ds_map_create(); // key: skill_id + "_" + alvo.id -> true
+// xp_lock removido
 
 life = 999999;   // padrão infinito (ou grande)
 
