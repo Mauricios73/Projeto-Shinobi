@@ -12,6 +12,8 @@ enum InputAction {
     ACT_CHIDORI,
     ACT_FIRE,
     ACT_CHAKRA,
+	ACT_POTION,
+	ACT_SUMMON,
 
     ACT_ENTER,
     ACT_BACK,
@@ -44,6 +46,8 @@ function scr_input_init_defaults()
     if (!variable_global_exists("key_dash"))   global.key_dash   = ord("L");
     if (!variable_global_exists("key_chidori"))global.key_chidori= ord("J");
     if (!variable_global_exists("key_ataque")) global.key_ataque = ord("K");
+	if (!variable_global_exists("key_potion")) global.key_potion = ord("H");
+	if (!variable_global_exists("key_summon")) global.key_summon = ord("G");
 
     actions_count = InputAction.ACT_BACK + 1;
 
@@ -60,15 +64,18 @@ function scr_input_init_defaults()
     _bind[InputAction.ACT_LEFT]  = { key: global.key_left,  pad_btn: gp_padl,  pad_axis: -1,        is_axis: false };
     _bind[InputAction.ACT_RIGHT] = { key: global.key_right, pad_btn: gp_padr,  pad_axis: -1,        is_axis: false };
 
-    _bind[InputAction.ACT_ENTER] = { key: global.key_enter, pad_btn: gp_face1, pad_axis: -1,        is_axis: false };
-    _bind[InputAction.ACT_BACK]  = { key: vk_escape,        pad_btn: gp_face2, pad_axis: -1,        is_axis: false };
-
     _bind[InputAction.ACT_JUMP]    = { key: global.key_up,      pad_btn: gp_face1,     pad_axis: -1, is_axis: false };
     _bind[InputAction.ACT_ATTACK]  = { key: global.key_ataque,  pad_btn: gp_face2,     pad_axis: -1, is_axis: false };
     _bind[InputAction.ACT_DASH]    = { key: global.key_dash,    pad_btn: gp_face3,     pad_axis: -1, is_axis: false };
     _bind[InputAction.ACT_CHIDORI] = { key: global.key_chidori, pad_btn: gp_shoulderr, pad_axis: -1, is_axis: false };
     _bind[InputAction.ACT_FIRE]    = { key: global.key_fire,    pad_btn: gp_shoulderl, pad_axis: -1, is_axis: false };
     _bind[InputAction.ACT_CHAKRA]  = { key: global.key_chakra,  pad_btn: gp_face4,     pad_axis: -1, is_axis: false };
+	_bind[InputAction.ACT_POTION]  = { key: global.key_potion,  pad_btn: gp_stickl,    pad_axis: -1, is_axis: false };
+	_bind[InputAction.ACT_SUMMON]  = { key: global.key_summon,  pad_btn: gp_select,    pad_axis: -1, is_axis: false };
+	
+	_bind[InputAction.ACT_ENTER]   = { key: global.key_enter, pad_btn: gp_face1, pad_axis: -1,        is_axis: false };
+    _bind[InputAction.ACT_BACK]    = { key: vk_escape,        pad_btn: gp_face2, pad_axis: -1,        is_axis: false };
+
 
     _bind[InputAction.ACT_MOVE_X]  = { key: -1, pad_btn: -1, pad_axis: gp_axislh, is_axis: true };
 }

@@ -1,3 +1,5 @@
+/// obj_menu - Create
+
 draw_set_font(fnt_asian_ninja);
 
 // View/GUI (safe)
@@ -22,6 +24,8 @@ if (!variable_global_exists("key_dash"))    global.key_dash    = ord("L");
 if (!variable_global_exists("key_chidori")) global.key_chidori = ord("J");
 if (!variable_global_exists("key_ataque"))  global.key_ataque  = ord("K");
 if (!variable_global_exists("key_defend"))  global.key_defesa  = ord("U");
+if (!variable_global_exists("key_potion"))  global.key_potion  = ord("H"); // <-- ADICIONE ESTA LINHA
+if (!variable_global_exists("key_summon"))  global.key_summon  = ord("G"); 
 
 // pause bind usually set by obj_pause, but keep fallback
 if (!variable_global_exists("key_pause"))   global.key_pause   = vk_escape;
@@ -156,7 +160,9 @@ ds_menu_controls = create_menu_page(
     ["CHIDORI", menu_element_type.input, "key_chidori", global.key_chidori],
     ["FIRE",    menu_element_type.input, "key_fire",    global.key_fire],
     ["CHAKRA",  menu_element_type.input, "key_chakra",  global.key_chakra],
+	["POTION",  menu_element_type.input, "key_potion",  global.key_potion], 
     ["PAUSE",   menu_element_type.input, "key_pause",   global.key_pause],
+	["SUMMON",  menu_element_type.input, "key_summon",  global.key_summon],
 
     ["BACK",    menu_element_type.page_transfer, menu_page.settings]
 );

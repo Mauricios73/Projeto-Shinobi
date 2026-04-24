@@ -15,11 +15,13 @@
 #macro PST_CHAKRA      9
 #macro PST_FIRE        10
 #macro PST_CHIDORI     11
-#macro PST_CROUCH      12 // <- NOVO: Estado de agachar
-#macro PST_ROLL        13 // <- NOVO: Estado de Rolar/Deslizar
-#macro PST_WALL        14 // <- NOVO: Estado de Parede
-#macro PST_DEFEND      15 // <- NOVO: Estado de Defesa
-#macro PST_GROUND_SLAM 16 // <- NOVO: Estado de mergulho/Ground Slam
+#macro PST_CROUCH      12 
+#macro PST_ROLL        13 
+#macro PST_WALL        14 
+#macro PST_DEFEND      15 
+#macro PST_GROUND_SLAM 16 
+#macro PST_POTION	   17 
+#macro PST_SUMMON	   18
 
 delay = 0;
 

@@ -8,7 +8,8 @@ cam.alvo = id;
 randomise();
 event_inherited();
 
-
+// PATCH C2 - obj_player Create_0.gml
+if (!variable_global_exists("potions")) global.potions = 3;
 
 /// -----------------------------
 /// Core stats / config
@@ -66,7 +67,10 @@ combo = 0;
 ataque = 1;
 ataque_mult = 1;
 posso = true;
+pode_dar_dano_slam = true;
 dano = noone;
+tempo_espera_combo = 0; // Tempo (em frames) que o jogo espera o próximo clique antes de resetar o combo
+janela_combo = 20; // Ajuste este valor: quanto maior, mais tempo o jogador tem para apertar
 
 
 /// controle de power ups (evite resetar global a cada respawn, mas mantive pra compat)
@@ -115,6 +119,8 @@ estado_to_pstate = function(_estado)
         case "chidori":       return PST_CHIDORI;
 		case "ground_slam":   return PST_GROUND_SLAM; // <- NOVO
 		case "wall":          return PST_WALL; // <- NOVO
+		case "potion":		  return PST_POTION; // <- NOVO
+		case "summon":		  return PST_SUMMON; // <- NOVO
         default:              return PST_IDLE;
     }
 };
@@ -123,24 +129,26 @@ pstate_to_estado = function(_ps)
 {
     switch (_ps)
     {
-        case PST_IDLE:      return "parado";
-        case PST_RUN:       return "movendo";
-        case PST_JUMP:      return "pulando";
-		case PST_CROUCH:    return "agachar"; // <- NOVO
-		case PST_ROLL:      return "roll"; // <- NOVO
-        case PST_DASH:      return "dash";
-        case PST_DASH_AIR:  return "dash aereo";
-        case PST_ATK:       return "ataque";
-        case PST_ATK_AIR:   return "ataque aereo";
-		case PST_DEFEND:    return "defend"; // <- NOVO
-        case PST_HIT:       return "hit";
-        case PST_DEAD:      return "dead";
-        case PST_CHAKRA:    return "chakra";
-        case PST_FIRE:      return "fire_breath";
-        case PST_CHIDORI:   return "chidori";
-		case PST_GROUND_SLAM: return "ground_slam"; // <- NOVO
-		case PST_WALL:      return "wall"; // <- NOVO
-        default:            return "parado";
+        case PST_IDLE:			return "parado";
+        case PST_RUN:			return "movendo";
+        case PST_JUMP:			return "pulando";
+		case PST_CROUCH:		return "agachar"; // <- NOVO
+		case PST_ROLL:			return "roll"; // <- NOVO
+        case PST_DASH:			return "dash";
+        case PST_DASH_AIR:		return "dash aereo";
+        case PST_ATK:			return "ataque";
+        case PST_ATK_AIR:		return "ataque aereo";
+		case PST_DEFEND:		return "defend"; // <- NOVO
+        case PST_HIT:			return "hit";
+        case PST_DEAD:			return "dead";
+        case PST_CHAKRA:		return "chakra";
+        case PST_FIRE:			return "fire_breath";
+        case PST_CHIDORI:		return "chidori";
+		case PST_GROUND_SLAM:	return "ground_slam"; // <- NOVO
+		case PST_WALL:			return "wall"; // <- NOVO
+		case PST_POTION:		return "potion"; // <- NOVO
+		case PST_SUMMON:		return "summon"; // <- NOVO
+        default:				return "parado";
     }
 };
 
@@ -182,12 +190,6 @@ aplica_gravidade = function()
 // visuals
 _apply_attack_visuals = function(_force)
 {
-    /*if (!_force && _vis_combo == combo && _vis_state == pstate) return;
-
-    if (combo == 0)      sprite_index = spr_player_punch1;
-    else if (combo == 1) sprite_index = spr_player_punch2;
-    else                 sprite_index = spr_player_kick;
-*/
     if (!_force && _vis_combo == combo && _vis_state == pstate) return;
 
     // Lógica de Sprites do Combo
@@ -259,9 +261,11 @@ _apply_state_visuals_enter = function(_ps)
             _apply_attack_visuals(true);
         break;
 
-        case PST_ATK_AIR:
-            sprite_index = spr_player_ataque2;
+		case PST_ATK_AIR:
+            sprite_index = spr_player_jump_kick;
             image_index = 0;
+            image_speed = 1.2; // Ataques aéreos costumam ser um pouco mais rápidos
+            posso = true;      // Garante que o dano pode ser criado
         break;
 
         case PST_CHIDORI:
@@ -274,6 +278,17 @@ _apply_state_visuals_enter = function(_ps)
             image_index = 0;
             image_speed = 1;
         break;
+		
+		case PST_POTION:
+		    sprite_index = spr_player_potion;
+		    image_index = 0;
+		    image_speed = 1; 
+		break;
+		
+		case PST_SUMMON:
+			sprite_index = spr_player_jutsu_1;
+			image_index = 0;
+		break;
 		
 		case PST_GROUND_SLAM: // <- NOVO
             sprite_index = spr_player_ground_slam; // (Cria este sprite caindo com a arma/pé para baixo)
@@ -354,6 +369,12 @@ _on_exit_state = function(_old, _new)
         image_index = 0; // Reseta para a pose inicial ao soltar o botão
         image_speed = 1; 
     } 
+	
+	if (_old == PST_GROUND_SLAM)
+    {
+        pode_dar_dano_slam = true;
+        image_speed = 1; // Garante que a velocidade volta ao normal
+    }
 };
 
 // central transition

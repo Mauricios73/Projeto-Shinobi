@@ -1,3 +1,5 @@
+// obj_dano - Step
+
 if (!instance_exists(owner))
 {
     instance_destroy();

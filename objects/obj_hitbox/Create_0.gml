@@ -1,3 +1,5 @@
+// obj_dano - Create
+
 owner = noone;
 config = undefined;
 duration = 0;

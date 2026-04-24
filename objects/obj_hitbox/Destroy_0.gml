@@ -1,3 +1,5 @@
+// obj_dano - Destruir
+
 if (instance_exists(damage_inst))
 {
     with (damage_inst) instance_destroy();

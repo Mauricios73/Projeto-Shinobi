@@ -15,7 +15,6 @@ else
     image_alpha = 1;
 }
 
-
 // --- inputs and ground
 var chao = place_meeting(x, y + 1, obj_block);
 var parede_dir = place_meeting(x + 1, y, obj_block); // <- NOVO: Deteta parede à direita
@@ -92,6 +91,22 @@ if (pstate == PST_DEAD)
     exit;
 }
 
+var _input_summon = scr_input_pressed(InputAction.ACT_SUMMON);
+
+// Só invoca se não houver um aliado ativo e se estiver no chão
+if (_input_summon && chao && !instance_exists(obj_ally)) {
+	show_debug_message("Botão pressionado! Chao: " + string(chao) + " Aliado existe: " + string(instance_exists(obj_ally)));
+    player_set_state(PST_SUMMON);
+}
+
+// Input Potion
+var _input_potion = scr_input_pressed(InputAction.ACT_POTION);
+
+if (_input_potion && (pstate == PST_IDLE || pstate == PST_RUN) && global.potions > 0) 
+{
+    global.potions -= 1;
+    player_set_state(PST_POTION);
+}
 
 // skill input via controller (não troca sprite aqui; troca estado)
 var sc = instance_find(obj_skill_controller, 0);
@@ -343,7 +358,6 @@ switch (pstate)
     // CRIAÇÃO DE DANO DINÂMICO
     // Criamos o dano no frame de impacto de cada sprite
     var frame_impacto = (combo == 1) ? 1 : 2; // Punch 2 é rápido (frame 1), outros no frame 2
-
     if (image_index >= frame_impacto && !instance_exists(dano) && posso)
     {
         // Ajuste a posição do dano baseado na escala do player
@@ -352,57 +366,93 @@ switch (pstate)
         dano.pai = id;
         posso = false;
     }
+		// --- AJUSTE DE FLUIDEZ DO COMBO ---
+        if (attack && combo < 2) 
+        {
+            // Verificamos se já passamos do começo da animação para não pular frames
+            // Se o jogador apertar muito cedo, o combo incrementa e a função visual reseta o frame
+            combo++;
+            ataque_mult++;
+            posso = true;
+			tempo_espera_combo = 0; // Reseta o cronômetro pois ele apertou
 
-    // BUFFER DE COMBO (Janela para apertar o próximo botão)
-    if (attack && combo < 2 && image_index >= image_number - 3)
-    {
-        combo++;
-        ataque_mult += 1; // Aumenta o dano progressivamente
-        posso = true;
-        
-        if (instance_exists(dano)) { with (dano) instance_destroy(); dano = noone; }
-        _apply_attack_visuals(true);
-    }
+            if (instance_exists(dano))
+            {
+                with (dano) instance_destroy();
+                dano = noone;
+            }
+            _apply_attack_visuals(true); // Isso vai resetar o image_index para 0 do PRÓXIMO golpe
+        }
+		// --- FIM DA ANIMAÇÃO ---
+        if (image_index >= image_number - 1)
+        {
+            image_speed = 0; // Para a animação no último frame (pose de ataque)
+            image_index = image_number - 1;
+            
+            tempo_espera_combo++; // Começa a contar o tempo de espera "tarde"
+            
+            // Se o tempo acabar ou o jogador se mover, aí sim resetamos
+            if (tempo_espera_combo >= janela_combo || right_held || left_held || jump)
+            {
+                combo = 0;
+                ataque_mult = 1;
+                tempo_espera_combo = 0;
+                image_speed = 1; // Devolve a velocidade da animação
+                finaliza_ataque();
+                player_set_state(PST_IDLE);
+            }
+        }
+        else 
+        {
+            image_speed = 1; // Garante que a animação roda enquanto não chega ao fim
+        }
 
-    // FINALIZAÇÃO
-    if (image_index >= image_number - 1)
-    {
-        player_set_state(PST_IDLE);
+        // cancels
+        if (dash && dash_timer <= 0) _cancel_attack_to(PST_DASH);
+        if (velv != 0) _cancel_attack_to(PST_JUMP);
     }
-}
-break;
+    break;
 
     case PST_ATK_AIR:
-    {
-        velh = (right_held - left_held) * max_velh * global.vel_mult;
+{
+        // 1. Movimentação: Permite um leve controle horizontal durante o chute
+        velh = (right_held - left_held) * (max_velh * 0.5) * global.vel_mult;
         aplica_gravidade();
-        _set_air_visual_from_velv();
+        
+        // IMPORTANTE: NÃO chamamos _set_air_visual_from_velv() aqui para não resetar o sprite do chute!
 
+        // 2. Criação do Dano (Baseado no frame de impacto da animação)
+        // Se o seu chute for o frame 1 ou 2, ajuste abaixo:
         if (image_index >= 1 && !instance_exists(dano) && posso)
         {
-            dano = instance_create_layer(x + sprite_width / 6, y - sprite_height / 9, layer, obj_dano);
+            // Posição ajustada para frente e um pouco abaixo (diagonal)
+            dano = instance_create_layer(x + (30 * image_xscale), y - 30, layer, obj_dano);
             dano.dano = ataque;
             dano.pai = id;
             posso = false;
         }
 
+        // 3. Finalização por fim de animação
         if (image_index >= image_number - 1)
         {
             finaliza_ataque();
-            player_set_state(PST_JUMP);
+            player_set_state(PST_JUMP); // Volta para o estado de pulo para processar a queda
         }
 
+        // 4. Finalização por toque no chão (Cancelamento de impacto)
         if (chao)
         {
             velv = 0;
             finaliza_ataque();
             player_set_state(PST_IDLE);
         }
-		// <- NOVO: Iniciar o Ground Slam (Exemplo: segurar Baixo e apertar Ataque)
+
+        // 5. Transição para Ground Slam (Se o jogador quiser cancelar o chute em um slam)
         if (down && attack)
         {
+            finaliza_ataque();
             player_set_state(PST_GROUND_SLAM);
-            break; // Sai do estado atual imediatamente
+            break;
         }
     }
     break;
@@ -446,58 +496,85 @@ break;
 	}
 	break;
 
-    case PST_FIRE:
-    {
-        velh = 0;
-        velv = 0;
+	case PST_FIRE:
+	{
+	    velh = 0; velv = 0;
+    
+	    if (image_index < 3) {
+	        image_speed = 1;
+	    } else {
+	        image_index = 3; // Trava na pose de sopro
+	        image_speed = 0;
 
-        // se o efeito sumiu, encerra
-        if (!instance_exists(fire_instance))
-        {
-            var _sc = instance_find(obj_skill_controller, 0);
-            if (_sc != noone) _sc.end_fire(self);
-            player_set_state(PST_IDLE);
-        }
-    }
-    break;
+	        if (!instance_exists(fire_instance)) {
+	            // Criamos a skill. Ela mesma vai gerenciar sua hitbox e tempo.
+	            var fx = instance_create_layer(x, y, layer, obj_skill_fire_breath);
+	            fx.owner = id;
+	            fire_instance = fx;
+	        }
+	    }
+
+	    // Se a skill acabou (foi destruída), o player volta ao IDLE
+	    if (image_index >= 3 && !instance_exists(fire_instance)) {
+	        player_set_state(PST_IDLE);
+	    }
+	}
+	break;
 
     case PST_CHIDORI:
-    {
-        aplica_gravidade();
-        _set_air_visual_from_velv();
+	{
+	    aplica_gravidade();
+	    mid_velh = image_xscale * dash_vel_ataque;
 
-        mid_velh = image_xscale * dash_vel_ataque;
-
-        if (image_index >= image_number - 1)
-        {
-            mid_velh = 0;
-            player_set_state(PST_IDLE);
-        }
-    }
-    break;
+	    // Se bater em parede ou acabar a animação
+	    if (place_meeting(x + sign(mid_velh), y, obj_block) || image_index >= image_number - 1)
+	    {
+	        mid_velh = 0;
+	        player_set_state(PST_IDLE);
+	    }
+	}
+	break;
 	
 	case PST_GROUND_SLAM:
-    {
-        // 1. Zera o movimento horizontal para ele cair a direito
+	{
         velh = 0; 
         mid_velh = 0;
         
-        // 2. Força uma descida muito rápida (o dobro da velocidade máxima de queda)
-        velv = max_velv * 2; 
-
-        // 3. O que acontece quando bate no chão?
-        if (chao)
+        // 1. DESCIDA
+        if (!chao)
         {
-            // Para a queda
-            velv = 0; 
-            
-            // Opcional: Adicionar um tremor de ecrã para dar peso ao impacto (já tens o screenshake no PST_HIT!)
-            screenshake(4); 
-            
-            // Futuramente: Criar o obj_dano_area aqui para magoar os inimigos!
-            
-            // Volta ao estado parado (ou podias criar um estado extra só para a animação de recuperar do impacto)
-            player_set_state(PST_IDLE); 
+            velv = max_velv * 2.5; 
+            image_speed = 0; 
+            image_index = 0; // Mantém o frame de "preparação" no ar
+            pode_dar_dano_slam = true; // Garante que está pronto para o impacto
+        }
+        // 2. IMPACTO
+        else 
+        {
+            // Se ainda não criamos o dano deste impacto
+            if (pode_dar_dano_slam) 
+            {
+                velv = 0;
+                screenshake(6);
+                
+                // Criar o dano
+                var _impacto = instance_create_layer(x, y, layer, obj_dano);
+                _impacto.dano = ataque * 3;
+                _impacto.pai = id;
+                
+                // Opcional: Ajustar a escala do objeto de dano para cobrir os dois lados
+                _impacto.image_xscale = 2 * image_xscale; 
+
+                pode_dar_dano_slam = false; // "Trava" para não criar mais de um dano
+                image_index = 1; // Pula para o frame de impacto da animação
+                image_speed = 1; // Começa a rodar a animação de recuperação
+            }
+
+            // 3. FINALIZAÇÃO (Sempre após a animação acabar)
+            if (image_index >= image_number - 1)
+            {
+                player_set_state(PST_IDLE);
+            }
         }
     }
     break;
@@ -526,6 +603,72 @@ break;
         if (!chakra) player_set_state(PST_IDLE);
     }
     break;
+	
+	case PST_POTION:
+	{
+	    // O player não se move enquanto bebe
+	    velh = 0;
+	    velv = 0;
+	    aplica_gravidade();
+
+	    // Lógica de Cura: 
+	    // Vamos esperar chegar no frame onde ele realmente bebe (ex: frame 4)
+	    if (image_index >= 4 && image_index < 4.2) 
+	    {
+	        if (vida_atual < vida_max) {
+	            vida_atual += 5; // Cura 1 ponto de vida
+	        }
+	    }
+
+	    // Finaliza o estado quando a animação acabar
+	    if (image_index >= image_number - 1) 
+	    {
+	        player_set_state(PST_IDLE);
+	    }
+	}
+	break;
+	
+case PST_SUMMON:
+{
+    velh = 0; // O player fica parado durante o jutsu
+    image_speed = 1;
+
+    // 1. CHECAGEM DO FRAME DE DISPARO (Frame 6 de 7)
+    // Criamos o aliado quando o player atinge o frame final da animação
+    if (image_index >= 6 && !instance_exists(obj_ally)) 
+    {
+        var _dist = 64 * image_xscale;
+        instance_create_layer(x + _dist, y, layer, obj_ally);
+        
+        // Efeito visual nativo para marcar a chegada
+        effect_create_above(ef_smoke, x + _dist, y, 1, c_white);
+        
+        if (script_exists(screenshake)) screenshake(2);
+    }
+
+    // 2. A TRAVA (O Pulo do Gato)
+    // Se chegamos no último frame (6) mas o aliado ainda não existe ou 
+    // ainda está na animação de "spawn", travamos o frame do player
+    if (image_index >= 6)
+    {
+        if (!instance_exists(obj_ally)) 
+        {
+            image_index = 6; // Trava no frame 6
+        } 
+        else if (obj_ally.estado == "spawn") 
+        {
+            image_index = 6; // Mantém travado enquanto o aliado está "nascendo"
+        }
+    }
+
+    // 3. LIBERAÇÃO
+    // Só volta para o IDLE quando o aliado terminar de aparecer (mudar para idle)
+    if (instance_exists(obj_ally) && obj_ally.estado != "spawn") 
+    {
+        player_set_state(PST_IDLE);
+    }
+}
+break;
 	
 	case PST_WALL:
     {

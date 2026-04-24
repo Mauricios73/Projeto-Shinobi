@@ -107,6 +107,7 @@ function grant_xp_on_hit(_skill_id, _target, _was_kill)
 function can_use_fire(_player)
 {
     if (_player_is_dead(_player)) return false;
+    // USAR fire_breath em vez de spr_player_jutsu
     if (!fire_breath.unlocked) return false;
     if (fire_breath.cooldown_left > 0) return false;
     if (fire_breath.is_active) return false;
@@ -126,28 +127,22 @@ function start_fire(_player)
     fire_breath.cooldown_left = fire_breath.cooldown_max;
 
     _player.estado = "fire_breath";
+    _player.sprite_index = spr_player_jutsu; // Define a sprite da pose
     _player.image_index = 0;
+    _player.image_speed = 1;
 
-    var fx = instance_create_layer(_player.x, _player.y, _player.layer, obj_skill_fire_breath);
-    fx.owner = _player;
-    _player.fire_instance = fx;
-
+    // REMOVEMOS a criação do objeto daqui para criar no Step do player
     return true;
 }
 
 function end_fire(_player)
 {
-    fire_breath.is_active = false;
+    fire_breath.is_active = false; // Corrigido aqui também
 
     if (instance_exists(_player.fire_instance))
     {
         with (_player.fire_instance) instance_destroy();
         _player.fire_instance = noone;
-    }
-    if (instance_exists(_player.fire_hitbox))
-    {
-        with (_player.fire_hitbox) instance_destroy();
-        _player.fire_hitbox = noone;
     }
 }
 
@@ -187,6 +182,6 @@ function unlock_skill(_id)
     switch (_id)
     {
         case "chidori": chidori.unlocked = true; break;
-        case "fire_breath": fire_breath.unlocked = true; break;
+        case "fire_breath": spr_player_jutsu1.unlocked = true; break;
     }
 }

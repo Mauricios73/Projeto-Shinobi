@@ -36,4 +36,6 @@ reload_binds = function() {
     _bind[InputAction.ACT_CHIDORI].key = global.key_chidori;
     _bind[InputAction.ACT_FIRE].key = global.key_fire;
     _bind[InputAction.ACT_CHAKRA].key = global.key_chakra;
+	_bind[InputAction.ACT_POTION].key = global.key_potion;
+	_bind[InputAction.ACT_SUMMON].key = global.key_summon;
 };

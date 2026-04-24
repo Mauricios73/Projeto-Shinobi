@@ -1,3 +1,5 @@
+// obj_dano - Draw
+
 draw_set_color(c_red);
 draw_rectangle(x - config.size,
                y - config.size,

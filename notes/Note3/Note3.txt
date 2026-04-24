@@ -1,40 +1,33 @@
 1. Já Existentes (No teu código original)
 Estas são as mecânicas que já estavam no ficheiro que me enviaste. Elas já têm o seu próprio estado ou lógica a funcionar:
 
-Idle / Parado (PST_IDLE)
-
-Running / Correr (PST_RUN)
-
-Jumping / Saltar (PST_JUMP)
-
-Falling / Cair (Gerido pela função aplica_gravidade())
+Idle / Parado (PST_IDLE) - OK
+Running / Correr (PST_RUN) - OK
+Jumping / Saltar (PST_JUMP) - OK
+Falling / Cair (Gerido pela função aplica_gravidade()) - OK
+Atacar / Combo (PST_ATK e PST_ATK_AIR - Cobre Punch, Kick, Aerial Strike) - OK
+Chakra / Carregar Energia (PST_CHAKRA) - OK
+Walk / Caminhar: Integrado no PST_RUN usando uma tecla para alternar velocidades. - OK
+Speed Boost / Stop Running: Integrados na lógica de aceleração e paragem do PST_RUN. - OK
+Crouch / Agachar: Novo estado (PST_CROUCH). - OK
+Double Jump / Duplo Salto: Nova variável (pode_duplo_salto) dentro do PST_JUMP. - OK
 
 Dash & Air Dash (PST_DASH e PST_DASH_AIR)
 
-Atacar / Combo (PST_ATK e PST_ATK_AIR - Cobre Punch, Kick, Aerial Strike)
-
 Tomar Dano / Hit (PST_HIT)
+
+Adicionar um menu de inventario para itens coletaveis
 
 Death / Morte (PST_DEAD)
 
 Habilidades Especiais:
 
-Chakra / Carregar Energia (PST_CHAKRA)
-
-Sopro de Fogo (PST_FIRE)
+Sopro de Fogo (PST_FIRE) - ~OK
 
 Chidori (PST_CHIDORI)
 
 2. Adicionados Recentemente (Pacote 1 e 2)
 Estas são as mecânicas que estruturámos nos nossos passos anteriores. Nota: Precisas de adicionar os sprites no GameMaker para que funcionem a 100%!
-
-Walk / Caminhar: Integrado no PST_RUN usando uma tecla para alternar velocidades.
-
-Speed Boost / Stop Running: Integrados na lógica de aceleração e paragem do PST_RUN.
-
-Crouch / Agachar: Novo estado (PST_CROUCH).
-
-Double Jump / Duplo Salto: Nova variável (pode_duplo_salto) dentro do PST_JUMP.
 
 Roll / Dodge / Slide: Novo estado (PST_ROLL) que te empurra para a frente e dá invencibilidade temporária.
 
@@ -42,6 +35,8 @@ Roll / Dodge / Slide: Novo estado (PST_ROLL) que te empurra para a frente e dá 
 Como conversámos, não vamos criar um estado novo para cada um destes itens. Vamos agrupá-los em categorias e implementá-los aos poucos.
 
 A. Movimento Avançado & Exploração (Próximos Passos)
+
+Adicionar um menu de inventario para itens coletaveis
 
 Interação com Paredes: Wall Jump, Wall Climbing.
 
@@ -55,7 +50,7 @@ B. Combate & Habilidades
 
 Defesa: Protect, Counter Attack, Defensive Stance, Magic shield.
 
-Novos Ataques: Ground Slam, Ice Strike, Explosive Strike, Jump Strike, Power Strike.
+Novos Ataques: (Ground Slam - OK), Ice Strike, Explosive Strike, Jump Strike, Power Strike.
 
 Magias e Utilidades: Healing, Drinking potion, Teleport, Summon ally, Time slow, Stealth mode.
 
