@@ -76,11 +76,18 @@ if (distance_to_object(obj_player) > dist_teleporte) {
     velv = 0;
 }
 
+if (pstate == PST_HIT) {
+    estado = "hit";
+}
 
+if (pstate == PST_DEAD) {
+    estado = "dead";
+}
 
 // 4. MÁQUINA DE ESTADOS
 switch (estado)
-{
+{	
+	#region spawn
     case "spawn":
         velh = 0;
         if (image_index >= image_number - 1) {
@@ -88,7 +95,9 @@ switch (estado)
             sprite_index = spr_player_idle;
         }
     break;
-
+	#endregion
+	
+	#region idle
     case "idle":
         velh = 0;
         sprite_index = spr_player_idle;
@@ -102,7 +111,9 @@ switch (estado)
             estado = "follow";
         }
     break;
-
+	#endregion
+	
+	#region follow
     case "follow":
         sprite_index = spr_player_run;
         var _dir = sign(obj_player.x - x);
@@ -110,9 +121,12 @@ switch (estado)
         
         if (distance_to_object(obj_player) < distancia_seguir - 10) estado = "idle";
     break;
-
+	#endregion
+	
+	#region combate
     case "combate":
-	    if (!instance_exists(alvo) || distance_to_object(alvo) > dist_perder_alvo) {
+	// Adicione a verificação: se o alvo não existe OU se o alvo já está morto
+	    if (!instance_exists(alvo) || alvo.vida_atual <= 0 || alvo.estado == "dead") {
 	        alvo = noone;
 	        estado = "idle";
 	        break;
@@ -152,7 +166,9 @@ switch (estado)
 	        if (image_index >= image_number - 1) pode_atacar = true;
 	    }
 	break;
-    
+	#endregion
+	
+    #region sacrificio
     case "sacrificio":
         sprite_index = spr_katon_goka_mekkyaku; // Sprite de ataque forte
         velh = image_xscale * 6; // Avanço rápido
@@ -166,6 +182,34 @@ switch (estado)
         
         if (image_index >= image_number - 1) vida_atual = 0;
     break;
+	#endregion
+	
+	#region hit
+	case "hit":
+        velh = 0; // Para de mover ao apanhar
+        sprite_index = spr_player_hit; // Use a sua sprite de dano
+        
+        // Sai do estado de hit quando a animação acabar
+        if (image_index >= image_number - 1) {
+            pstate = PST_IDLE;
+            estado = "idle";
+        }
+    break;
+	#endregion
+	
+	#region dead
+    case "dead":
+        velh = 0;
+        sprite_index = spr_player_dead; // Sprite de queda/derrota
+        
+        // Efeito visual de sumiço (Nativo do GM)
+        if (image_index >= image_number - 1) {
+            effect_create_above(ef_cloud, x, y - 15, 2, c_gray);
+            instance_destroy();
+			effect_create_above(ef_cloud, x, y - 5, 2, c_gray);
+        }
+    break;
+	#endregion
 }
 
 // Ajuste visual de pulo/queda (Item 3)

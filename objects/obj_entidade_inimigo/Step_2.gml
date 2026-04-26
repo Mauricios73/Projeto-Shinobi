@@ -1,3 +1,4 @@
+// OBJ_ENTIDADE_INIMIGO- END STEP EVENT
 // Inherit the parent event
 event_inherited();
 

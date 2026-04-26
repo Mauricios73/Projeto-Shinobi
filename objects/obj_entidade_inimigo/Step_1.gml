@@ -1,3 +1,4 @@
+// OBJ_ENTIDADE_INIMIGO- STEP BEGIN EVENT
 // Herda o evento pai (Isto já deves ter no teu código)
 event_inherited();
 

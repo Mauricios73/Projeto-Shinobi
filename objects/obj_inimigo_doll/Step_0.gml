@@ -24,7 +24,7 @@ switch(estado)
 			estado = choose("movendo", "parado", "movendo");
 			timer_estado = 0
 		}
-		scr_ataca_player(obj_player, dist, image_xscale);
+		scr_ataca_entidade(dist, image_xscale);
 		
 		break;
 	}
@@ -45,7 +45,7 @@ switch(estado)
 			estado = choose("parado", "movendo", "parado");
 			timer_estado = 0;
 		}
-		scr_ataca_player(obj_player, dist, image_xscale);
+		scr_ataca_entidade(dist, image_xscale);
 		
 		break;
 	}

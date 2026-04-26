@@ -1,3 +1,4 @@
+// obj_inimigo_esqueleto - STEP EVENT
 var chao = place_meeting(x, y + 1, obj_block);
 
 //Aplicando GRAVIDADE
@@ -5,6 +6,10 @@ if (!chao){
 		velv += GRAVIDADE * massa * global.vel_mult;
 }
 
+// No Step Event do obj_inimigo_esqueleto
+if (pstate == PST_HIT && estado != "ataque") {
+    estado = "hit";
+}
 	
 switch(estado)
 {
@@ -24,32 +29,48 @@ switch(estado)
 			estado = choose("movendo", "parado", "movendo");
 			timer_estado = 0
 		}
-		scr_ataca_player(obj_player, dist, image_xscale);
+		scr_ataca_entidade(dist, image_xscale); // Agora ataca aliado também
 		
 		break;
 	}
 	#endregion
 	
 	#region movendo
-	case "movendo":
-	{
-		timer_estado++;
-		if (sprite_index != spr_skeleton_walk){
-			image_index = 0;
-			sprite_index = spr_skeleton_walk;
-			mid_velh = choose(1, -1);
-		}
-		
-		//indo para patrulha random
-		if (irandom(timer_estado) > 300){
-			estado = choose("parado", "movendo", "parado");
-			timer_estado = 0;
-		}
-		scr_ataca_player(obj_player, dist, image_xscale);
-		
-		break;
-	}
-	#endregion
+case "movendo":
+{
+    timer_estado++;
+    
+    // Se não estiver com a sprite de walk, reseta e escolhe uma direção
+    if (sprite_index != spr_skeleton_walk) {
+        image_index = 0;
+        sprite_index = spr_skeleton_walk;
+        
+        // Escolhe 1 (direita) ou -1 (esquerda) e guarda numa variável interna
+        if (!variable_instance_exists(id, "direcao_patrulha")) direcao_patrulha = choose(1, -1);
+        else direcao_patrulha = choose(1, -1);
+    }
+    
+    // APLICA O MOVIMENTO REAL
+    velh = direcao_patrulha * max_velh;
+    
+    // Inverte a direção se bater em uma parede (usando sua lógica de colisão)
+    if (place_meeting(x + velh, y, obj_block)) {
+        direcao_patrulha *= -1;
+    }
+
+    // Voltando para parado ou mudando patrulha
+    if (irandom(timer_estado) > 300) {
+        estado = choose("parado", "movendo", "parado");
+        timer_estado = 0;
+        velh = 0; // Para de mover ao trocar de estado
+    }
+    
+    // Chame a nova função de ataque que criamos
+    scr_ataca_entidade(dist, image_xscale);
+    
+    break;
+}
+#endregion
 	
 	#region ataque
 	case "ataque":
@@ -108,7 +129,6 @@ switch(estado)
 			if (image_alpha <= 0) instance_destroy();
 		}
 		break;
-	
 	}
 	#endregion
 }

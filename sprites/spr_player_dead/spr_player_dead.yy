@@ -1,6 +1,6 @@
 {
   "$GMSprite":"v2",
-  "%Name":"Death",
+  "%Name":"spr_player_dead",
   "bboxMode":0,
   "bbox_bottom":127,
   "bbox_left":42,
@@ -25,19 +25,19 @@
   "layers":[
     {"$GMImageLayer":"","%Name":"952f31a6-ec89-4a75-a5f3-12c852160e2b","blendMode":0,"displayName":"default","isLocked":false,"name":"952f31a6-ec89-4a75-a5f3-12c852160e2b","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
-  "name":"Death",
+  "name":"spr_player_dead",
   "nineSlice":null,
   "origin":0,
   "parent":{
-    "name":"Add",
-    "path":"folders/Sprites/PrayerV2/Add.yy",
+    "name":"PrayerV2",
+    "path":"folders/Sprites/PrayerV2.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",
   "resourceVersion":"2.0",
   "sequence":{
     "$GMSequence":"v1",
-    "%Name":"Death",
+    "%Name":"spr_player_dead",
     "autoRecord":true,
     "backdropHeight":768,
     "backdropImageOpacity":0.5,
@@ -61,7 +61,7 @@
       "resourceType":"KeyframeStore<MomentsEventKeyframe>",
       "resourceVersion":"2.0",
     },
-    "name":"Death",
+    "name":"spr_player_dead",
     "playback":1,
     "playbackSpeed":10.0,
     "playbackSpeedType":0,
@@ -73,19 +73,19 @@
     "tracks":[
       {"$GMSpriteFramesTrack":"","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"$KeyframeStore<SpriteFrameKeyframe>":"","Keyframes":[
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
-                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"366e9c84-e18d-4aab-b2cb-137ece7c541e","path":"sprites/Death/Death.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"366e9c84-e18d-4aab-b2cb-137ece7c541e","path":"sprites/spr_player_dead/spr_player_dead.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
               },"Disabled":false,"id":"650a1dce-a4b3-441c-90df-dedc39284cc5","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
-                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"19a691c3-8cc8-4379-9537-238ca644a55b","path":"sprites/Death/Death.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"19a691c3-8cc8-4379-9537-238ca644a55b","path":"sprites/spr_player_dead/spr_player_dead.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
               },"Disabled":false,"id":"e2950d1b-075d-4e87-b904-dbafc00f2368","IsCreationKey":false,"Key":1.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
-                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"169ef103-92c8-4e02-8c18-3b5214f32934","path":"sprites/Death/Death.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"169ef103-92c8-4e02-8c18-3b5214f32934","path":"sprites/spr_player_dead/spr_player_dead.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
               },"Disabled":false,"id":"80b32371-b16c-49ef-a77f-c94612ea144c","IsCreationKey":false,"Key":2.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
-                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"d4a85335-5e16-4460-9edb-7c1c4c96c20f","path":"sprites/Death/Death.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"d4a85335-5e16-4460-9edb-7c1c4c96c20f","path":"sprites/spr_player_dead/spr_player_dead.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
               },"Disabled":false,"id":"e40dcdda-4d60-4a4c-9328-54b41a8fe52c","IsCreationKey":false,"Key":3.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
-                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"cf9ddb64-4e06-4827-890a-1888cafd803a","path":"sprites/Death/Death.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"cf9ddb64-4e06-4827-890a-1888cafd803a","path":"sprites/spr_player_dead/spr_player_dead.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
               },"Disabled":false,"id":"bd17a4f1-6255-41c9-b7a8-a33c8ed65274","IsCreationKey":false,"Key":4.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
           ],"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"2.0",},"modifiers":[],"name":"frames","resourceType":"GMSpriteFramesTrack","resourceVersion":"2.0","spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],

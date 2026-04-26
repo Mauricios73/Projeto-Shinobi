@@ -1,3 +1,4 @@
+// OBJ_ENTIDADE_INIMIGO- CREATE EVENT
 // Inherit the parent event
 event_inherited();
 

@@ -1,3 +1,4 @@
+// obj_inimigo_esqueleto - DRAW EVENT
 // Inherit the parent event
 //event_inherited();
 draw_self();

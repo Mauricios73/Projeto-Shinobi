@@ -31,8 +31,8 @@
   "nineSlice":null,
   "origin":9,
   "parent":{
-    "name":"Add",
-    "path":"folders/Sprites/PrayerV2/Add.yy",
+    "name":"PrayerV2",
+    "path":"folders/Sprites/PrayerV2.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

@@ -308,7 +308,7 @@ _apply_state_visuals_enter = function(_ps)
         break;
 
         case PST_HIT:
-            sprite_index = spr_player_hit;
+            sprite_index = spr_player_hit1;
             image_index = 0;
             screenshake(3);
 
@@ -317,7 +317,7 @@ _apply_state_visuals_enter = function(_ps)
         break;
 
         case PST_DEAD:
-            sprite_index = spr_player_death;
+            sprite_index = spr_player_death1;
             image_index = 0;
         break;
     }
