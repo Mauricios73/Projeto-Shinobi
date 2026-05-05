@@ -3,7 +3,7 @@
 event_inherited(); // Inicializa variáveis da entidade (vida, velh, velv, etc)
 
 // --- Identidade e Vida ---
-vida_max = 2;
+vida_max = 10;
 vida_atual = vida_max;
 dano_aliado = 1;
 timer_vida = room_speed * 15;

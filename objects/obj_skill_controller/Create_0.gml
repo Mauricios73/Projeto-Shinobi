@@ -1,9 +1,10 @@
+/// obj_skill_controller - create
 // ==========================
 // SKILL: FIRE BREATH
 // ==========================
 fire_breath = {
     id: "fire_breath",
-    level: 1,
+    level: 100,
     xp: 0,
     xp_next: 20,
     unlocked: true,

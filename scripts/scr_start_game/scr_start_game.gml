@@ -1,6 +1,4 @@
-function start_game() {
+fn_start_game = function() {
     global.pause = false;
-
-    // se o menu rm_menu não for overlay, só troca de room
     room_goto(Room1);
-}
+};

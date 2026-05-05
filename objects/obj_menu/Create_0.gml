@@ -55,42 +55,15 @@ enum menu_element_type {
 // --------------------------
 // LOCAL FUNCTION REFS (robust on older runtimes)
 // --------------------------
-fn_start_game = function() {
-    global.pause = false;
-    room_goto(Room1);
-};
+scr_start_game()
 
-fn_exit_game = function() {
-    game_end();
-};
+scr_exit_game()
 
-fn_change_volume = function(value, type) {
-    switch (type) {
-        case 0:
-            global.vol_master = value;
-            audio_master_gain(value);
-            break;
-        case 1:
-            global.vol_sounds = value;
-            audio_group_set_gain(audiogroup_soundeffects, value, 0);
-            break;
-        case 2:
-            global.vol_music = value;
-            audio_group_set_gain(audiogroup_music, value, 0);
-            break;
-    }
-};
+scr_change_volume()
 
-fn_change_resolution = function(idx) {
-    global.resolution_index = idx;
-    switch (idx) {
-        case 0: window_set_size(640, 360); break;
-        case 1: window_set_size(854, 480); break;
-        case 2: window_set_size(1280, 720); break;
-        case 3: window_set_size(1440, 900); break;
-        case 4: window_set_size(1920, 1080); break;
-    }
-};
+scr_change_resolution()
+
+fn_change_difficulty = change_difficulty
 
 fn_change_window_mode = function(mode) {
     global.window_mode = mode;
@@ -100,22 +73,16 @@ fn_change_window_mode = function(mode) {
     }
 };
 
-// which: 0=enemies, 1=allies
-fn_change_difficulty = function(value, which) {
-    if (which == 0) global.difficulty_enemies = value;
-    else           global.difficulty_allies  = value;
-};
-
 // --------------------------
 // PAGES
 // --------------------------
-ds_menu_main = create_menu_page(
+ds_menu_main = scr_create_menu_page(
     ["PLAY",     menu_element_type.script_runner, fn_start_game],
     ["SETTINGS", menu_element_type.page_transfer, menu_page.settings],
     ["EXIT",     menu_element_type.script_runner, fn_exit_game]
 );
 
-ds_settings = create_menu_page(
+ds_settings = scr_create_menu_page(
     ["AUDIO",      menu_element_type.page_transfer, menu_page.audio],
     ["DIFFICULTY", menu_element_type.page_transfer, menu_page.difficulty],
     ["GRAPHICS",   menu_element_type.page_transfer, menu_page.graphics],
@@ -123,7 +90,7 @@ ds_settings = create_menu_page(
     ["BACK",       menu_element_type.page_transfer, menu_page.main]
 );
 
-ds_menu_audio = create_menu_page(
+ds_menu_audio = scr_create_menu_page(
     ["MASTER", menu_element_type.slider, fn_change_volume, 1, [0,1], 0],
     ["SOUNDS", menu_element_type.slider, fn_change_volume, 1, [0,1], 1],
     ["MUSIC",  menu_element_type.slider, fn_change_volume, 1, [0,1], 2],
@@ -131,13 +98,13 @@ ds_menu_audio = create_menu_page(
 );
 
 // Difficulty may be unimplemented; keep entries but they won't crash with menu exec guards in Step
-ds_menu_difficulty = create_menu_page(
+ds_menu_difficulty = scr_create_menu_page(
     ["ENEMIES", menu_element_type.shift, fn_change_difficulty, 0, ["HARMLESS","NORMAL","TERRIBLE"], 0],
     ["ALLIES",  menu_element_type.shift, fn_change_difficulty, 0, ["DIM-WITTED","NORMAL","HELPFUL"], 1],
     ["BACK",    menu_element_type.page_transfer, menu_page.settings]
 );
 
-ds_menu_graphics = create_menu_page(
+ds_menu_graphics = scr_create_menu_page(
     ["RESOLUTION", menu_element_type.shift,  fn_change_resolution, 0, ["640 x 360","854 x 480","1280 x 720","1440 x 900","1920 x 1080"]],
     ["WINDOW MODE",menu_element_type.toggle, fn_change_window_mode, 1, ["FULLSCREEN","WINDOWED"]],
     ["BACK",       menu_element_type.page_transfer, menu_page.settings]
@@ -147,7 +114,7 @@ ds_menu_graphics = create_menu_page(
 // CONTROLS (A.1) — expanded binds
 // input rows: [Label, input_type, global_field_name, default_value]
 // --------------------------
-ds_menu_controls = create_menu_page(
+ds_menu_controls = scr_create_menu_page(
     ["UP",      menu_element_type.input, "key_up",      global.key_up],
     ["DOWN",    menu_element_type.input, "key_down",    global.key_down],
     ["LEFT",    menu_element_type.input, "key_left",    global.key_left],

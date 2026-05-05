@@ -34,10 +34,7 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":{
-    "name":"spr_doll_idle",
-    "path":"sprites/spr_doll_idle/spr_doll_idle.yy",
-  },
+  "spriteId":null,
   "spriteMaskId":null,
   "visible":true,
 }

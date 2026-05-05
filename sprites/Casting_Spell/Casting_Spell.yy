@@ -35,7 +35,7 @@
   "origin":0,
   "parent":{
     "name":"Add",
-    "path":"folders/Sprites/PrayerV2/Add.yy",
+    "path":"folders/Sprites/Add.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

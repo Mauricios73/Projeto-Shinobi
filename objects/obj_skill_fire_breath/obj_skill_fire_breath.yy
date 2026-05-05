@@ -9,8 +9,8 @@
   "name":"obj_skill_fire_breath",
   "overriddenProperties":[],
   "parent":{
-    "name":"Player",
-    "path":"folders/Objetos/Player.yy",
+    "name":"Poderes",
+    "path":"folders/Objetos/Player/Poderes.yy",
   },
   "parentObjectId":null,
   "persistent":false,

@@ -14,7 +14,7 @@ if (!variable_global_exists("potions")) global.potions = 3;
 /// -----------------------------
 /// Core stats / config
 /// -----------------------------
-vida_max = 5;
+vida_max = 10;
 vida_atual = vida_max;
 
 max_velh = 3;
@@ -72,6 +72,17 @@ dano = noone;
 tempo_espera_combo = 0; // Tempo (em frames) que o jogo espera o próximo clique antes de resetar o combo
 janela_combo = 20; // Ajuste este valor: quanto maior, mais tempo o jogador tem para apertar
 
+// Variáveis do Teleporte
+teleport_dist = 350;      // Distância fixa do teleporte
+teleport_timer = 0;       // Controlador de tempo das animações
+teleport_finish = false;  // Trava para mudar de fase
+target_x = 0;             // Coordenada X de destino
+target_y = 0;             // Coordenada Y de destino (se necessário)
+
+// Registre as sprites no objeto
+spr_tele_out = spr_teleport_out;
+spr_tele_in = spr_teleport_in;
+spr_fx_kamuy = spr_kamuy_fx;
 
 /// controle de power ups (evite resetar global a cada respawn, mas mantive pra compat)
 if (!variable_global_exists("power_ups")) global.power_ups = [false];
@@ -121,6 +132,8 @@ estado_to_pstate = function(_estado)
 		case "wall":          return PST_WALL; // <- NOVO
 		case "potion":		  return PST_POTION; // <- NOVO
 		case "summon":		  return PST_SUMMON; // <- NOVO
+		case "teleport_out":  return PST_TELEPORT_OUT;
+        case "teleport_in":   return PST_TELEPORT_IN;
         default:              return PST_IDLE;
     }
 };
@@ -148,6 +161,8 @@ pstate_to_estado = function(_ps)
 		case PST_WALL:			return "wall"; // <- NOVO
 		case PST_POTION:		return "potion"; // <- NOVO
 		case PST_SUMMON:		return "summon"; // <- NOVO
+		case PST_TELEPORT_OUT:  return "teleport_out";
+        case PST_TELEPORT_IN:   return "teleport_in";
         default:				return "parado";
     }
 };
@@ -219,12 +234,23 @@ _apply_state_visuals_enter = function(_ps)
             image_index = 0;
         break;
 
-        case PST_JUMP:
-            // decide fase inicial pelo velv
-            _air_phase = (velv >= 0) ? 1 : 0;
-            sprite_index = (_air_phase == 0) ? spr_player_jump : spr_player_fall;
-            image_index = 0;
-        break;
+		case PST_JUMP:
+		    // Se a velocidade horizontal for quase zero e o pulo acabou de ser acionado (velv >= 0)
+		    if (abs(velh) < 0.5 && velv >= 0) 
+		    {
+		        sprite_index = spr_player_leap;
+		        velv = 0; // Garante que ele comece parado no chão para a animação rodar
+		    }
+		    else 
+		    {
+		        // Se estiver em movimento ou já estiver no ar, usa as sprites normais
+		        sprite_index = (velv < 0) ? spr_player_jump : spr_player_fall;
+		    }
+    
+		    image_index = 0;
+		    image_speed = 1;
+		    _air_phase = (velv >= 0) ? 1 : 0;
+		break;
 		
 		case PST_CROUCH:
             sprite_index = spr_player_crouch; // (Certifica-te que crias este sprite no GameMaker)
@@ -305,6 +331,26 @@ _apply_state_visuals_enter = function(_ps)
             image_index = 0;
             image_speed = 1;
             chakra_timer = 0;
+        break;
+		
+		case PST_TELEPORT_OUT:
+            sprite_index = spr_tele_out;
+            image_index = 0;
+            image_speed = 1;
+            
+            // Criar o Kamuy ao SUMIR
+            var _fx = instance_create_layer(x, y, layer, obj_kamuy_effect);
+            _fx.image_xscale = image_xscale; 
+        break;
+
+        case PST_TELEPORT_IN:
+            sprite_index = spr_tele_in;
+            image_index = 0;
+            image_speed = 1;
+            
+            // Criar o Kamuy ao APARECER
+            var _fx = instance_create_layer(x, y, layer, obj_kamuy_effect);
+            _fx.image_xscale = image_xscale;
         break;
 
         case PST_HIT:

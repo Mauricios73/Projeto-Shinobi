@@ -68,25 +68,26 @@ for (var i = 0; i < qtd; i++)
         hits_map[? k] = h + 1;
     }
 
-    // aplica dano
-	// --- NOVO BLOCO DE APLICAÇÃO DE DANO COM SUPORTE A DEFESA ---
-    if (variable_instance_exists(alvo, "vida_atual"))
-    {
-        // 1. Verificar se o alvo tem a função de receber dano (que criamos no obj_player)
-        if (variable_instance_exists(alvo, "recebe_dano")) 
-        {
-            // Chamamos a função passando o dano e a posição X da fonte do dano
-            alvo.recebe_dano(dano, x);
-        } 
-        else 
-        {
-            // Fallback: Se for um alvo simples (como o obj_dummy), aplica o dano normal
-            alvo.vida_atual -= dano;
-            if (variable_instance_exists(alvo, "estado")) {
-                 alvo.estado = "hit";
-                 alvo.image_index = 0;
-            }
-        }
+		// aplica dano
+		if (variable_instance_exists(alvo, "vida_atual"))
+		{
+			show_debug_message("Colidi com: " + object_get_name(alvo.object_index));
+		    if (variable_instance_exists(alvo, "recebe_dano")) 
+		    {
+		        // Se o Ninja tem a função, chamamos ela. 
+				show_debug_message("Sucesso: Achei a funcao recebe_dano!");
+		        alvo.recebe_dano(dano, x, skill_id);
+		    } 
+		    else 
+		    {
+				show_debug_message("AVISO: Objeto " + object_get_name(alvo.object_index) + " NAO tem a funcao recebe_dano.");
+		        // Fallback para objetos sem cérebro (tipo o dummy)
+		        alvo.vida_atual -= dano;
+		        if (variable_instance_exists(alvo, "estado")) {
+		             alvo.estado = "hit";
+		             alvo.image_index = 0;
+		        }
+		    }
 
         var morreu = (alvo.vida_atual <= 0);
 
@@ -97,24 +98,7 @@ for (var i = 0; i < qtd; i++)
             if (sc != noone) sc.grant_xp_on_hit(skill_id, alvo, morreu);
         }
 
-        // reação: não cancelar ataque fraco em inimigo
-        if (variable_instance_exists(alvo, "estado"))
-        {
-            var is_enemy = (object_get_parent(alvo.object_index) == obj_entidade_inimigo) || (alvo.object_index == obj_entidade_inimigo);
-            var can_interrupt = true;
-
-            if (is_enemy && alvo.estado == "ataque")
-            {
-                // skill sempre pode interromper; normal só se dano >= 3
-                if (skill_id == "" && dano < 3) can_interrupt = false;
-            }
-
-            if (can_interrupt)
-            {
-                alvo.estado = "hit";
-                alvo.image_index = 0;
-            }
-        }
+      
 
         // número de dano
         var base_x = alvo.x;

@@ -37,7 +37,7 @@ var dash    = keyboard_check_pressed(global.key_dash);
 var chidori = keyboard_check_pressed(global.key_chidori);
 var fire    = keyboard_check_pressed(global.key_fire);
 var chakra  = keyboard_check(global.key_chakra);
-
+ 
 // gamepad
 if (gamepad_is_connected(0))
 {
@@ -108,6 +108,30 @@ if (_input_potion && (pstate == PST_IDLE || pstate == PST_RUN) && global.potions
     player_set_state(PST_POTION);
 }
 
+// Exemplo de Input Check no Step Event (fora do switch de estados)
+if (keyboard_check_pressed(ord("I")) && pstate != PST_TELEPORT_OUT && pstate != PST_TELEPORT_IN) {
+    // Só teleporta se houver chão no destino (opcional, mas recomendado)
+    var _dir = image_xscale;
+    target_x = x + (teleport_dist * _dir);
+    target_y = y; // Mantém a mesma altura
+
+    // Verificação de colisão básica para não teleportar para dentro de paredes
+    if (!place_meeting(target_x, target_y, obj_block)) {
+        player_set_state(PST_TELEPORT_OUT);
+        velh = 0; // Trava o movimento
+        velv = 0;
+    } else {
+        show_debug_message("Teleporte bloqueado por parede!");
+    }
+}
+
+// Exemplo no Step do Player
+if (keyboard_check(ord("U"))) { // Ou o botão de defesa
+    pstate = PST_DEFEND;
+    velh = 0; // O player não deve andar enquanto defende
+    sprite_index = spr_player_defend; 
+}
+
 // skill input via controller (não troca sprite aqui; troca estado)
 var sc = instance_find(obj_skill_controller, 0);
 if (fire && sc != noone)   sc.start_fire(self);
@@ -126,13 +150,16 @@ else
 // --- helpers local
 function _set_air_visual_from_velv()
 {
+    // NOVO: Se estivermos na animação de preparação do Leap, NÃO mude a sprite para jump/fall
+    if (sprite_index == spr_player_leap && image_index < 5) return;
+
     var new_phase = (velv >= 0) ? 1 : 0;
     if (new_phase != _air_phase)
     {
         _air_phase = new_phase;
         sprite_index = (_air_phase == 0) ? spr_player_jump : spr_player_fall;
         image_index = 0;
-        _vis_state = pstate; // mantém cache consistente
+        _vis_state = pstate; 
     }
 }
 
@@ -161,10 +188,11 @@ switch (pstate)
         else if (velh != 0) player_set_state(PST_RUN);
 		
         else if (jump || !chao)
-        {
-            velv = (-max_velv * (jump ? 1 : 0));
-            player_set_state(PST_JUMP);
-        }
+		{
+		    if (jump && abs(velh) < 0.5) velv = 0; 
+		    else velv = (-max_velv * (jump ? 1 : 0));
+		    player_set_state(PST_JUMP);
+		}
         else if (attack)
         {
             inicia_ataque(chao);
@@ -240,54 +268,65 @@ switch (pstate)
     }
     break;
 
-    case PST_JUMP:
+case PST_JUMP:
     {
-		// <- NOVO: Transição para agarrar na parede
-        // Se não estiver no chão, estiver a tocar numa parede e a pressionar na direção dela
+        // 1. Transição para agarrar na parede
         if (!chao && ((parede_dir && right_held) || (parede_esq && left_held)))
         {
             player_set_state(PST_WALL);
-            break; // Sai do case do JUMP
+            break;
         }
 		
-		//max_velh = run_key ? vel_correr : vel_caminhar; // <- NOVO: Mantém o controlo de andar/correr no ar
         max_velh = run ? vel_sprint : (is_running ? vel_correr : vel_caminhar);
-		// horizontal control
         velh = (right_held - left_held) * max_velh * global.vel_mult;
+		
+        // --- LÓGICA DO SALTO PARADO (LEAP) ---
+        var pode_aterissar = true; // Variável de controle para não cancelar o pulo
+
+        if (sprite_index == spr_player_leap) 
+        {
+            image_speed = 1;
+            
+            // Bloqueia a aterrissagem enquanto prepara o pulo no chão
+            if (image_index < 5) 
+            {
+                pode_aterissar = false; 
+                velv = 0; 
+                velh = 0; // Opcional: trava o movimento horizontal no "squat" do pulo
+            }
+            
+            // Frame 5: Momento do impulso físico
+            if (image_index >= 5 && image_index < 5.2 && velv == 0) 
+            {
+                velv = -max_velv; 
+            }
+        }
 
         aplica_gravidade();
         _set_air_visual_from_velv();
 
-        // landing
-        if (chao && velv >= 0)
+        // 2. Landing (Tocar no chão)
+        // Só volta para IDLE se não estiver na fase de preparação do salto parado
+        if (chao && velv >= 0 && pode_aterissar)
         {
             velv = 0;
-			pode_duplo_salto = true; // <- NOVO: Recarrega o duplo salto ao tocar no chão	
+            pode_duplo_salto = true;	
             player_set_state((abs(velh) > 0.1) ? PST_RUN : PST_IDLE);
             break;
         }
 		
-		// <- NOVO: Lógica do Duplo Salto
+        // 3. Duplo Salto
         if (jump && pode_duplo_salto)
         {
-            velv = -max_velv; // Dá o impulso para cima
-            pode_duplo_salto = false; // Gasta o duplo salto
-            _air_phase = 0; // Atualiza a animação para "subindo"
-            sprite_index = spr_player_jump; 
-        }
-		// <- NOVO: Iniciar o Ground Slam (Exemplo: segurar Baixo e apertar Ataque)
-        if (down && attack)
-        {
-            player_set_state(PST_GROUND_SLAM);
-            break; // Sai do estado atual imediatamente
+            velv = -max_velv;
+            pode_duplo_salto = false;
+            _air_phase = 0;
+            sprite_index = spr_player_jump; // Duplo salto usa sempre a sprite de movimento
         }
 
+        if (down && attack) { player_set_state(PST_GROUND_SLAM); break; }
         if (attack) inicia_ataque(chao);
-
-        if (dash && dash_aereo == true)
-        {
-            player_set_state(PST_DASH_AIR);
-        }
+        if (dash && dash_aereo == true) player_set_state(PST_DASH_AIR);
     }
     break;
 	
@@ -578,6 +617,30 @@ switch (pstate)
         }
     }
     break;
+	
+	case PST_TELEPORT_OUT:
+	{
+	    if (image_index >= image_number - 1) 
+	    {
+	        x = target_x;
+	        y = target_y;
+        
+	        // AO CHAMAR ISSO, o _apply_state_visuals_enter será executado
+	        // e criará o segundo efeito de Kamuy no destino automaticamente.
+	        player_set_state(PST_TELEPORT_IN); 
+	    }
+	}
+	break;	
+
+	case PST_TELEPORT_IN:
+	{
+	    // Quando terminar de aparecer, volta ao normal
+	    if (image_index >= image_number - 1) 
+	    {
+	        player_set_state(PST_IDLE);
+	    }
+	}
+	break;
 
     case PST_CHAKRA:
     {
@@ -628,47 +691,47 @@ switch (pstate)
 	}
 	break;
 	
-case PST_SUMMON:
-{
-    velh = 0; // O player fica parado durante o jutsu
-    image_speed = 1;
+	case PST_SUMMON:
+	{
+	    velh = 0; // O player fica parado durante o jutsu
+	    image_speed = 1;
 
-    // 1. CHECAGEM DO FRAME DE DISPARO (Frame 6 de 7)
-    // Criamos o aliado quando o player atinge o frame final da animação
-    if (image_index >= 6 && !instance_exists(obj_ally)) 
-    {
-        var _dist = 64 * image_xscale;
-        instance_create_layer(x + _dist, y, layer, obj_ally);
+	    // 1. CHECAGEM DO FRAME DE DISPARO (Frame 6 de 7)
+	    // Criamos o aliado quando o player atinge o frame final da animação
+	    if (image_index >= 6 && !instance_exists(obj_ally)) 
+	    {
+	        var _dist = 64 * image_xscale;
+	        instance_create_layer(x + _dist, y, layer, obj_ally);
         
-        // Efeito visual nativo para marcar a chegada
-        effect_create_above(ef_smoke, x + _dist, y, 1, c_white);
+	        // Efeito visual nativo para marcar a chegada
+	        effect_create_above(ef_smoke, x + _dist, y, 1, c_white);
         
-        if (script_exists(screenshake)) screenshake(2);
-    }
+	        if (script_exists(screenshake)) screenshake(2);
+	    }
 
-    // 2. A TRAVA (O Pulo do Gato)
-    // Se chegamos no último frame (6) mas o aliado ainda não existe ou 
-    // ainda está na animação de "spawn", travamos o frame do player
-    if (image_index >= 6)
-    {
-        if (!instance_exists(obj_ally)) 
-        {
-            image_index = 6; // Trava no frame 6
-        } 
-        else if (obj_ally.estado == "spawn") 
-        {
-            image_index = 6; // Mantém travado enquanto o aliado está "nascendo"
-        }
-    }
+	    // 2. A TRAVA (O Pulo do Gato)
+	    // Se chegamos no último frame (6) mas o aliado ainda não existe ou 
+	    // ainda está na animação de "spawn", travamos o frame do player
+	    if (image_index >= 6)
+	    {
+	        if (!instance_exists(obj_ally)) 
+	        {
+	            image_index = 6; // Trava no frame 6
+	        } 
+	        else if (obj_ally.estado == "spawn") 
+	        {
+	            image_index = 6; // Mantém travado enquanto o aliado está "nascendo"
+	        }
+	    }
 
-    // 3. LIBERAÇÃO
-    // Só volta para o IDLE quando o aliado terminar de aparecer (mudar para idle)
-    if (instance_exists(obj_ally) && obj_ally.estado != "spawn") 
-    {
-        player_set_state(PST_IDLE);
-    }
-}
-break;
+	    // 3. LIBERAÇÃO
+	    // Só volta para o IDLE quando o aliado terminar de aparecer (mudar para idle)
+	    if (instance_exists(obj_ally) && obj_ally.estado != "spawn") 
+	    {
+	        player_set_state(PST_IDLE);
+	    }
+	}
+	break;
 	
 	case PST_WALL:
     {
