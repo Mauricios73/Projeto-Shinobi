@@ -1,3 +1,5 @@
+//obj_neve - create
+
 depth = 100000;
 
 snow_n = 240; // 180~320

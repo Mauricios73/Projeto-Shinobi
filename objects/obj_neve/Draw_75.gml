@@ -1,3 +1,5 @@
+//obj_neve - draw end GUI
+
 gpu_set_blendmode(bm_normal);
 draw_set_color(c_white);
 

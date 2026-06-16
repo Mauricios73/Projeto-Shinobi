@@ -189,16 +189,16 @@ if (sprite_exists(sprLandscapeFar2))
 {
     var y2 = camh * land2_y_ratio;
 
-    // loop horizontal: repete na largura
-    // drift = land2_offx (0 = totalmente parado; pode usar um valor pequeno se quiser)
-    draw_band(sprLandscapeFar2, land2_px, y2, land2_offx, land2_alpha, land2_tint);
+    //loop horizontal: repete na largura
+    //drift = land2_offx (0 = totalmente parado; pode usar um valor pequeno se quiser)
+    //draw_band(sprLandscapeFar2, land2_px, y2, land2_offx, land2_alpha, land2_tint);
 }
 
 // DRAW 1.5 — Paisagem distante centralizada
 var y_land = camh * land_far_y_ratio;
 var x_center = camw * 0.5;
 
-//draw_parallax_single_center(sprLandscapeFar, land_far_px, x_center, y_land, land_far_alpha, true);
+draw_parallax_single_center(sprLandscapeFar, land_far_px, x_center, y_land, land_far_alpha, true);
 
 // DRAW 2 — Estrelas
 var useStars = (night_factor > 0.65) ? sprStarsB : sprStarsA;
@@ -216,10 +216,10 @@ clouds_offx += 0.15;
 
 var cloudsHigh = sprCloudHighDay;
 if (t >= 0.45 && t < 0.70) cloudsHigh = sprCloudHighSun;
-if (t >= 0.70) cloudsHigh = sprCloudHighNight;
+//if (t >= 0.70) cloudsHigh = sprCloudHighNight;
 
 var y_high = camh * clouds_high_ratio;
-//draw_band(cloudsHigh, 0.10, y_high, clouds_offx, 0.75, false);
+draw_band(cloudsHigh, 0.10, y_high, clouds_offx, 0.75, false);
 
 // DRAW 5 — Horizonte / nuvens baixas (sempre acima do “chão/água”)
 clouds_low_offx += 0.05;

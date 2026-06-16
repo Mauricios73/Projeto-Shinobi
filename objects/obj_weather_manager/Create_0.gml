@@ -1,4 +1,6 @@
-    if (instance_exists(obj_fog))
+//obj_weather_menager - create
+
+	if (instance_exists(obj_fog))
         show_debug_message("FOG DEPTH=" + string(obj_fog.depth));
 
 
@@ -20,8 +22,8 @@ fog_in_indoor = true;
 // ====== TEMPOS (segundos) ======
 precip_min = 30;
 precip_max = 60;
-fog_min    = 25;
-fog_max    = 70;
+fog_min    = 200;
+fog_max    = 300;
 
 snow_accum_speed   = 0.015;
 snow_melt_speed    = 0.005;

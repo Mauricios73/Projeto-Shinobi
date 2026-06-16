@@ -1,3 +1,5 @@
+//obj_weather_menager - alarme1
+
 // só para se ainda estiver sem chuva (evita cortar quando voltar a chover)
 if (precip_mode != 2 && precip_mode != 3)
 {

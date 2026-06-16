@@ -1,3 +1,5 @@
+//obj_weather_menager - alarme0
+
 var rn = room_get_name(room);
 
 // -------- is_menu?
@@ -25,18 +27,32 @@ if (is_menu)
     exit;
 }
 
-// ----- FOG (pode indoor se fog_in_indoor = true)
+//// ----- FOG (pode indoor se fog_in_indoor = true)
+//var fog_allowed = outdoor || fog_in_indoor;
+
+//if (fog_on && fog_allowed)
+//{
+//    if (!instance_exists(obj_fog))
+//        instance_create_depth(0, 0, -2000, obj_fog);
+//}
+//else
+//{
+//    if (instance_exists(obj_fog)) with (obj_fog) instance_destroy();
+//}
+// ----- FOG (Gerenciamento suave)
 var fog_allowed = outdoor || fog_in_indoor;
 
 if (fog_on && fog_allowed)
 {
-    if (!instance_exists(obj_fog))
+    if (!instance_exists(obj_fog)) {
         instance_create_depth(0, 0, -2000, obj_fog);
+    } else {
+        // Se ele já existia mas estava em fade out, reativa
+        obj_fog.is_fading_out = false;
+    }
 }
-else
-{
-    if (instance_exists(obj_fog)) with (obj_fog) instance_destroy();
-}
+// NOTA: O "instance_destroy" foi removido daqui. O próprio obj_fog se destrói no Step dele
+// quando nota que fog_on virou false e as partículas terminaram de sumir!
 
 // ----- PRECIP (somente outdoor)
 if (!outdoor)

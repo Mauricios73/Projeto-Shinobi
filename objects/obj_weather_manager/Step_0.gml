@@ -1,3 +1,5 @@
+//	obj_weather_menager - step
+
 var rn = room_get_name(room);
 
 // -------- is_menu?
@@ -109,6 +111,18 @@ if (fog_left <= 0)
 
 // compat global
 global.precip_mode = precip_mode;
+
+// ====== GERENCIAMENTO AUTOMÁTICO DO ACÚMULO DE NEVE ======
+if (!variable_global_exists("snow_amount")) global.snow_amount = 0;
+
+if (precip_mode == 1) // 1 = Modo Neve ativa
+{
+    global.snow_amount = clamp(global.snow_amount + snow_accum_speed * dt, 0, 1);
+}
+else // Qualquer outro clima faz a neve derreter devagar
+{
+    global.snow_amount = clamp(global.snow_amount - snow_melt_speed * dt, 0, 1);
+}
 
 // ============================
 // SOM DA CHUVA (sem clique)

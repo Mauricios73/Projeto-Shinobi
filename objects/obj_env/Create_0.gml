@@ -47,11 +47,11 @@ sprMoonRed   = spr_moon_red;
 // Nuvens (corrigi ; faltando)
 sprCloudHighDay   = spr_clouds_high_day_1;      // dia
 sprCloudHighSun   = spr_clouds_high_sunset_1;   // pôr do sol
-sprCloudHighNight = spr_clouds_high_night_22;   // noite
+//sprCloudHighNight = spr_clouds_high_night_22;   // noite
 
 // OBS: aqui você tinha "low" apontando para "high". Se for isso mesmo, ok.
 // Se você tiver um sprite real de nuvem baixa/horizonte, use ele aqui:
-sprCloudLowA = spr_clouds_low_4;    // horizonte / nuvem baixa principal
+//sprCloudLowA = spr_clouds_low_4;    // horizonte / nuvem baixa principal
 sprCloudLowB = spr_clouds_high_day_2; // opcional (segunda variação)
 
 // -------------------- CONFIG VISUAL (AJUSTÁVEL) --------------------
