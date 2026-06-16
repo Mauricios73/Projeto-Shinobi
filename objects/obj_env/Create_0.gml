@@ -1,8 +1,17 @@
 /// obj_env - Create
 
-// -------------------- CONFIG BÁSICA --------------------
-time_speed = 2 / (60 * 240); // 4 min em 60fps
+// -------------------- CONFIG BÁSICA & TESTES --------------------
+is_testing = false; // TRUE: Tempo voa para testes | FALSE: Tempo realista de jogo
+
+// Definição das velocidades (Ciclo completo = 24 horas no jogo)
+time_speed_normal = 1 / (60 * 60 * 15); // Lento: Um ciclo dura cerca de 15 minutos reais
+time_speed_test   = 4 / (60 * 120);     // Rápido: O tempo voa para testar transições
+
+time_speed = is_testing ? time_speed_test : time_speed_normal;
 t = 0.15; // 0..1 (começa de manhã)
+
+// ---- CONFIGURAÇÃO DA LUA ----
+moon_scale = 0.45; // Reduz o tamanho da lua (0.5 = metade do tamanho original, altere como quiser)
 
 // Camera vars (instância, para o Draw enxergar)
 camx = 0;
@@ -44,39 +53,27 @@ sprMoonWhite = spr_moon_white;
 sprMoonBlue  = spr_moon_blue;
 sprMoonRed   = spr_moon_red;
 
-// Nuvens (corrigi ; faltando)
-sprCloudHighDay   = spr_clouds_high_day_1;      // dia
-sprCloudHighSun   = spr_clouds_high_sunset_1;   // pôr do sol
-//sprCloudHighNight = spr_clouds_high_night_22;   // noite
+sprCloudHighDay   = spr_clouds_high_day_1;
+sprCloudHighSun   = spr_clouds_high_sunset_1;
 
-// OBS: aqui você tinha "low" apontando para "high". Se for isso mesmo, ok.
-// Se você tiver um sprite real de nuvem baixa/horizonte, use ele aqui:
-//sprCloudLowA = spr_clouds_low_4;    // horizonte / nuvem baixa principal
-sprCloudLowB = spr_clouds_high_day_2; // opcional (segunda variação)
+sprCloudLowB = spr_clouds_high_day_2;
 
 // -------------------- CONFIG VISUAL (AJUSTÁVEL) --------------------
-// Linha do chão/água na TELA (percentual da câmera)
-// Use isso para manter o horizonte acima
-ground_cut_ratio = 0.52; // 0.50~0.60
+ground_cut_ratio = 0.52; 
+clouds_high_ratio = 0.08; 
+horizon_offset_px = 120;  
 
-// Alturas na tela (percentuais)
-clouds_high_ratio = 0.08; // nuvem alta (mais perto do topo)
-horizon_offset_px = 120;  // quanto acima do chão a faixa do horizonte fica
+sprLandscapeFar = spr_landscape_far2; 
+land_far_px = 0.02;  
+land_far_alpha = 0.85;  
+land_far_y_ratio = 0.22;  
 
-// Fundo distante (Kingdom-like)
-sprLandscapeFar = spr_landscape_far; // <- crie esse sprite
-land_far_px = 0.02;                  // parallax bem baixo (quase parado)
-land_far_alpha = 0.85;               // visível mas distante
-land_far_y_ratio = 0.22;             // altura na tela (horizonte)
+far_haze_alpha = 0.20;  
+far_haze_height_ratio = 0.55;  
 
-// Haze (neblina) distante
-far_haze_alpha = 0.20;               // força da névoa
-far_haze_height_ratio = 0.55;        // até onde a névoa desce na tela
-
-// ---- Landscape 2 (mais distante, pode repetir) ----
-sprLandscapeFar2 = spr_landscape_far2; // importe e defina esse sprite
-land2_px = 0.01;                       // mais distante (menos parallax)
-land2_alpha = 0.70;                    // mais fraca
-land2_y_ratio = 0.20;                  // mais alta na tela
-land2_tint = true;                     // usa ambient_col (opcional)
-land2_offx = 0;                        // se quiser micro drift, senão fica 0
+sprLandscapeFar2 = spr_landscape_far2; 
+land2_px = 0.01;  
+land2_alpha = 0.70;  
+land2_y_ratio = 0.20;  
+land2_tint = true;  
+land2_offx = 0;
