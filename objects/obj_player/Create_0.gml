@@ -10,6 +10,7 @@ event_inherited();
 
 // PATCH C2 - obj_player Create_0.gml
 if (!variable_global_exists("potions")) global.potions = 3;
+if (!variable_global_exists("key_defesa")) global.key_defesa = ord("U");
 
 /// -----------------------------
 /// Core stats / config
@@ -53,6 +54,8 @@ chakra_timer = 0;
 chidori_hit = noone;
 fire_instance = noone;
 fire_hitbox = noone;
+potion_healed = false;
+summon_spawned = false;
 
 // <- NOVO: Variáveis para Andar/Correr e Duplo Salto
 // Velocidades de locomoção
@@ -184,11 +187,7 @@ inicia_ataque = function(_chao)
 finaliza_ataque = function()
 {
     posso = true;
-    if (instance_exists(dano))
-    {
-        with (dano) instance_destroy();
-        dano = noone;
-    }
+    scr_player_combat_destroy_current_hit();
 };
 
 // gravidade
@@ -409,6 +408,16 @@ _on_exit_state = function(_old, _new)
             with (fire_hitbox) instance_destroy();
             fire_hitbox = noone;
         }
+    }
+
+    if (_old == PST_POTION && _new != PST_POTION)
+    {
+        potion_healed = false;
+    }
+
+    if (_old == PST_SUMMON && _new != PST_SUMMON)
+    {
+        summon_spawned = false;
     }
 	// NOVO: Ao sair do estado de Chakra
 	if (_old == PST_CHAKRA) {

@@ -1,9 +1,7 @@
-// obj_dano - Destruir
+// obj_hitbox - Destroy
+// Garante limpeza da instância de dano persistente vinculada.
 
-if (instance_exists(damage_inst))
-{
-    with (damage_inst) instance_destroy();
-}
+scr_hitbox_destroy_ref(damage_inst);
 
 if (instance_exists(owner))
 {

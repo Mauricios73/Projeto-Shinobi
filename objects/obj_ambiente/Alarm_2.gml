@@ -1,3 +1,6 @@
+var rn_amb = room_get_name(room);
+if (rn_amb == "rm_init" || rn_amb == "rm_menu") exit;
+
 if (vento_ativo) exit;
 
 var snd = sons_vento[irandom(array_length(sons_vento) - 1)];

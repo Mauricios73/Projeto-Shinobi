@@ -1,4 +1,5 @@
 draw_self();
+scr_combat_draw_debug_entity(id);
 
 //if (mostra_estado){
 //    draw_set_valign(fa_middle);

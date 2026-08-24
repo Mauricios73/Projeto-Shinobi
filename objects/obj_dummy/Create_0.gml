@@ -10,3 +10,10 @@ vida_max = vida_atual
 
 estado = "parado";
 hit_index = 0; // Para escolher qual sprite de hit usar
+
+recebe_dano = function(_valor, _origem_x, _skill_id = "") {
+    var applied = scr_combat_receive_damage(id, _valor, _origem_x, _skill_id);
+    velh = 0;
+    mid_velh = 0;
+    return applied;
+}

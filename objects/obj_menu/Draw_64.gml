@@ -1,5 +1,7 @@
 // Só trava pelo pause quando este menu estiver em modo PAUSE.
 // No menu principal (main) ele deve rodar normal.
+if (variable_global_exists("game_over") && global.game_over) exit;
+
 if (variable_global_exists("menu_mode")) {
     if (global.menu_mode == "pause" && !global.pause) exit;
 } else {
@@ -8,10 +10,79 @@ if (variable_global_exists("menu_mode")) {
 }
 
 var gwidth = global.view_width, gheight = global.view_height;
+var is_pause_menu = variable_global_exists("menu_mode") && global.menu_mode == "pause";
+
+if (is_pause_menu)
+{
+    var ds_pause = menu_pages[page];
+    var ds_pause_height = ds_grid_height(ds_pause);
+    var pause_gw = display_get_gui_width();
+    var pause_gh = display_get_gui_height();
+
+    var panel_w = min(620, pause_gw * 0.72);
+    var panel_h = min(330, pause_gh * 0.52);
+    var px = pause_gw * 0.5 - panel_w * 0.5;
+    var py = pause_gh * 0.5 - panel_h * 0.5;
+
+    if (variable_global_exists("pause_surface") && surface_exists(global.pause_surface))
+    {
+        draw_set_alpha(1);
+        draw_surface_stretched(global.pause_surface, 0, 0, pause_gw, pause_gh);
+    }
+
+    draw_set_alpha(0.54);
+    draw_set_color(c_black);
+    draw_rectangle(0, 0, pause_gw, pause_gh, false);
+
+    draw_set_alpha(0.84);
+    draw_set_color(make_color_rgb(10, 8, 8));
+    draw_rectangle(px, py, px + panel_w, py + panel_h, false);
+
+    draw_set_alpha(1);
+    draw_set_color(make_color_rgb(150, 20, 20));
+    draw_rectangle(px, py, px + panel_w, py + 4, false);
+    draw_rectangle(px, py + panel_h - 4, px + panel_w, py + panel_h, false);
+    draw_rectangle(px, py, px + 4, py + panel_h, false);
+    draw_rectangle(px + panel_w - 4, py, px + panel_w, py + panel_h, false);
+
+    var font_menu = asset_get_index("fnt_asian_ninja");
+    draw_set_font(font_menu != -1 ? font_menu : -1);
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+
+    draw_set_color(c_black);
+    draw_text(pause_gw * 0.5 + 2, py + 72, "PAUSE");
+    draw_set_color(make_color_rgb(185, 22, 22));
+    draw_text(pause_gw * 0.5, py + 70, "PAUSE");
+
+    var y_gap = 44;
+    var start_y_pause = py + 158;
+
+    for (var ip = 0; ip < ds_pause_height; ip++)
+    {
+        var txt = ds_pause[# 0, ip];
+        var col = (ip == menu_option[page]) ? c_yellow : c_white;
+        var xoff = (ip == menu_option[page]) ? -8 : 0;
+
+        draw_set_color(c_black);
+        draw_text(pause_gw * 0.5 + xoff + 2, start_y_pause + ip * y_gap + 2, txt);
+        draw_set_color(col);
+        draw_text(pause_gw * 0.5 + xoff, start_y_pause + ip * y_gap, txt);
+    }
+
+    draw_set_font(-1);
+    draw_set_halign(fa_left);
+    draw_set_valign(fa_top);
+    draw_set_alpha(1);
+    exit;
+}
 
 //Draw Pause Menu "Back"
-var c = c_black;
-draw_rectangle_color(0,0,gwidth, gheight, c,c,c,c, false);
+if (!is_pause_menu)
+{
+    var c = c_black;
+    draw_rectangle_color(0,0,gwidth, gheight, c,c,c,c, false);
+}
 
 //Draw elements on Left Side
 draw_set_valign(fa_middle);

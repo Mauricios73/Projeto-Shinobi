@@ -1,5 +1,12 @@
 persistent = true;
 
+var rn_amb = room_get_name(room);
+if (rn_amb == "rm_init" || rn_amb == "rm_menu")
+{
+    instance_destroy();
+    exit;
+}
+
 // Avoid duplicates
 if (instance_number(obj_ambiente) > 1) { instance_destroy(); exit; }
 

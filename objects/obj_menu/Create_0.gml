@@ -59,6 +59,52 @@ scr_start_game()
 
 scr_exit_game()
 
+fn_resume_game = function() {
+    scr_pause_close();
+};
+
+fn_restart_room = function() {
+    instance_activate_all();
+
+    if (instance_exists(obj_game_controller))
+    {
+        var gc = instance_find(obj_game_controller, 0);
+        with (gc) restart_current_room();
+    }
+    else
+    {
+        global.pause = false;
+        global.menu_mode = "game";
+        if (instance_exists(obj_menu)) with (obj_menu) instance_destroy();
+        if (instance_exists(obj_dano)) with (obj_dano) instance_destroy();
+        if (instance_exists(obj_hitbox)) with (obj_hitbox) instance_destroy();
+        if (instance_exists(obj_skill_fire_breath)) with (obj_skill_fire_breath) instance_destroy();
+        if (instance_exists(obj_ally)) with (obj_ally) instance_destroy();
+        if (instance_exists(obj_camera)) with (obj_camera) instance_destroy();
+        if (instance_exists(obj_player)) with (obj_player) instance_destroy();
+        room_restart();
+    }
+};
+
+fn_return_main_menu = function() {
+    global.pause = false;
+    global.menu_mode = "game";
+    global.vel_mult = 1;
+    instance_activate_all();
+
+    if (instance_exists(obj_menu)) with (obj_menu) instance_destroy();
+    if (instance_exists(obj_dano)) with (obj_dano) instance_destroy();
+    if (instance_exists(obj_hitbox)) with (obj_hitbox) instance_destroy();
+    if (instance_exists(obj_skill_fire_breath)) with (obj_skill_fire_breath) instance_destroy();
+    if (instance_exists(obj_ally)) with (obj_ally) instance_destroy();
+    if (instance_exists(obj_musica)) with (obj_musica) instance_destroy();
+    if (instance_exists(obj_ambiente)) with (obj_ambiente) instance_destroy();
+    if (instance_exists(obj_camera)) with (obj_camera) instance_destroy();
+    if (instance_exists(obj_player)) with (obj_player) instance_destroy();
+
+    room_goto(rm_menu);
+};
+
 scr_change_volume()
 
 scr_change_resolution()
@@ -76,11 +122,24 @@ fn_change_window_mode = function(mode) {
 // --------------------------
 // PAGES
 // --------------------------
-ds_menu_main = scr_create_menu_page(
-    ["PLAY",     menu_element_type.script_runner, fn_start_game],
-    ["SETTINGS", menu_element_type.page_transfer, menu_page.settings],
-    ["EXIT",     menu_element_type.script_runner, fn_exit_game]
-);
+var is_pause_menu = variable_global_exists("menu_mode") && global.menu_mode == "pause";
+
+if (is_pause_menu)
+{
+    ds_menu_main = scr_create_menu_page(
+        ["RESUME",    menu_element_type.script_runner, fn_resume_game],
+        ["RESTART",   menu_element_type.script_runner, fn_restart_room],
+        ["MAIN MENU", menu_element_type.script_runner, fn_return_main_menu]
+    );
+}
+else
+{
+    ds_menu_main = scr_create_menu_page(
+        ["PLAY",     menu_element_type.script_runner, fn_start_game],
+        ["SETTINGS", menu_element_type.page_transfer, menu_page.settings],
+        ["EXIT",     menu_element_type.script_runner, fn_exit_game]
+    );
+}
 
 ds_settings = scr_create_menu_page(
     ["AUDIO",      menu_element_type.page_transfer, menu_page.audio],

@@ -1,6 +1,11 @@
 // obj_inimigo_esqueleto - STEP EVENT
 var chao = place_meeting(x, y + 1, obj_block);
 
+if (estado == "idle") estado = "parado";
+if (estado == "patrulha" || estado == "perseguicao") estado = "movendo";
+if (estado == "dano") estado = "hit";
+if (estado == "morte") estado = "dead";
+
 //Aplicando GRAVIDADE
 if (!chao){
 		velv += GRAVIDADE * massa * global.vel_mult;

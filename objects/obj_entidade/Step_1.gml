@@ -1,4 +1,6 @@
 // obj_entidade - Begin Step
+scr_combat_update_hurt_invulnerability();
+
 // FIX: direção deve considerar impulso (mid_velh), não só velh.
 var _dir = velh + mid_velh;
 if (_dir != 0) xscale = sign(_dir);

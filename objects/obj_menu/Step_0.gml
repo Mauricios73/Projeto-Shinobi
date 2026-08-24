@@ -1,4 +1,10 @@
 /// obj_menu - Step (PATCH A: robust + debounce)
+if (variable_global_exists("game_over") && global.game_over)
+{
+    instance_destroy();
+    exit;
+}
+
 if (!variable_instance_exists(self, "inputting")) inputting = false;
 if (!variable_instance_exists(self, "menu_pages")) exit;
 if (!variable_instance_exists(self, "menu_option")) exit;

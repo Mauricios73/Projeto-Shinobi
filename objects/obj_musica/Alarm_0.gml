@@ -1,3 +1,6 @@
+var rn_music = room_get_name(room);
+if (rn_music == "rm_init" || rn_music == "rm_menu") exit;
+
 var nova_musica;
 
 show_debug_message("ALARME 0 EXECUTOU");

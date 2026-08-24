@@ -7,6 +7,7 @@ if (global.pause_lock_frames > 0) {
 
 // NÃO pausar no menu inicial / init
 if (room == rm_menu || room == rm_init) exit;
+if (variable_global_exists("game_over") && global.game_over) exit;
 
 if (keyboard_check_pressed(global.key_pause)) {
 

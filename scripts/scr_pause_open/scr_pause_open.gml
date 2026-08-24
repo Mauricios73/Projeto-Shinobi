@@ -4,6 +4,25 @@ function scr_pause_open() {
     global.pause = true;
     global.menu_mode = "pause";
 
+    if (variable_global_exists("pause_surface") && surface_exists(global.pause_surface))
+    {
+        surface_free(global.pause_surface);
+    }
+
+    global.pause_surface = -1;
+
+    if (surface_exists(application_surface))
+    {
+        var sw = surface_get_width(application_surface);
+        var sh = surface_get_height(application_surface);
+
+        global.pause_surface = surface_create(sw, sh);
+        surface_set_target(global.pause_surface);
+        draw_clear_alpha(c_black, 0);
+        draw_surface(application_surface, 0, 0);
+        surface_reset_target();
+    }
+
     if (!instance_exists(obj_menu)) {
         var lyr = layer_get_id("GUI");
         if (lyr == -1) lyr = layer_get_id("Instances");

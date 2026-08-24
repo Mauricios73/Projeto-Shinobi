@@ -8,26 +8,15 @@ global.game_over = game_over;
 
 if (game_over)
 {
+    if (!variable_instance_exists(id, "game_over_alpha")) game_over_alpha = 0;
+    game_over_alpha = min(game_over_alpha + 0.04, 1);
     global.vel_mult = 0.15;
+    global.pause = false;
+    global.menu_mode = "game_over";
 
-    // ENTER reinicia a room atual
     if (keyboard_check_pressed(vk_enter))
     {
-        game_over = false;
-        global.game_over = false;
-        global.vel_mult = 1;
-        room_restart();
-        exit;
-    }
-
-    // ESC volta para menu se existir
-    if (keyboard_check_pressed(vk_escape))
-    {
-        game_over = false;
-        global.game_over = false;
-        global.vel_mult = 1;
-        if (room_exists(rm_menu)) room_goto(rm_menu);
-        else room_restart();
+        restart_current_room();
         exit;
     }
 
@@ -35,5 +24,6 @@ if (game_over)
 }
 else
 {
+    game_over_alpha = 0;
     global.vel_mult = 1;
 }

@@ -1,3 +1,6 @@
+var rn_amb = room_get_name(room);
+if (rn_amb == "rm_init" || rn_amb == "rm_menu") exit;
+
 var snd = sons_birds[irandom(array_length(sons_birds) - 1)];
 bird_voice = audio_play_sound(snd, 1, false);
 

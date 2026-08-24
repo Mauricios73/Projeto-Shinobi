@@ -1,3 +1,6 @@
+var rn_amb = room_get_name(room);
+if (rn_amb == "rm_init" || rn_amb == "rm_menu") exit;
+
 var snd = sons_crows[irandom(array_length(sons_crows) - 1)];
 crow_voice = audio_play_sound(snd, 1, false);
 

@@ -16,7 +16,8 @@ function scr_ataca_entidade(_dist, _xscale) {
     if (_alvo_final != noone && distance_to_object(_alvo_final) <= _dist) {
         var _dir_alvo = sign(_alvo_final.x - x);
         if (_dir_alvo == _xscale || _dir_alvo == 0) {
-            estado = "ataque";
+            if (variable_instance_exists(id, "enemy_set_state")) enemy_set_state("ataque");
+            else estado = "ataque";
         }
     }
 }
