@@ -1,8 +1,18 @@
 # Projeto Shinobi 🗡️
 
+<p align="center">
+  <img src="https://img.shields.io/github/repo-size/Mauricios73/Projeto-Shinobi?style=for-the-badge" alt="Repo Size" />
+  <img src="https://img.shields.io/github/last-commit/Mauricios73/Projeto-Shinobi?style=for-the-badge" alt="Last Commit" />
+  <img src="https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=for-the-badge" alt="Status" />
+  <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License" />
+</p>
+
+<p align="center">
 **Projeto Shinobi** é um jogo de ação e plataforma desenvolvido em **GameMaker Studio 2**, criado como um projeto de estudo e desenvolvimento de sistemas de gameplay, combate, habilidades e arquitetura de objetos.
 
-> Projeto em desenvolvimento.
+
+
+</p>
 
 ## 🎮 Sobre o projeto
 
