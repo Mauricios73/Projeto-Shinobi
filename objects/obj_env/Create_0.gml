@@ -1,17 +1,80 @@
 /// obj_env - Create
 
-// -------------------- CONFIG BÁSICA & TESTES --------------------
-is_testing = false; // TRUE: Tempo voa para testes | FALSE: Tempo realista de jogo
+// -------------------- TIME SYSTEM --------------------
+// Um dia completo no jogo dura 12 minutos reais.
+time_day_seconds = 12 * 60;
+time_game_hours = 24;
+time_scale = 1.0;
+time_paused = false;
+time_debug = true;
+time_debug_overlay = true;
+time_debug_step_hours = 1;
 
-// Definição das velocidades (Ciclo completo = 24 horas no jogo)
-time_speed_normal = 1 / (60 * 60 * 15); // Lento: Um ciclo dura cerca de 15 minutos reais
-time_speed_test   = 4 / (60 * 120);     // Rápido: O tempo voa para testar transições
+// Estado inicial: 06:00 (amanhecer).
+time_seconds = 6 * 60 * 60;
+time_day = 1;
+time_period = "AMANHECER";
+time_prev_period = time_period;
+time_prev_hour = 6;
+time_delta = 0;
 
-time_speed = is_testing ? time_speed_test : time_speed_normal;
-t = 0.15; // 0..1 (começa de manhã)
+// Períodos do dia. Os limites são em horas do relógio do jogo.
+time_dawn_start = 5.0;
+time_morning_start = 7.0;
+time_afternoon_start = 13.0;
+time_sunset_start = 17.0;
+time_night_start = 19.0;
+time_midnight = 0.0;
+time_dawn_end = 7.0;
 
-// ---- CONFIGURAÇÃO DA LUA ----
-moon_scale = 0.45; // Reduz o tamanho da lua (0.5 = metade do tamanho original, altere como quiser)
+// API simples para outros sistemas consultarem o ambiente.
+get_time_hours = function() { return time_seconds / 3600; };
+get_time_minutes = function() { return (time_seconds / 60) mod 60; };
+get_time_seconds = function() { return time_seconds mod 60; };
+get_time_day = function() { return time_day; };
+get_time_period = function() { return time_period; };
+
+get_time_period_name = function(_p)
+{
+    switch (_p)
+    {
+        case "MADRUGADA": return "Madrugada";
+        case "AMANHECER": return "Amanhecer";
+        case "MANHÃ":     return "Manhã";
+        case "TARDE":     return "Tarde";
+        case "PÔR DO SOL":return "Pôr do sol";
+        case "NOITE":     return "Noite";
+    }
+    return string(_p);
+};
+
+get_period_from_hours = function(_h)
+{
+    if (_h >= 0 && _h < time_dawn_start) return "MADRUGADA";
+    if (_h >= time_dawn_start && _h < time_morning_start) return "AMANHECER";
+    if (_h >= time_morning_start && _h < time_afternoon_start) return "MANHÃ";
+    if (_h >= time_afternoon_start && _h < time_sunset_start) return "TARDE";
+    if (_h >= time_sunset_start && _h < time_night_start) return "PÔR DO SOL";
+    return "NOITE";
+};
+
+// Eventos globais preparados para Weather, Audio, Visual, Gameplay e IA.
+if (!variable_global_exists("environment")) global.environment = {};
+global.environment.time = {};
+global.environment.time.day = time_day;
+global.environment.time.seconds = time_seconds;
+global.environment.time.hours = 6;
+global.environment.time.minutes = 0;
+global.environment.time.period = time_period;
+global.environment.time.scale = time_scale;
+global.environment.time.paused = time_paused;
+global.environment.time.event = "INIT";
+
+// -------------------- CONFIGURAÇÕES DE TESTE --------------------
+time_test_speed = 12.0;
+
+// -------------------- CONFIGURAÇÃO DA LUA --------------------
+moon_scale = 0.45;
 
 // Camera vars (instância, para o Draw enxergar)
 camx = 0;
@@ -59,21 +122,21 @@ sprCloudHighSun   = spr_clouds_high_sunset_1;
 sprCloudLowB = spr_clouds_high_day_2;
 
 // -------------------- CONFIG VISUAL (AJUSTÁVEL) --------------------
-ground_cut_ratio = 0.52; 
-clouds_high_ratio = 0.08; 
-horizon_offset_px = 120;  
+ground_cut_ratio = 0.52;
+clouds_high_ratio = 0.08;
+horizon_offset_px = 120;
 
-sprLandscapeFar = spr_landscape_far2; 
-land_far_px = 0.02;  
-land_far_alpha = 0.85;  
-land_far_y_ratio = 0.22;  
+sprLandscapeFar = spr_landscape_far2;
+land_far_px = 0.02;
+land_far_alpha = 0.85;
+land_far_y_ratio = 0.22;
 
-far_haze_alpha = 0.20;  
-far_haze_height_ratio = 0.55;  
+far_haze_alpha = 0.20;
+far_haze_height_ratio = 0.55;
 
-sprLandscapeFar2 = spr_landscape_far2; 
-land2_px = 0.01;  
-land2_alpha = 0.70;  
-land2_y_ratio = 0.20;  
-land2_tint = true;  
+sprLandscapeFar2 = spr_landscape_far2;
+land2_px = 0.01;
+land2_alpha = 0.70;
+land2_y_ratio = 0.20;
+land2_tint = true;
 land2_offx = 0;
