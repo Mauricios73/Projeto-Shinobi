@@ -362,7 +362,7 @@ _apply_state_visuals_enter = function(_ps)
         break;
 
         case PST_DEAD:
-            sprite_index = spr_player_death1;
+            sprite_index = spr_player_dead;
             image_index = 0;
         break;
     }
