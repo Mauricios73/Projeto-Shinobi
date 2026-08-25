@@ -7,7 +7,7 @@ var vy  = camera_get_view_y(cam);
 if (w <= 1) w = camera_get_view_width(view_camera[0]);
 if (h <= 1) h = camera_get_view_height(view_camera[0]);
 
-// ---------- INIT (só cria arrays uma vez / quando muda a view) ----------
+// ---------- INIT ----------
 if (!init || w != gw || h != gh)
 {
     init = true;
@@ -32,21 +32,38 @@ if (!init || w != gw || h != gh)
     }
 }
 
-// ---------- INTENSIDADE (roda todo step) ----------
-var pm = (instance_exists(obj_weather_manager) ? obj_weather_manager.precip_mode : 0);
+// ---------- INTENSIDADE REAL DO WEATHER SYSTEM ----------
+var pm = 0;
+var wi = 0;
+var transitioning = false;
 
-// 3 = fraca, 2 = forte
-var target = (pm == 3) ? 120 : 320;
-rain_active = clamp(round(lerp(rain_active, target, 0.08)), 0, rain_max);
+if (instance_exists(obj_weather_manager))
+{
+    pm = obj_weather_manager.precip_mode;
+    wi = clamp(obj_weather_manager.weather_intensity, 0, 1);
+    transitioning = obj_weather_manager.weather_transitioning;
+}
+
+// A quantidade visual acompanha a intensidade contínua.
+// CLEAR/CLOUDY = 0, RAIN = ~240, STORM = ~420.
+var target = 0;
+if (pm == 3) target = round(lerp(0, 240, clamp(wi / 0.65, 0, 1)));
+else if (pm == 2) target = round(lerp(240, 420, clamp((wi - 0.65) / 0.35, 0, 1)));
+else if (pm == 1) target = 0;
+
+// Em uma transicao para CLEAR, permite desaparecer suavemente.
+// Quando o Weather System conclui CLEAR, o manager destrói esta instancia.
+rain_active = clamp(round(lerp(rain_active, target, 0.12)), 0, rain_max);
 
 // vento
 var wind = wind_base + sin(current_time * wind_speed) * wind_amp;
 
-// chances de ripple dependendo da intensidade
-var ripple_chance = (pm == 3) ? 28 : 45;
-var mid_chance    = (pm == 3) ? 50 : 70;
+// ripple acompanha a intensidade atual da chuva.
+var rain_strength = clamp(wi, 0, 1);
+var ripple_chance = clamp(round(18 + rain_strength * 42), 0, 60);
+var mid_chance = clamp(round(35 + rain_strength * 45), 0, 85);
 
-// ---------- MOVE (só as gotas ativas) ----------
+// ---------- MOVE ----------
 for (var i = 0; i < rain_active; i++)
 {
     var wx = wind + sin((current_time + ph[i]) * 0.002) * 0.6;
@@ -54,7 +71,7 @@ for (var i = 0; i < rain_active; i++)
     rx[i] += wx;
     ry[i] += rv[i];
 
-    // hit na água
+    // hit na agua
     if (variable_global_exists("lake_gui_top") && ry[i] >= global.lake_gui_top)
     {
         if (irandom(99) < ripple_chance && instance_exists(obj_lake_v3))
@@ -71,13 +88,11 @@ for (var i = 0; i < rain_active; i++)
             }
         }
 
-        // respawn
         ry[i] = -20;
         rx[i] = random(gw);
         continue;
     }
 
-    // respawn fora da tela
     if (ry[i] > gh + 20)
     {
         ry[i] = -20;
@@ -85,5 +100,8 @@ for (var i = 0; i < rain_active; i++)
     }
 
     if (rx[i] > gw + 20) rx[i] = -20;
-    if (rx[i] < -20)     rx[i] = gw + 20;
+    if (rx[i] < -20) rx[i] = gw + 20;
 }
+
+// Segurança: fora do clima de chuva, não deixa partículas residuais.
+if (!transitioning && pm == 0 && rain_active <= 1) instance_destroy();
