@@ -8,7 +8,7 @@ var dt = 1 / room_speed;
 // ====================================================
 // DEBUG
 // F6 fog | F7 chuva | F8 chuva fraca | F9 neve | F10 limpar
-// F11 limpa clima automatico | F12 avanca estado do clima
+// F11 clima automatico | F12 avanca estado
 // ====================================================
 if (debug_keys)
 {
@@ -21,9 +21,11 @@ if (debug_keys)
     if (keyboard_check_pressed(vk_f12))
     {
         weather_auto = false;
-        var next_debug = (weather_current == WEATHER_CLEAR) ? WEATHER_CLOUDY :
-                         (weather_current == WEATHER_CLOUDY) ? WEATHER_RAIN :
-                         (weather_current == WEATHER_RAIN) ? WEATHER_STORM : WEATHER_CLEAR;
+        var next_debug = WEATHER_CLEAR;
+        if (weather_current == WEATHER_CLEAR) next_debug = WEATHER_CLOUDY;
+        else if (weather_current == WEATHER_CLOUDY) next_debug = WEATHER_RAIN;
+        else if (weather_current == WEATHER_RAIN) next_debug = WEATHER_STORM;
+        else next_debug = WEATHER_CLEAR;
         weather_set_target(next_debug, "DEBUG_NEXT");
     }
 }
@@ -45,7 +47,7 @@ if (is_menu)
 }
 
 // ====================================================
-// TIME / WEATHER TRANSITION
+// WEATHER TRANSITION
 // ====================================================
 if (weather_auto)
 {
@@ -73,20 +75,27 @@ else
 }
 
 // ====================================================
-// CONVERTE O ESTADO NOVO PARA O LEGADO
-// 0 nada, 1 neve, 2 chuva forte, 3 chuva fraca
+// CONVERSAO PARA O SISTEMA DE PRECIPITACAO EXISTENTE
+// 0 nada | 1 neve | 2 chuva forte | 3 chuva fraca
 // ====================================================
 if (weather_current == WEATHER_SNOW) precip_mode = 1;
 else if (weather_current == WEATHER_STORM) precip_mode = 2;
 else if (weather_current == WEATHER_RAIN) precip_mode = 3;
 else precip_mode = 0;
 
-// Durante transicao, qualquer intensidade acima de chuva leve ativa chuva.
 if (weather_transitioning)
 {
-    if (weather_target == WEATHER_STORM) precip_mode = (weather_intensity > 0.40) ? 2 : 3;
+    if (weather_target == WEATHER_STORM)
+    {
+        if (weather_intensity > 0.40) precip_mode = 2;
+        else precip_mode = 3;
+    }
     else if (weather_target == WEATHER_RAIN) precip_mode = 3;
-    else if (weather_current == WEATHER_STORM || weather_current == WEATHER_RAIN) precip_mode = (weather_intensity > 0.78) ? 2 : 3;
+    else if (weather_current == WEATHER_STORM || weather_current == WEATHER_RAIN)
+    {
+        if (weather_intensity > 0.78) precip_mode = 2;
+        else precip_mode = 3;
+    }
     else if (weather_target == WEATHER_SNOW) precip_mode = 1;
 }
 
@@ -127,7 +136,7 @@ if (weather_current == WEATHER_SNOW) global.snow_amount = clamp(global.snow_amou
 else global.snow_amount = clamp(global.snow_amount - snow_melt_speed * dt, 0, 1);
 
 // ====================================================
-// AUDIO DA CHUVA — intensidade acompanha o clima
+// AUDIO DA CHUVA
 // ====================================================
 rain_wobble_t -= dt;
 if (rain_wobble_t <= 0)
@@ -138,8 +147,13 @@ if (rain_wobble_t <= 0)
 rain_wobble = lerp(rain_wobble, rain_wobble_goal, 0.02);
 
 var rain_active = (precip_mode == 2 || precip_mode == 3);
-var target_forest = rain_active ? lerp(0, 0.65, clamp(weather_intensity, 0, 1)) : 0;
-var target_heavy = rain_active ? lerp(0, 0.45, clamp((weather_intensity - 0.45) / 0.55, 0, 1)) : 0;
+var target_forest = 0;
+var target_heavy = 0;
+if (rain_active)
+{
+    target_forest = lerp(0, 0.65, clamp(weather_intensity, 0, 1));
+    target_heavy = lerp(0, 0.45, clamp((weather_intensity - 0.45) / 0.55, 0, 1));
+}
 target_forest *= rain_wobble;
 target_heavy *= rain_wobble;
 
