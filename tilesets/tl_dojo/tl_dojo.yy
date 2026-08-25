@@ -8,18 +8,18 @@
     "TileSerialiseData":[],
   },
   "name":"tl_dojo",
-  "out_columns":139,
+  "out_columns":55,
   "out_tilehborder":2,
   "out_tilevborder":2,
   "parent":{
-    "name":"Tile",
-    "path":"folders/Tile.yy",
+    "name":"Dojo",
+    "path":"folders/Tile/Dojo.yy",
   },
   "resourceType":"GMTileSet",
   "resourceVersion":"2.0",
   "spriteId":{
-    "name":"Basic_Tiles_Dojo",
-    "path":"sprites/Basic_Tiles_Dojo/Basic_Tiles_Dojo.yy",
+    "name":"Prefabs",
+    "path":"sprites/Prefabs/Prefabs.yy",
   },
   "spriteNoExport":false,
   "textureGroupId":{
@@ -34,5 +34,5 @@
   "tileWidth":16,
   "tilexoff":0,
   "tileyoff":0,
-  "tile_count":19264,
+  "tile_count":3015,
 }

@@ -1,14 +1,14 @@
 {
   "$GMTileSet":"v1",
-  "%Name":"tl_mainlev_build",
+  "%Name":"tl_chao",
   "autoTileSets":[],
   "macroPageTiles":{
     "SerialiseHeight":0,
     "SerialiseWidth":0,
     "TileSerialiseData":[],
   },
-  "name":"tl_mainlev_build",
-  "out_columns":64,
+  "name":"tl_chao",
+  "out_columns":16,
   "out_tilehborder":2,
   "out_tilevborder":2,
   "parent":{
@@ -18,8 +18,8 @@
   "resourceType":"GMTileSet",
   "resourceVersion":"2.0",
   "spriteId":{
-    "name":"mainlev_build",
-    "path":"sprites/mainlev_build/mainlev_build.yy",
+    "name":"TileChao",
+    "path":"sprites/TileChao/TileChao.yy",
   },
   "spriteNoExport":false,
   "textureGroupId":{
@@ -34,5 +34,5 @@
   "tileWidth":16,
   "tilexoff":0,
   "tileyoff":0,
-  "tile_count":4096,
+  "tile_count":256,
 }

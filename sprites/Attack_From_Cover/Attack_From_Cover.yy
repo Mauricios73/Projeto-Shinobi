@@ -29,8 +29,8 @@
   "nineSlice":null,
   "origin":0,
   "parent":{
-    "name":"Poderes",
-    "path":"folders/Sprites/PrayerV2/Poderes.yy",
+    "name":"Add",
+    "path":"folders/Sprites/Add.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

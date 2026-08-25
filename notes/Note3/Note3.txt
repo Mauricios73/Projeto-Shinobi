@@ -18,7 +18,7 @@ Tomar Dano / Hit (PST_HIT)
 
 Adicionar um menu de inventario para itens coletaveis
 
-Death / Morte (PST_DEAD)
+Death / Morte (PST_DEAD) - OK
 
 Habilidades Especiais:
 
@@ -61,3 +61,5 @@ Diálogos: Talk neutral, Talk angry, Talk happy, Nod (Yes), Shake head (no).
 Ações Casuais: Facepalm, Crossed arms, Head scratching, Hands on hips, Tossing object, Carrying Object.
 
 (Nota: Todos estes farão parte de um único estado chamado PST_CINEMATIC, mudando apenas o sprite!)
+
+FAZER CHOVER SEMPRE QUE TOCAR A MUSICA SENYA ITACHI

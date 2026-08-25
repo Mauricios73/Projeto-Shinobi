@@ -1,14 +1,14 @@
 {
   "$GMTileSet":"v1",
-  "%Name":"tl_dojo_prefabs",
+  "%Name":"tl_obj",
   "autoTileSets":[],
   "macroPageTiles":{
     "SerialiseHeight":0,
     "SerialiseWidth":0,
     "TileSerialiseData":[],
   },
-  "name":"tl_dojo_prefabs",
-  "out_columns":55,
+  "name":"tl_obj",
+  "out_columns":30,
   "out_tilehborder":2,
   "out_tilevborder":2,
   "parent":{
@@ -18,8 +18,8 @@
   "resourceType":"GMTileSet",
   "resourceVersion":"2.0",
   "spriteId":{
-    "name":"Prefabs",
-    "path":"sprites/Prefabs/Prefabs.yy",
+    "name":"TileObj",
+    "path":"sprites/TileObj/TileObj.yy",
   },
   "spriteNoExport":false,
   "textureGroupId":{
@@ -34,5 +34,5 @@
   "tileWidth":16,
   "tilexoff":0,
   "tileyoff":0,
-  "tile_count":3015,
+  "tile_count":884,
 }
