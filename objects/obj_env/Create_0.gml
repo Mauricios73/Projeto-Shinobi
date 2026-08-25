@@ -40,10 +40,10 @@ get_time_period_name = function(_p)
     {
         case "MADRUGADA": return "Madrugada";
         case "AMANHECER": return "Amanhecer";
-        case "MANHÃ":     return "Manhã";
-        case "TARDE":     return "Tarde";
-        case "PÔR DO SOL":return "Pôr do sol";
-        case "NOITE":     return "Noite";
+        case "MANHÃ": return "Manhã";
+        case "TARDE": return "Tarde";
+        case "PÔR DO SOL": return "Pôr do sol";
+        case "NOITE": return "Noite";
     }
     return string(_p);
 };
@@ -58,7 +58,32 @@ get_period_from_hours = function(_h)
     return "NOITE";
 };
 
-// Eventos globais preparados para Weather, Audio, Visual, Gameplay e IA.
+// -------------------- LUA / EVENTOS NOTURNOS --------------------
+// A lua é sorteada uma vez por noite e não troca de cor durante o percurso.
+// Normal: branca ou azul, 50/50.
+// Após 10 noites normais, a próxima noite tem 20% de chance de lua vermelha.
+moon_normal_nights = 0;
+moon_type_for_night = 0; // 0 branca, 1 azul, 2 vermelha
+moon_night_selected = false;
+moon_was_red = false;
+
+select_moon_for_night = function()
+{
+    moon_night_selected = true;
+    moon_was_red = false;
+
+    if (moon_normal_nights >= 10 && irandom(99) < 20)
+    {
+        moon_type_for_night = 2;
+        moon_was_red = true;
+    }
+    else
+    {
+        moon_type_for_night = (irandom(1) == 0) ? 0 : 1;
+    }
+};
+
+// -------------------- EVENTOS GLOBAIS --------------------
 if (!variable_global_exists("environment")) global.environment = {};
 global.environment.time = {};
 global.environment.time.day = time_day;
@@ -69,6 +94,8 @@ global.environment.time.period = time_period;
 global.environment.time.scale = time_scale;
 global.environment.time.paused = time_paused;
 global.environment.time.event = "INIT";
+global.environment.time.moon_type = moon_type_for_night;
+global.environment.time.moon_normal_nights = moon_normal_nights;
 
 // -------------------- CONFIGURAÇÕES DE TESTE --------------------
 time_test_speed = 12.0;
@@ -96,44 +123,36 @@ moon_mode = 0;
 // -------------------- PALETAS DE LUZ (dia/noite) --------------------
 night_factor = 0;
 
-col_day   = make_color_rgb(255,255,255);
-col_dusk  = make_color_rgb(200,180,255);
+col_day = make_color_rgb(255,255,255);
+col_dusk = make_color_rgb(200,180,255);
 col_night = make_color_rgb(140,160,220);
-col_deep  = make_color_rgb(110,120,190);
-
+col_deep = make_color_rgb(110,120,190);
 ambient_col = col_day;
 
 // -------------------- ASSETS --------------------
-sprSkyDay    = spr_sky_day;
+sprSkyDay = spr_sky_day;
 sprSkySunset = spr_sky_sunset;
-sprSkyDusk   = spr_sky_dusk;
-sprSkyNight  = spr_sky_night;
-
+sprSkyDusk = spr_sky_dusk;
+sprSkyNight = spr_sky_night;
 sprStarsA = spr_stars_sparse;
 sprStarsB = spr_stars_dense;
-
 sprMoonWhite = spr_moon_white;
-sprMoonBlue  = spr_moon_blue;
-sprMoonRed   = spr_moon_red;
-
-sprCloudHighDay   = spr_clouds_high_day_1;
-sprCloudHighSun   = spr_clouds_high_sunset_1;
-
+sprMoonBlue = spr_moon_blue;
+sprMoonRed = spr_moon_red;
+sprCloudHighDay = spr_clouds_high_day_1;
+sprCloudHighSun = spr_clouds_high_sunset_1;
 sprCloudLowB = spr_clouds_high_day_2;
 
 // -------------------- CONFIG VISUAL (AJUSTÁVEL) --------------------
 ground_cut_ratio = 0.52;
 clouds_high_ratio = 0.08;
 horizon_offset_px = 120;
-
 sprLandscapeFar = spr_landscape_far2;
 land_far_px = 0.02;
 land_far_alpha = 0.85;
 land_far_y_ratio = 0.22;
-
 far_haze_alpha = 0.20;
 far_haze_height_ratio = 0.55;
-
 sprLandscapeFar2 = spr_landscape_far2;
 land2_px = 0.01;
 land2_alpha = 0.70;
