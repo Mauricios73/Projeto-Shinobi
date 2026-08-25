@@ -91,100 +91,80 @@ function draw_parallax_single_center(_spr, _px, _x_center_screen, _y_screen, _al
 // 4) SELEÇÃO DO CÉU
 // ----------------------------------------------------
 var skyA, skyB, skyMix;
-var T_SUNSET = 0.55;
-var T_DUSK   = 0.70;
-var T_NIGHT  = 0.82;
-var T_DAWN   = 0.92;
-var T_WRAP   = 1.00;
+var H_SUNSET = 17.0;
+var H_DUSK   = 18.5;
+var H_NIGHT  = 20.0;
+var H_DAWN   = 5.0;
+var H_MORNING = 7.0;
 
-if (t < T_SUNSET) {
+if (global.environment.time.hours < H_SUNSET && global.environment.time.hours >= H_MORNING) {
     skyA = sprSkyDay; skyB = sprSkyDay; skyMix = 0;
 }
-else if (t < T_DUSK) {
-    skyA = sprSkyDay; skyB = sprSkySunset; skyMix = smooth01((t - T_SUNSET) / (T_DUSK - T_SUNSET));
+else if (global.environment.time.hours >= H_SUNSET && global.environment.time.hours < H_DUSK) {
+    skyA = sprSkyDay; skyB = sprSkySunset; skyMix = smooth01((global.environment.time.hours - H_SUNSET) / (H_DUSK - H_SUNSET));
 }
-else if (t < T_NIGHT) {
-    skyA = sprSkySunset; skyB = sprSkyDusk; skyMix = smooth01((t - T_DUSK) / (T_NIGHT - T_DUSK));
+else if (global.environment.time.hours >= H_DUSK && global.environment.time.hours < H_NIGHT) {
+    skyA = sprSkySunset; skyB = sprSkyDusk; skyMix = smooth01((global.environment.time.hours - H_DUSK) / (H_NIGHT - H_DUSK));
 }
-else if (t < T_DAWN) {
-    skyA = sprSkyDusk; skyB = sprSkyNight; skyMix = smooth01((t - T_NIGHT) / (T_DAWN - T_NIGHT));
+else if (global.environment.time.hours >= H_NIGHT || global.environment.time.hours < H_DAWN) {
+    skyA = sprSkyNight; skyB = sprSkyNight; skyMix = 0;
 }
 else {
-    skyA = sprSkyNight; skyB = sprSkyDay; skyMix = smooth01((t - T_DAWN) / (T_WRAP - T_DAWN));
+    skyA = sprSkyNight; skyB = sprSkyDay; skyMix = smooth01((global.environment.time.hours - H_DAWN) / (H_MORNING - H_DAWN));
 }
-
 
 // ----------------------------------------------------
 // 5) DRAWS
 // ----------------------------------------------------
-
-// DRAW 1 — Céu
 draw_sky_fullscreen(skyA, 1.0);
 if (skyMix > 0) draw_sky_fullscreen(skyB, skyMix);
 
-// DRAW 1.5 — Paisagem distante centralizada
 var y_land = camh * land_far_y_ratio;
 var x_center = camw * 0.5;
 draw_parallax_single_center(sprLandscapeFar, land_far_px, x_center, y_land, land_far_alpha, true);
 
-// DRAW 2 — Estrelas
 var useStars = (night_factor > 0.65) ? sprStarsB : sprStarsA;
 draw_tiled(useStars, 0.03, 0.00, stars_alpha);
 
 // ====================================================
-// DRAW 3 — LUA COM TRAJETÓRIA REAL EM ARCO E ESCALA
+// DRAW 3 — LUA
 // ====================================================
 var moonSpr = sprMoonWhite;
 if (moon_mode == 1) moonSpr = sprMoonBlue;
 if (moon_mode == 2) moonSpr = sprMoonRed;
 
-if (sprite_exists(moonSpr) && moon_alpha > 0) 
+if (sprite_exists(moonSpr) && moon_alpha > 0)
 {
-    // ------------------------------------------------===
-    // ⚙️ CONFIGURAÇÃO DE POSIÇÃO DA LUA (AJUSTE AQUI!)
-    // ------------------------------------------------===
-    // Onde ela inicia na tela (0.02 = bem colada na borda esquerda / valores negativos fazem ela surgir de fora da tela)
-    var moon_start_x_pct = -0.5; 
-    
-    // Onde ela termina na tela antes de sumir (0.82 = vai até 82% da largura, impedindo de "vazar" da tela)
-    var moon_end_x_pct   = 0.85;  
-    
-    // CORREÇÃO DO TEMPO: A mecânica de movimento agora começa exatamente em 0.72 (quando ela ganha opacidade)
-    var start_moon_t = 0.72;
-    var end_moon_t   = 0.96;
-    
-    var moon_progress = clamp((t - start_moon_t) / (end_moon_t - start_moon_t), 0, 1);
-    
-    // Percurso Horizontal usando os novos limites configurados acima
+    var moon_start_x_pct = -0.5;
+    var moon_end_x_pct   = 0.85;
+    var start_moon_h = 18.5;
+    var end_moon_h   = 5.5;
+    var moon_progress;
+
+    if (global.environment.time.hours >= start_moon_h)
+        moon_progress = (global.environment.time.hours - start_moon_h) / (24 - start_moon_h + end_moon_h);
+    else
+        moon_progress = (global.environment.time.hours + (24 - start_moon_h)) / (24 - start_moon_h + end_moon_h);
+
+    moon_progress = clamp(moon_progress, 0, 1);
     var moon_screen_x = lerp(camw * moon_start_x_pct, camw * moon_end_x_pct, moon_progress);
-    
-    // Percurso Vertical (Arco)
-    // Se achar que ela sobe demais ou de menos, altere o multiplicador do max_arc_height
-    var max_arc_height = camh * 0.75; 
+    var max_arc_height = camh * 0.75;
     var moon_screen_y  = (camh * 0.55) - sin(moon_progress * pi) * max_arc_height;
-    
-    // Aplica o fator de parallax de distância (0.05) para se mover com a câmera
     var sx = camx + moon_screen_x - (camx * 0.05);
-    var sy = camy + moon_screen_y; 
-    
+    var sy = camy + moon_screen_y;
+
     var oa = draw_get_alpha();
     draw_set_alpha(moon_alpha);
-    
-    // Centraliza a origem do desenho para que a rotação/escala fiquem perfeitas
     var orig_x = sprite_get_width(moonSpr) * 0.5;
     var orig_y = sprite_get_height(moonSpr) * 0.5;
-    
-    // Desenha com a escala reduzida configurada no Create
     draw_sprite_ext(moonSpr, 0, sx + orig_x, sy + orig_y, moon_scale, moon_scale, 0, c_white, moon_alpha);
-    
     draw_set_alpha(oa);
 }
 
 // DRAW 4 — Nuvens altas
 clouds_offx += 0.15;
 var cloudsHigh = sprCloudHighDay;
-if (t >= 0.45 && t < 0.70) cloudsHigh = sprCloudHighSun;
-
+if (global.environment.time.hours >= 16.0 && global.environment.time.hours < 19.0) cloudsHigh = sprCloudHighSun;
 var y_high = camh * clouds_high_ratio;
 draw_band(cloudsHigh, 0.10, y_high, clouds_offx, 0.75, false);
 
@@ -193,12 +173,40 @@ clouds_low_offx += 0.05;
 var y_low = ground_cut_screen - horizon_offset_px;
 y_low = clamp(y_low, camh * 0.15, ground_cut_screen - 16);
 
-// DRAW 6 — Overlay noite (escurecimento)
+// DRAW 6 — Overlay noite
 if (night_factor > 0) {
     var oa = draw_get_alpha();
     draw_set_alpha(0.25 * night_factor);
     draw_set_color(c_black);
     draw_rectangle(camx, camy, camx + camw, camy + camh, false);
     draw_set_alpha(oa);
+    draw_set_color(c_white);
+}
+
+// ====================================================
+// DEBUG GUI — F5 alterna. Não altera gameplay.
+// F1 pausa | F2 +1h | F3 -1h | F4 x1/x12
+// ====================================================
+if (time_debug && time_debug_overlay)
+{
+    var gh = display_get_gui_height();
+    var gw = display_get_gui_width();
+    var hh = floor(global.environment.time.hours);
+    var mm = global.environment.time.minutes;
+    var ss = global.environment.time.seconds_display;
+    var clock_text = string_format(hh, 2, 0) + ":" + string_format(mm, 2, 0) + ":" + string_format(ss, 2, 0);
+    var status_text = time_paused ? "PAUSADO" : "RODANDO";
+    var debug_text = "ENV DEBUG  | Dia " + string(time_day) + " | " + clock_text + " | " + time_period + " | " + status_text + " | x" + string(time_scale);
+
+    draw_set_alpha(0.86);
+    draw_set_color(c_black);
+    draw_rectangle(8, 8, min(gw - 8, 610), 43, false);
+    draw_set_alpha(1);
+    draw_set_color(c_white);
+    draw_set_halign(fa_left);
+    draw_set_valign(fa_top);
+    draw_set_font(-1);
+    draw_text(16, 15, debug_text);
+    draw_text(16, 29, "F1 pausa | F2 +1h | F3 -1h | F4 velocidade | F5 debug");
     draw_set_color(c_white);
 }
