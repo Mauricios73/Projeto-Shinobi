@@ -1,78 +1,75 @@
-//obj_weather_menager - create
+// obj_weather_manager - Create
 
-	if (instance_exists(obj_fog))
-        show_debug_message("FOG DEPTH=" + string(obj_fog.depth));
-
-
-
-// evita duplicar
+if (instance_exists(obj_fog)) show_debug_message("FOG DEPTH=" + string(obj_fog.depth));
 if (instance_number(obj_weather_manager) > 1) { instance_destroy(); exit; }
 persistent = true;
 
-// ====== CONFIG ROOMS ======
-// Coloque aqui o nome EXATO da sua room de menu:
-menu_rooms = ["rm_init", "rm_menu"]; // TROQUE para o nome real do seu menu
-
-// Rooms internas onde NÃO pode ter chuva/neve:
-indoor_rooms = ["Room2"];     // Dojo (interior)
-
-// Fog pode aparecer em rooms internas?
+menu_rooms = ["rm_init", "rm_menu"];
+indoor_rooms = ["Room2"];
 fog_in_indoor = true;
 
-// ====== TEMPOS (segundos) ======
+// ====================================================
+// WEATHER SYSTEM
+// CLEAR -> CLOUDY -> RAIN -> STORM
+// A transicao usa current/target + intensidade contínua.
+// ====================================================
+WEATHER_CLEAR = 0;
+WEATHER_CLOUDY = 1;
+WEATHER_RAIN = 2;
+WEATHER_STORM = 3;
+WEATHER_SNOW = 4; // legado/especial, fora do ciclo principal
+
+weather_current = WEATHER_CLEAR;
+weather_target = WEATHER_CLEAR;
+weather_intensity = 0.0;
+weather_target_intensity = 0.0;
+weather_transition_speed = 0.35;
+weather_state_time = 90;
+weather_transitioning = false;
+weather_auto = true;
+weather_event = "INIT";
+
+// duracoes automaticas do clima
+weather_min_duration = 45;
+weather_max_duration = 120;
+weather_next_change = irandom_range(weather_min_duration, weather_max_duration);
+
+// ===== compatibilidade com sistema antigo =====
 precip_min = 30;
 precip_max = 60;
-fog_min    = 200;
-fog_max    = 300;
+fog_min = 200;
+fog_max = 300;
+snow_accum_speed = 0.015;
+snow_melt_speed = 0.005;
+chance_none = 85;
+chance_snow = 5;
+chance_rain_light = 5;
+chance_rain_heavy = 5;
 
-snow_accum_speed   = 0.015;
-snow_melt_speed    = 0.005;
-
-// chances (0..100)
-chance_none       = 85;
-chance_snow       = 5;
-chance_rain_light = 5; // precip_mode = 3
-chance_rain_heavy = 5; // precip_mode = 2
-
-// ====== ESTADO ATUAL ======
-precip_mode = 0;        // 0 nada, 1 neve, 2 chuva forte, 3 chuva fraca
-fog_on      = false;
-
+precip_mode = 0;
+fog_on = false;
 precip_left = 0;
-fog_left    = 0;
+fog_left = 0;
+global.precip_mode = 0;
 
-// compat (se algum lugar ler global.precip_mode)
-global.precip_mode = precip_mode;
-
-
-// ====== DEBUG (TEMPORÁRIO) ======
-debug_keys   = true;    // deixe true agora
-debug_popup  = false;    // show_message quando mudar (TEMPORÁRIO)
-
-// só pra evitar popup repetido
+// ===== DEBUG =====
+debug_keys = true;
+debug_popup = false;
 _last_precip = -1;
-_last_fog    = -1;
+_last_fog = -1;
 
-// ====== SOM CHUVA (2 camadas) ======
+// ===== SOM CHUVA =====
 rain_fade_ms = 500;
-
-// ajuste os nomes dos assets aqui:
-snd_forest = snd_rain_forest; // <-- CONFIRA O NOME EXATO DO ASSET
-snd_heavy  = snd_rain;      // <-- CONFIRA O NOME EXATO DO ASSET
-
-// handles
+snd_forest = snd_rain_forest;
+snd_heavy = snd_rain;
 h_forest = -1;
-h_heavy  = -1;
-
-// variação orgânica de volume
-rain_wobble      = 1.0;
-rain_wobble_t    = 0;
+h_heavy = -1;
+rain_wobble = 1.0;
+rain_wobble_t = 0;
 rain_wobble_goal = 1.0;
-
-// para stop seguro pós-fade
 rain_stop_armed = false;
+_volume = 0;
 
-// helper: garante loop tocando sem recriar sempre
 ensure_loop = function(_h, _snd)
 {
     if (_h == -1 || !audio_is_playing(_h))
@@ -83,4 +80,67 @@ ensure_loop = function(_h, _snd)
     return _h;
 };
 
-_volume = 0;   // Volume alvo do som da chuva
+weather_state_name = function(_state)
+{
+    switch (_state)
+    {
+        case WEATHER_CLEAR: return "LIMPO";
+        case WEATHER_CLOUDY: return "NUBLADO";
+        case WEATHER_RAIN: return "CHUVA";
+        case WEATHER_STORM: return "TEMPESTADE";
+        case WEATHER_SNOW: return "NEVE";
+    }
+    return "?";
+};
+
+weather_intensity_for = function(_state)
+{
+    switch (_state)
+    {
+        case WEATHER_CLEAR: return 0.0;
+        case WEATHER_CLOUDY: return 0.25;
+        case WEATHER_RAIN: return 0.65;
+        case WEATHER_STORM: return 1.0;
+        case WEATHER_SNOW: return 0.65;
+    }
+    return 0.0;
+};
+
+weather_set_target = function(_state, _reason)
+{
+    _state = clamp(_state, WEATHER_CLEAR, WEATHER_SNOW);
+    weather_target = _state;
+    weather_target_intensity = weather_intensity_for(_state);
+    weather_transitioning = (weather_current != weather_target || abs(weather_intensity - weather_target_intensity) > 0.01);
+    weather_event = _reason;
+    weather_next_change = irandom_range(weather_min_duration, weather_max_duration);
+};
+
+weather_pick_next = function()
+{
+    // Clima muda gradualmente apenas entre estados vizinhos.
+    switch (weather_current)
+    {
+        case WEATHER_CLEAR:
+            weather_set_target(irandom(1) == 0 ? WEATHER_CLEAR : WEATHER_CLOUDY, "AUTO_CHANGE");
+        break;
+        case WEATHER_CLOUDY:
+            var r = irandom(99);
+            if (r < 45) weather_set_target(WEATHER_CLEAR, "AUTO_CHANGE");
+            else if (r < 80) weather_set_target(WEATHER_RAIN, "AUTO_CHANGE");
+            else weather_set_target(WEATHER_CLOUDY, "AUTO_CHANGE");
+        break;
+        case WEATHER_RAIN:
+            var r2 = irandom(99);
+            if (r2 < 35) weather_set_target(WEATHER_CLOUDY, "AUTO_CHANGE");
+            else if (r2 < 70) weather_set_target(WEATHER_RAIN, "AUTO_CHANGE");
+            else weather_set_target(WEATHER_STORM, "AUTO_CHANGE");
+        break;
+        case WEATHER_STORM:
+            weather_set_target(irandom(99) < 70 ? WEATHER_RAIN : WEATHER_CLOUDY, "AUTO_CHANGE");
+        break;
+        default:
+            weather_set_target(WEATHER_CLEAR, "AUTO_RESET");
+        break;
+    }
+};
