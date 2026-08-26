@@ -184,7 +184,7 @@ if (time_debug && time_debug_overlay)
     var panel_w = min(gw - 24, 560);
     var panel_h = 52;
     var px = gw - panel_w - 12;
-    var py = gh - panel_h - 12;
+    var py = gh - panel_h - 282;
     draw_set_alpha(0.88); draw_set_color(c_black);
     draw_rectangle(px, py, px + panel_w, py + panel_h, false);
     draw_set_alpha(1); draw_set_color(c_white);

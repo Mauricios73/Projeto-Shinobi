@@ -1,0 +1,26 @@
+{
+  "$GMSound":"v2",
+  "%Name":"snd_cicada",
+  "audioGroupId":{
+    "name":"audiogroup_soundeffects",
+    "path":"audiogroups/audiogroup_soundeffects",
+  },
+  "bitDepth":1,
+  "channelFormat":0,
+  "compression":0,
+  "compressionQuality":4,
+  "conversionMode":0,
+  "duration":16.448322,
+  "exportDir":"",
+  "name":"snd_cicada",
+  "parent":{
+    "name":"Sons Ambiente",
+    "path":"folders/Sounds/Sons Ambiente.yy",
+  },
+  "preload":false,
+  "resourceType":"GMSound",
+  "resourceVersion":"2.0",
+  "sampleRate":44100,
+  "soundFile":"snd_cicada.wav",
+  "volume":1.0,
+}
