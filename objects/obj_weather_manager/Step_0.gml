@@ -12,12 +12,7 @@ if (debug_keys)
     if (keyboard_check_pressed(vk_f8)) { weather_set_target(WEATHER_RAIN, "DEBUG_LIGHT_RAIN"); weather_auto = false; }
     if (keyboard_check_pressed(vk_f9)) { weather_set_target(WEATHER_SNOW, "DEBUG_SNOW"); weather_auto = false; }
     if (keyboard_check_pressed(vk_f10)) { weather_set_target(WEATHER_CLEAR, "DEBUG_CLEAR"); weather_auto = false; }
-    if (keyboard_check_pressed(vk_f11))
-    {
-        weather_auto = !weather_auto;
-        if (weather_auto) weather_event = "AUTO_ON";
-        else weather_event = "AUTO_OFF";
-    }
+    if (keyboard_check_pressed(vk_f11)) { weather_auto = !weather_auto; weather_event = weather_auto ? "AUTO_ON" : "AUTO_OFF"; }
     if (keyboard_check_pressed(vk_f12))
     {
         weather_auto = false;
@@ -28,9 +23,12 @@ if (debug_keys)
         else next_debug = WEATHER_CLEAR;
         weather_set_target(next_debug, "DEBUG_NEXT");
     }
+
+    // F10 mantem o debug do clima. F11 alterna automatico.
+    // F12 avanca clima. O evento de audio usa A como teste manual.
+    if (keyboard_check_pressed(ord("A"))) audio_env_trigger_event();
 }
 
-// Menu
 if (is_menu)
 {
     weather_set_target(WEATHER_CLEAR, "MENU");
@@ -42,11 +40,11 @@ if (is_menu)
     if (instance_exists(obj_neve)) with (obj_neve) instance_destroy();
     if (h_forest != -1) audio_sound_gain(h_forest, 0, rain_fade_ms);
     if (h_heavy != -1) audio_sound_gain(h_heavy, 0, rain_fade_ms);
+    audio_env_timer = 5;
     alarm[0] = 1;
     exit;
 }
 
-// Weather transition
 if (weather_auto)
 {
     weather_next_change -= dt;
@@ -72,7 +70,6 @@ else
     weather_state_time += dt;
 }
 
-// Conversao: 0 nada | 1 neve | 2 chuva forte | 3 chuva fraca
 if (weather_current == WEATHER_SNOW) precip_mode = 1;
 else if (weather_current == WEATHER_STORM) precip_mode = 2;
 else if (weather_current == WEATHER_RAIN) precip_mode = 3;
@@ -80,26 +77,16 @@ else precip_mode = 0;
 
 if (weather_transitioning)
 {
-    if (weather_target == WEATHER_STORM)
-    {
-        if (weather_intensity > 0.40) precip_mode = 2;
-        else precip_mode = 3;
-    }
+    if (weather_target == WEATHER_STORM) precip_mode = (weather_intensity > 0.40) ? 2 : 3;
     else if (weather_target == WEATHER_RAIN) precip_mode = 3;
-    else if (weather_current == WEATHER_STORM || weather_current == WEATHER_RAIN)
-    {
-        if (weather_intensity > 0.78) precip_mode = 2;
-        else precip_mode = 3;
-    }
+    else if (weather_current == WEATHER_STORM || weather_current == WEATHER_RAIN) precip_mode = (weather_intensity > 0.78) ? 2 : 3;
     else if (weather_target == WEATHER_SNOW) precip_mode = 1;
 }
 
-// Room atual
 var is_indoor = false;
 for (var j = 0; j < array_length(indoor_rooms); j++) if (rn == indoor_rooms[j]) { is_indoor = true; break; }
 var outdoor = !is_menu && !is_indoor;
 
-// Mantem o clima global mesmo dentro da casa.
 global.precip_mode = precip_mode;
 global.environment.weather = {
     current: weather_current,
@@ -114,36 +101,22 @@ global.environment.weather = {
 };
 
 // ====================================================
-// CHUVA VISUAL - FONTE UNICA DE VERDADE
-// O Alarm_0 nao decide mais quando criar/destruir a chuva.
-// A cada Step, a room atual e o clima determinam a instancia.
+// CHUVA / NEVE - fonte unica de verdade
 // ====================================================
 var rain_visual = (precip_mode == 2 || precip_mode == 3);
-
 if (outdoor && rain_visual)
 {
-    if (!instance_exists(obj_chuva))
-        instance_create_depth(0, 0, 0, obj_chuva);
-    else
-        obj_chuva.depth = 0;
+    if (!instance_exists(obj_chuva)) instance_create_depth(0, 0, 0, obj_chuva);
+    else obj_chuva.depth = 0;
 }
-else
-{
-    if (instance_exists(obj_chuva)) with (obj_chuva) instance_destroy();
-}
+else if (instance_exists(obj_chuva)) with (obj_chuva) instance_destroy();
 
-// Neve segue a mesma regra.
 if (outdoor && precip_mode == 1)
 {
-    if (!instance_exists(obj_neve))
-        instance_create_depth(0, 0, 0, obj_neve);
-    else
-        obj_neve.depth = 0;
+    if (!instance_exists(obj_neve)) instance_create_depth(0, 0, 0, obj_neve);
+    else obj_neve.depth = 0;
 }
-else
-{
-    if (instance_exists(obj_neve)) with (obj_neve) instance_destroy();
-}
+else if (instance_exists(obj_neve)) with (obj_neve) instance_destroy();
 
 // Fog
 if (fog_left > 0) fog_left -= dt;
@@ -159,7 +132,9 @@ if (!variable_global_exists("snow_amount")) global.snow_amount = 0;
 if (weather_current == WEATHER_SNOW) global.snow_amount = clamp(global.snow_amount + snow_accum_speed * dt, 0, 1);
 else global.snow_amount = clamp(global.snow_amount - snow_melt_speed * dt, 0, 1);
 
-// Audio da chuva
+// ====================================================
+// AUDIO DA CHUVA
+// ====================================================
 rain_wobble_t -= dt;
 if (rain_wobble_t <= 0)
 {
@@ -202,3 +177,25 @@ if (!rain_active || !outdoor)
     }
 }
 else rain_stop_armed = false;
+
+// ====================================================
+// AUDIO DIRECTOR - EVENTOS AMBIENTAIS
+// ====================================================
+if (audio_env_enabled)
+{
+    audio_env_timer -= dt;
+    if (audio_env_timer <= 0)
+    {
+        audio_env_trigger_event();
+        audio_env_timer = random_range(audio_env_min, audio_env_max);
+    }
+}
+
+// Estado publico para debug/UI.
+if (!variable_global_exists("environment")) global.environment = {};
+global.environment.audio = {
+    enabled: audio_env_enabled,
+    timer: audio_env_timer,
+    last_event: audio_env_last,
+    event_count: audio_env_event_count
+};
