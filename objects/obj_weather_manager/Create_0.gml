@@ -11,13 +11,12 @@ fog_in_indoor = true;
 // ====================================================
 // WEATHER SYSTEM
 // CLEAR -> CLOUDY -> RAIN -> STORM
-// A transicao usa current/target + intensidade contínua.
 // ====================================================
 WEATHER_CLEAR = 0;
 WEATHER_CLOUDY = 1;
 WEATHER_RAIN = 2;
 WEATHER_STORM = 3;
-WEATHER_SNOW = 4; // legado/especial, fora do ciclo principal
+WEATHER_SNOW = 4;
 
 weather_current = WEATHER_CLEAR;
 weather_target = WEATHER_CLEAR;
@@ -28,13 +27,11 @@ weather_state_time = 90;
 weather_transitioning = false;
 weather_auto = true;
 weather_event = "INIT";
-
-// duracoes automaticas do clima
 weather_min_duration = 45;
 weather_max_duration = 120;
 weather_next_change = irandom_range(weather_min_duration, weather_max_duration);
 
-// ===== compatibilidade com sistema antigo =====
+// ===== compatibilidade =====
 precip_min = 30;
 precip_max = 60;
 fog_min = 200;
@@ -45,7 +42,6 @@ chance_none = 85;
 chance_snow = 5;
 chance_rain_light = 5;
 chance_rain_heavy = 5;
-
 precip_mode = 0;
 fog_on = false;
 precip_left = 0;
@@ -69,6 +65,40 @@ rain_wobble_t = 0;
 rain_wobble_goal = 1.0;
 rain_stop_armed = false;
 _volume = 0;
+
+// ====================================================
+// AUDIO DIRECTOR - AMBIENTE
+// Os sons de evento sao independentes do loop da chuva.
+// O sistema escolhe eventos por periodo + clima e usa
+// cooldowns para evitar repeticao artificial.
+// ====================================================
+audio_env_enabled = true;
+audio_env_timer = random_range(3, 8);
+audio_env_min = 4;
+audio_env_max = 11;
+audio_env_last = "-";
+audio_env_event_count = 0;
+audio_env_last_handle = -1;
+
+audio_env_play = function(_snd, _volume)
+{
+    if (!audio_env_enabled) return false;
+    if (_snd == -1) return false;
+    audio_env_last_handle = audio_play_sound(_snd, 5, false);
+    audio_sound_gain(audio_env_last_handle, clamp(_volume, 0, 1), 0);
+    audio_env_event_count += 1;
+    return true;
+};
+
+// Pools compostos apenas pelos novos assets confirmados.
+audio_pool_insects = [snd_cicada, snd_cricket_1, snd_cricket_2];
+audio_pool_frogs = [snd_frog];
+audio_pool_thunder = [snd_thunder_dark01, snd_thunder_dark02, snd_thunder_loud_dark_01];
+
+audio_env_pick = function(_pool)
+{
+    return _pool[irandom(array_length(_pool) - 1)];
+};
 
 ensure_loop = function(_h, _snd)
 {
@@ -118,7 +148,6 @@ weather_set_target = function(_state, _reason)
 
 weather_pick_next = function()
 {
-    // Clima muda gradualmente apenas entre estados vizinhos.
     switch (weather_current)
     {
         case WEATHER_CLEAR:
