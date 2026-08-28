@@ -7,7 +7,6 @@ var dt = 1 / room_speed;
 
 if (debug_keys)
 {
-    if (keyboard_check_pressed(vk_f5)) debug_popup = !debug_popup;
     if (keyboard_check_pressed(vk_f6)) { fog_on = !fog_on; fog_left = 15; alarm[0] = 1; }
     if (keyboard_check_pressed(vk_f7)) { weather_set_target(WEATHER_RAIN, "DEBUG_RAIN"); weather_auto = false; }
     if (keyboard_check_pressed(vk_f8)) { weather_set_target(WEATHER_RAIN, "DEBUG_LIGHT_RAIN"); weather_auto = false; }
@@ -24,6 +23,9 @@ if (debug_keys)
         else next_debug = WEATHER_CLEAR;
         weather_set_target(next_debug, "DEBUG_NEXT");
     }
+
+    // F10 mantem o debug do clima. F11 alterna automatico.
+    // F12 avanca clima. O evento de audio usa A como teste manual.
     if (keyboard_check_pressed(ord("A"))) audio_env_trigger_event();
 }
 
@@ -98,6 +100,9 @@ global.environment.weather = {
     indoor: is_indoor
 };
 
+// ====================================================
+// CHUVA / NEVE - fonte unica de verdade
+// ====================================================
 var rain_visual = (precip_mode == 2 || precip_mode == 3);
 if (outdoor && rain_visual)
 {
@@ -113,6 +118,7 @@ if (outdoor && precip_mode == 1)
 }
 else if (instance_exists(obj_neve)) with (obj_neve) instance_destroy();
 
+// Fog
 if (fog_left > 0) fog_left -= dt;
 if (fog_left <= 0 && !weather_transitioning)
 {
@@ -121,10 +127,14 @@ if (fog_left <= 0 && !weather_transitioning)
     alarm[0] = 1;
 }
 
+// Neve
 if (!variable_global_exists("snow_amount")) global.snow_amount = 0;
 if (weather_current == WEATHER_SNOW) global.snow_amount = clamp(global.snow_amount + snow_accum_speed * dt, 0, 1);
 else global.snow_amount = clamp(global.snow_amount - snow_melt_speed * dt, 0, 1);
 
+// ====================================================
+// AUDIO DA CHUVA
+// ====================================================
 rain_wobble_t -= dt;
 if (rain_wobble_t <= 0)
 {
@@ -168,6 +178,9 @@ if (!rain_active || !outdoor)
 }
 else rain_stop_armed = false;
 
+// ====================================================
+// AUDIO DIRECTOR - EVENTOS AMBIENTAIS
+// ====================================================
 if (audio_env_enabled)
 {
     audio_env_timer -= dt;
@@ -178,6 +191,7 @@ if (audio_env_enabled)
     }
 }
 
+// Estado publico para debug/UI.
 if (!variable_global_exists("environment")) global.environment = {};
 global.environment.audio = {
     enabled: audio_env_enabled,
