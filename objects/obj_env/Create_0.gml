@@ -6,9 +6,6 @@ time_day_seconds = 12 * 60;
 time_game_hours = 24;
 time_scale = 1.0;
 time_paused = false;
-time_debug = true;
-time_debug_overlay = true;
-time_debug_step_hours = 1;
 
 // Estado inicial: 06:00 (amanhecer).
 time_seconds = 6 * 60 * 60;
@@ -28,22 +25,22 @@ time_midnight = 0.0;
 time_dawn_end = 7.0;
 
 // API simples para outros sistemas consultarem o ambiente.
-get_time_hours = function() { return time_seconds / 3600; };
-get_time_minutes = function() { return (time_seconds / 60) mod 60; };
-get_time_seconds = function() { return time_seconds mod 60; };
-get_time_day = function() { return time_day; };
-get_time_period = function() { return time_period; };
+get_time_hours =	 function() { return time_seconds / 3600; };
+get_time_minutes =	 function() { return (time_seconds / 60) mod 60; };
+get_time_seconds =	 function() { return time_seconds mod 60; };
+get_time_day =		 function() { return time_day; };
+get_time_period =	 function() { return time_period; };
 
 get_time_period_name = function(_p)
 {
     switch (_p)
     {
-        case "MADRUGADA": return "Madrugada";
-        case "AMANHECER": return "Amanhecer";
-        case "MANHÃ":     return "Manhã";
-        case "TARDE":     return "Tarde";
-        case "PÔR DO SOL":return "Pôr do sol";
-        case "NOITE":     return "Noite";
+        case "MADRUGADA":  return "Madrugada";
+        case "AMANHECER":  return "Amanhecer";
+        case "MANHÃ":      return "Manhã";
+        case "TARDE":      return "Tarde";
+        case "PÔR DO SOL": return "Pôr do sol";
+        case "NOITE":      return "Noite";
     }
     return string(_p);
 };

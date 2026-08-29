@@ -103,6 +103,7 @@
     {"id":{"name":"obj_chuva","path":"objects/obj_chuva/obj_chuva.yy",},},
     {"id":{"name":"obj_dano_num","path":"objects/obj_dano_num/obj_dano_num.yy",},},
     {"id":{"name":"obj_dano","path":"objects/obj_dano/obj_dano.yy",},},
+    {"id":{"name":"obj_debug","path":"objects/obj_debug/obj_debug.yy",},},
     {"id":{"name":"obj_dummy","path":"objects/obj_dummy/obj_dummy.yy",},},
     {"id":{"name":"obj_entidade_inimigo","path":"objects/obj_entidade_inimigo/obj_entidade_inimigo.yy",},},
     {"id":{"name":"obj_entidade_player","path":"objects/obj_entidade_player/obj_entidade_player.yy",},},

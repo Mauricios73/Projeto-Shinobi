@@ -1,31 +1,36 @@
-/// obj_debug - Create
 persistent = true;
 debug_enabled = true;
 show_overlay = true;
 page = 0;
-page_count = 4;
+page_count = 4; 
 
-// 0=geral, 1=tempo, 2=clima/audio, 3=visual/IA
+// 0 = Geral/Teclas, 1 = Tempo/Luz, 2 = Clima, 3 = Áudio Diretor
 key_help = true;
 
-if (!variable_global_exists("debug")) global.debug = {};
-global.debug.enabled = debug_enabled;
-global.debug.show = show_overlay;
-global.debug.page = page;
-global.debug.last_command = "INIT";
-global.debug.command_count = 0;
+// Mudamos de "debug" para "debug_data" para evitar conflito com 'false/0'
+if (!variable_global_exists("debug_data")) global.debug_data = {};
+global.debug_data.enabled = debug_enabled;
+global.debug_data.show = show_overlay;
+global.debug_data.page = page;
+global.debug_data.last_command = "INIT";
+global.debug_data.command_count = 0;
 
-// API central de comandos. Os sistemas podem consultar global.debug.
+// API central de comandos
 debug_command = function(_command)
 {
-    global.debug.last_command = _command;
-    global.debug.command_count += 1;
+    global.debug_data.last_command = _command;
+    global.debug_data.command_count += 1;
 
-    if (_command == "TIME_PAUSE" && instance_exists(obj_env)) obj_env.time_paused = !obj_env.time_paused;
-    if (_command == "TIME_HOUR_PLUS" && instance_exists(obj_env)) obj_env.time_seconds += 3600;
-    if (_command == "TIME_HOUR_MINUS" && instance_exists(obj_env)) obj_env.time_seconds -= 3600;
-    if (_command == "TIME_SPEED" && instance_exists(obj_env)) obj_env.time_scale = (obj_env.time_scale == 1) ? obj_env.time_test_speed : 1;
+    // Comandos de Tempo
+    if (instance_exists(obj_env))
+    {
+        if (_command == "TIME_PAUSE") obj_env.time_paused = !obj_env.time_paused;
+        if (_command == "TIME_HOUR_PLUS") obj_env.time_seconds += 3600;
+        if (_command == "TIME_HOUR_MINUS") obj_env.time_seconds -= 3600;
+        if (_command == "TIME_SPEED") obj_env.time_scale = (obj_env.time_scale == 1) ? obj_env.time_test_speed : 1;
+    }
 
+    // Comandos de Clima
     if (instance_exists(obj_weather_manager))
     {
         if (_command == "WEATHER_CLEAR") { obj_weather_manager.weather_set_target(obj_weather_manager.WEATHER_CLEAR, "DEBUG_CLEAR"); obj_weather_manager.weather_auto = false; }

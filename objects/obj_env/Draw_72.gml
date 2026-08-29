@@ -165,31 +165,3 @@ if (night_factor > 0) {
     draw_rectangle(camx, camy, camx + camw, camy + camh, false);
     draw_set_alpha(oa); draw_set_color(c_white);
 }
-
-// ----------------------------------------------------
-// 8) DEBUG GUI — canto inferior direito
-// F1 pausa | F2 +1h | F3 -1h | F4 velocidade | F5 debug
-// ----------------------------------------------------
-if (time_debug && time_debug_overlay)
-{
-    var gw = display_get_gui_width();
-    var gh = display_get_gui_height();
-    var hh = floor(global.environment.time.hours);
-    var mm = global.environment.time.minutes;
-    var ss = global.environment.time.seconds_display;
-    var clock_text = string_format(hh, 2, 0) + ":" + string_format(mm, 2, 0) + ":" + string_format(ss, 2, 0);
-    var status_text = time_paused ? "PAUSADO" : "RODANDO";
-    var debug_text = "ENV DEBUG | Dia " + string(time_day) + " | " + clock_text + " | " + time_period + " | " + status_text + " | x" + string(time_scale);
-    var help_text = "F1 pausa  F2 +1h  F3 -1h  F4 x1/x12  F5 debug";
-    var panel_w = min(gw - 24, 560);
-    var panel_h = 52;
-    var px = gw - panel_w - 12;
-    var py = gh - panel_h - 282;
-    draw_set_alpha(0.88); draw_set_color(c_black);
-    draw_rectangle(px, py, px + panel_w, py + panel_h, false);
-    draw_set_alpha(1); draw_set_color(c_white);
-    draw_set_halign(fa_left); draw_set_valign(fa_top); draw_set_font(-1);
-    draw_text(px + 10, py + 7, debug_text);
-    draw_text(px + 10, py + 27, help_text);
-    draw_set_color(c_white); draw_set_alpha(1);
-}

@@ -51,6 +51,7 @@
     {"name":"obj_chuva","order":6,"path":"objects/obj_chuva/obj_chuva.yy",},
     {"name":"obj_dano_num","order":2,"path":"objects/obj_dano_num/obj_dano_num.yy",},
     {"name":"obj_dano","order":1,"path":"objects/obj_dano/obj_dano.yy",},
+    {"name":"obj_debug","order":10,"path":"objects/obj_debug/obj_debug.yy",},
     {"name":"obj_dummy","order":2,"path":"objects/obj_dummy/obj_dummy.yy",},
     {"name":"obj_entidade_inimigo","order":2,"path":"objects/obj_entidade_inimigo/obj_entidade_inimigo.yy",},
     {"name":"obj_entidade_player","order":1,"path":"objects/obj_entidade_player/obj_entidade_player.yy",},

@@ -58,14 +58,6 @@ time_delta = delta_time / 1000000;
 if (time_delta < 0) time_delta = 0;
 if (time_delta > 0.25) time_delta = 0.25;
 
-if (time_debug)
-{
-    if (keyboard_check_pressed(vk_f1)) time_paused = !time_paused;
-    if (keyboard_check_pressed(vk_f2)) time_seconds += 60 * 60;
-    if (keyboard_check_pressed(vk_f3)) time_seconds -= 60 * 60;
-    if (keyboard_check_pressed(vk_f4)) time_scale = (time_scale == 1) ? time_test_speed : 1;
-    if (keyboard_check_pressed(vk_f5)) time_debug_overlay = !time_debug_overlay;
-}
 
 time_seconds = clamp(time_seconds, 0, 86399.999);
 var environment_paused = time_paused;

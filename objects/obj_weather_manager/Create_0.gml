@@ -43,8 +43,6 @@ precip_left = 0;
 fog_left = 0;
 global.precip_mode = 0;
 
-debug_keys = true;
-debug_popup = false;
 _last_precip = -1;
 _last_fog = -1;
 

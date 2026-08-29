@@ -5,30 +5,6 @@ var is_menu = false;
 for (var i = 0; i < array_length(menu_rooms); i++) if (rn == menu_rooms[i]) { is_menu = true; break; }
 var dt = 1 / room_speed;
 
-if (debug_keys)
-{
-    if (keyboard_check_pressed(vk_f6)) { fog_on = !fog_on; fog_left = 15; alarm[0] = 1; }
-    if (keyboard_check_pressed(vk_f7)) { weather_set_target(WEATHER_RAIN, "DEBUG_RAIN"); weather_auto = false; }
-    if (keyboard_check_pressed(vk_f8)) { weather_set_target(WEATHER_RAIN, "DEBUG_LIGHT_RAIN"); weather_auto = false; }
-    if (keyboard_check_pressed(vk_f9)) { weather_set_target(WEATHER_SNOW, "DEBUG_SNOW"); weather_auto = false; }
-    if (keyboard_check_pressed(vk_f10)) { weather_set_target(WEATHER_CLEAR, "DEBUG_CLEAR"); weather_auto = false; }
-    if (keyboard_check_pressed(vk_f11)) { weather_auto = !weather_auto; weather_event = weather_auto ? "AUTO_ON" : "AUTO_OFF"; }
-    if (keyboard_check_pressed(vk_f12))
-    {
-        weather_auto = false;
-        var next_debug = WEATHER_CLEAR;
-        if (weather_current == WEATHER_CLEAR) next_debug = WEATHER_CLOUDY;
-        else if (weather_current == WEATHER_CLOUDY) next_debug = WEATHER_RAIN;
-        else if (weather_current == WEATHER_RAIN) next_debug = WEATHER_STORM;
-        else next_debug = WEATHER_CLEAR;
-        weather_set_target(next_debug, "DEBUG_NEXT");
-    }
-
-    // F10 mantem o debug do clima. F11 alterna automatico.
-    // F12 avanca clima. O evento de audio usa A como teste manual.
-    if (keyboard_check_pressed(ord("A"))) audio_env_trigger_event();
-}
-
 if (is_menu)
 {
     weather_set_target(WEATHER_CLEAR, "MENU");
