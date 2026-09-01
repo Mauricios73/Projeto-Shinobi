@@ -1,11 +1,26 @@
+/// ========================================================
+/// OBJ_DEBUG - CREATE
+/// Sistema central de debug/testes
+/// ========================================================
+
 persistent = true;
 debug_enabled = true;
 show_overlay = true;
 page = 0;
-page_count = 4; 
+page_count = 5;
 
-// 0 = Geral/Teclas, 1 = Tempo/Luz, 2 = Clima, 3 = Áudio Diretor
+// 0 = Geral
+// 1 = Tempo / Ambiente
+// 2 = Clima
+// 3 = Áudio Diretor
+// 4 = Visual Environment
+
 key_help = true;
+visual_test = "NONE";
+debug_wind_override = false;
+debug_wind_strength = 0;
+debug_weather_override = false;
+debug_weather_saved = -1;
 
 // Mudamos de "debug" para "debug_data" para evitar conflito com 'false/0'
 if (!variable_global_exists("debug_data")) global.debug_data = {};
@@ -48,4 +63,154 @@ debug_command = function(_command)
         if (_command == "WEATHER_AUTO") obj_weather_manager.weather_auto = !obj_weather_manager.weather_auto;
         if (_command == "AUDIO_EVENT") obj_weather_manager.audio_env_trigger_event();
     }
+	// ====================================================
+	// COMANDOS VISUAIS - FASE 4
+	// ====================================================
+
+	if (_command == "VISUAL_SNOW")
+	{
+	    visual_test = "SNOW";
+
+	    if (instance_exists(obj_weather_manager))
+	    {
+	        obj_weather_manager.weather_set_target(
+	            obj_weather_manager.WEATHER_SNOW,
+	            "DEBUG_SNOW"
+	        );
+
+	        obj_weather_manager.weather_auto = false;
+	    }
+	}
+
+
+	if (_command == "VISUAL_FOG")
+	{
+	    visual_test = "FOG";
+
+	    if (instance_exists(obj_weather_manager))
+	    {
+	        obj_weather_manager.fog_on = true;
+	        obj_weather_manager.fog_left = 999999;
+	    }
+	}
+
+
+	if (_command == "VISUAL_WIND_LOW")
+	{
+	    visual_test = "WIND LOW";
+
+	    debug_wind_override = true;
+	    debug_wind_strength = 25;
+	}
+
+
+	if (_command == "VISUAL_WIND_HIGH")
+	{
+	    visual_test = "WIND HIGH";
+
+	    debug_wind_override = true;
+	    debug_wind_strength = 80;
+	}
+
+
+	if (_command == "VISUAL_LEAF")
+	{
+	    visual_test = "LEAF";
+
+	    if (instance_exists(obj_particle_system))
+	    {
+	        particle_emit(
+	            camera_get_view_x(view_camera[0]) +
+	            camera_get_view_width(view_camera[0]) * 0.5,
+
+	            camera_get_view_y(view_camera[0]) +
+	            camera_get_view_height(view_camera[0]) * 0.5,
+
+	            obj_particle_system.PARTICLE_LEAF,
+	            10
+	        );
+	    }
+	}
+
+
+	if (_command == "VISUAL_DUST")
+	{
+	    visual_test = "DUST";
+
+	    if (instance_exists(obj_particle_system))
+	    {
+	        particle_emit(
+	            camera_get_view_x(view_camera[0]) +
+	            camera_get_view_width(view_camera[0]) * 0.5,
+
+	            camera_get_view_y(view_camera[0]) +
+	            camera_get_view_height(view_camera[0]) * 0.5,
+
+	            obj_particle_system.PARTICLE_DUST,
+	            15
+	        );
+	    }
+	}
+
+
+	if (_command == "VISUAL_SPARK")
+	{
+	    visual_test = "SPARK";
+
+	    if (instance_exists(obj_particle_system))
+	    {
+	        particle_emit(
+	            camera_get_view_x(view_camera[0]) +
+	            camera_get_view_width(view_camera[0]) * 0.5,
+
+	            camera_get_view_y(view_camera[0]) +
+	            camera_get_view_height(view_camera[0]) * 0.5,
+
+	            obj_particle_system.PARTICLE_SPARK,
+	            15
+	        );
+	    }
+	}
+
+
+	if (_command == "VISUAL_SMOKE")
+	{
+	    visual_test = "SMOKE";
+
+	    if (instance_exists(obj_particle_system))
+	    {
+	        particle_emit(
+	            camera_get_view_x(view_camera[0]) +
+	            camera_get_view_width(view_camera[0]) * 0.5,
+
+	            camera_get_view_y(view_camera[0]) +
+	            camera_get_view_height(view_camera[0]) * 0.5,
+
+	            obj_particle_system.PARTICLE_SMOKE,
+	            8
+	        );
+	    }
+	}
+
+
+	if (_command == "VISUAL_RESET")
+	{
+	    visual_test = "NONE";
+
+	    debug_wind_override = false;
+	    debug_wind_strength = 0;
+
+	    if (instance_exists(obj_weather_manager))
+	    {
+	        obj_weather_manager.fog_on = false;
+	        obj_weather_manager.fog_left = 0;
+
+	        obj_weather_manager.weather_set_target(
+	            obj_weather_manager.WEATHER_CLEAR,
+	            "DEBUG_RESET"
+	        );
+
+	        obj_weather_manager.weather_auto = false;
+	    }
+	}
 };

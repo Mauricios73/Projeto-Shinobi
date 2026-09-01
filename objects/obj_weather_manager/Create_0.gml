@@ -2,6 +2,7 @@
 
 if (instance_exists(obj_fog)) show_debug_message("FOG DEPTH=" + string(obj_fog.depth));
 if (instance_number(obj_weather_manager) > 1) { instance_destroy(); exit; }
+if (!instance_exists(obj_environment_fx)) { instance_create_depth(0, 0, -5000, obj_environment_fx); }
 persistent = true;
 
 menu_rooms = ["rm_init", "rm_menu"];
@@ -224,3 +225,29 @@ weather_pick_next = function()
         break;
     }
 };
+// ====================================================
+// ENVIRONMENT FX
+// ====================================================
+
+if (!instance_exists(obj_environment_fx))
+{
+    instance_create_depth(
+        0,
+        0,
+        -5000,
+        obj_environment_fx
+    );
+}
+// ====================================================
+// PARTICLE SYSTEM
+// ====================================================
+
+if (!instance_exists(obj_particle_system))
+{
+    instance_create_depth(
+        0,
+        0,
+        -4000,
+        obj_particle_system
+    );
+}

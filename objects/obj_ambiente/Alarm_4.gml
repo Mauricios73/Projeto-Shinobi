@@ -1,3 +1,5 @@
+//alarme4
+
 if (vento_voice != -1) {
     audio_stop_sound(vento_voice);
 }

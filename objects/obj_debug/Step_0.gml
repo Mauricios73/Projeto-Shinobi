@@ -28,3 +28,34 @@ if (keyboard_check_pressed(ord("A"))) debug_command("AUDIO_EVENT");
 
 global.debug_data.show = show_overlay;
 global.debug_data.page = page;
+
+// ====================================================
+// FASE 4 - TESTES VISUAIS
+// ====================================================
+
+if (keyboard_check_pressed(ord("1")))
+    debug_command("VISUAL_SNOW");
+
+if (keyboard_check_pressed(ord("2")))
+    debug_command("VISUAL_FOG");
+
+if (keyboard_check_pressed(ord("3")))
+    debug_command("VISUAL_WIND_LOW");
+
+if (keyboard_check_pressed(ord("4")))
+    debug_command("VISUAL_WIND_HIGH");
+
+if (keyboard_check_pressed(ord("5")))
+    debug_command("VISUAL_LEAF");
+
+if (keyboard_check_pressed(ord("6")))
+    debug_command("VISUAL_DUST");
+
+if (keyboard_check_pressed(ord("7")))
+    debug_command("VISUAL_SPARK");
+
+if (keyboard_check_pressed(ord("8")))
+    debug_command("VISUAL_SMOKE");
+
+if (keyboard_check_pressed(ord("9")))
+    debug_command("VISUAL_RESET");

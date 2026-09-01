@@ -120,3 +120,94 @@ else if (page == 3) // ÁUDIO DIRETOR
     }
     else { draw_text(px, py + line * 2, "obj_weather_manager não encontrado."); }
 }
+else if (page == 4) // VISUAL ENVIRONMENT
+{
+    draw_text(
+        px,
+        py + line * 2,
+        "--- TESTES VISUAIS ---"
+    );
+
+    draw_text(
+        px,
+        py + line * 3,
+        "[1] Neve"
+    );
+
+    draw_text(
+        px,
+        py + line * 4,
+        "[2] Fog"
+    );
+
+    draw_text(
+        px,
+        py + line * 5,
+        "[3] Vento Fraco"
+    );
+
+    draw_text(
+        px,
+        py + line * 6,
+        "[4] Vento Forte"
+    );
+
+    draw_text(
+        px,
+        py + line * 7,
+        "[5] Emitir Folhas"
+    );
+
+    draw_text(
+        px,
+        py + line * 8,
+        "[6] Emitir Poeira"
+    );
+
+    draw_text(
+        px,
+        py + line * 9,
+        "[7] Emitir Faíscas"
+    );
+
+    draw_text(
+        px,
+        py + line * 10,
+        "[8] Emitir Fumaça"
+    );
+
+    draw_text(
+        px,
+        py + line * 11,
+        "[9] Reset Visual"
+    );
+
+
+    // ====================================================
+    // ESTADO
+    // ====================================================
+
+    draw_text(
+        px,
+        py + line * 13,
+        "--- ESTADO ---"
+    );
+
+    draw_text(
+        px,
+        py + line * 14,
+        "Teste Atual: " +
+        string(visual_test)
+    );
+
+    draw_text(
+        px,
+        py + line * 15,
+        "Vento Debug: " +
+        string_format(
+            debug_wind_strength,
+            1,
+            1
+        )
+    );
+}

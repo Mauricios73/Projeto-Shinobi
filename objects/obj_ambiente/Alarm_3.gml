@@ -1,3 +1,5 @@
+//alarme3
+
 if (vento_voice != -1) {
     audio_sound_gain(vento_voice, 0, fade_out_ms);
 }

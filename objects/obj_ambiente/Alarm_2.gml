@@ -1,3 +1,5 @@
+//alarme2
+
 var rn_amb = room_get_name(room);
 if (rn_amb == "rm_init" || rn_amb == "rm_menu") exit;
 
