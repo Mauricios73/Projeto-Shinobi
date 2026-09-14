@@ -1,0 +1,1101 @@
+Projeto Shinobi — Plano de Migração GameMaker → Unity
+1. Objetivo
+
+Migrar o Projeto Shinobi atualmente desenvolvido em GameMaker para Unity, utilizando C#.
+
+A migração não será uma conversão automática de GML para C#.
+
+O projeto GameMaker será utilizado como:
+
+referência de gameplay;
+referência de comportamento;
+referência visual;
+referência de estados;
+referência de combate;
+referência de IA;
+referência de habilidades;
+referência de clima e ambiente;
+referência de áudio;
+referência de interface.
+
+A implementação final será reconstruída seguindo uma arquitetura modular própria para Unity.
+
+Regra principal
+
+Preservar o comportamento do jogo, não o código do GameMaker.
+
+2. Estado atual
+
+O projeto original está em:
+
+Ultimo Uchiha - versão 3
+
+Repositório:
+
+Mauricios73/Projeto-Shinobi
+
+Branch principal:
+
+main
+
+O GameMaker continuará preservado durante toda a migração.
+
+Não fazer
+apagar o projeto GameMaker;
+substituir o projeto GameMaker pela Unity;
+converter GML automaticamente;
+copiar arquitetura problemática simplesmente porque já funciona;
+reescrever tudo sem testar;
+migrar vários sistemas simultaneamente.
+Fazer
+
+Criar uma nova implementação Unity baseada no comportamento existente.
+
+3. Estratégia geral
+
+A migração será realizada em etapas.
+
+GAME MAKER
+    │
+    ├── Player
+    ├── Combat
+    ├── Enemy AI
+    ├── Abilities
+    ├── Environment
+    ├── Weather
+    ├── Audio
+    └── UI
+          │
+          ▼
+    DOCUMENTAÇÃO
+          │
+          ▼
+       UNITY
+          │
+          ├── Core
+          ├── Player
+          ├── Combat
+          ├── AI
+          ├── Abilities
+          ├── Environment
+          ├── Audio
+          └── UI
+
+Cada sistema será implementado e testado individualmente.
+
+4. Estrutura dos projetos
+
+Não misturar os arquivos do GameMaker com os arquivos da Unity.
+
+Estrutura recomendada:
+
+Projetos/
+│
+├── Projeto-Shinobi/
+│   └── GameMaker
+│
+└── Projeto-Shinobi-Unity/
+    └── Unity
+
+O projeto GameMaker permanece intacto.
+
+O projeto Unity será independente.
+
+5. Git
+
+O GameMaker continuará sendo versionado no repositório atual.
+
+Recomendação para a Unity:
+
+Projeto-Shinobi-Unity
+
+como novo projeto/repositório.
+
+Isso permite:
+
+Projeto-Shinobi
+        │
+        └── GameMaker
+
+e:
+
+Projeto-Shinobi-Unity
+        │
+        └── Unity/C#
+
+Sem risco de destruir o projeto original.
+
+6. Fase 0 — Backup
+
+Antes de iniciar a Unity:
+
+git status
+
+O projeto GameMaker precisa estar salvo.
+
+Depois:
+
+git add .
+git commit -m "chore: save GameMaker state before Unity migration"
+git push origin main
+
+Opcionalmente criar uma tag:
+
+git tag -a gamemaker-pre-unity -m "Stable GameMaker version before Unity migration"
+git push origin gamemaker-pre-unity
+
+Essa tag representa o ponto:
+
+Última versão estável do GameMaker antes da migração.
+
+7. Fase 1 — Criar projeto Unity
+
+Criar um projeto Unity novo.
+
+Preferência:
+
+Unity 6 LTS
+
+Projeto:
+
+Projeto-Shinobi-Unity
+
+Template:
+
+Universal 2D
+
+ou o template equivalente mais adequado ao projeto caso a versão utilizada disponibilize uma configuração 2D mais apropriada.
+
+8. Estrutura inicial Unity
+
+Criar:
+
+Assets/
+│
+├── Art/
+│   ├── Characters/
+│   ├── Enemies/
+│   ├── Environment/
+│   ├── Effects/
+│   ├── UI/
+│   └── Backgrounds/
+│
+├── Audio/
+│   ├── Music/
+│   ├── SFX/
+│   ├── Ambient/
+│   └── Voice/
+│
+├── Materials/
+│
+├── Prefabs/
+│   ├── Player/
+│   ├── Enemies/
+│   ├── Environment/
+│   ├── Effects/
+│   └── UI/
+│
+├── Scenes/
+│   ├── Bootstrap/
+│   ├── Menu/
+│   ├── Test/
+│   └── Game/
+│
+├── Scripts/
+│   ├── Core/
+│   ├── Player/
+│   ├── Combat/
+│   ├── AI/
+│   ├── Abilities/
+│   ├── Environment/
+│   ├── Weather/
+│   ├── Audio/
+│   ├── UI/
+│   └── Debug/
+│
+├── ScriptableObjects/
+│   ├── Characters/
+│   ├── Attacks/
+│   ├── Abilities/
+│   ├── Enemies/
+│   └── Weather/
+│
+└── Resources/
+9. Arquitetura Unity
+
+A arquitetura principal será:
+
+Core
+ │
+ ├── GameManager
+ ├── EventBus
+ ├── SceneManager
+ ├── SaveSystem
+ └── DebugSystem
+       │
+       ├───────────────┐
+       ▼               ▼
+    Player          Environment
+       │               │
+       ├── State       ├── Weather
+       ├── Movement    ├── Fog
+       ├── Combat      ├── Particles
+       └── Abilities   └── Lighting
+       │
+       ▼
+    Combat
+       │
+       ├── Attacks
+       ├── Damage
+       ├── Hitboxes
+       └── Defense
+       │
+       ▼
+      AI
+       │
+       ├── Detection
+       ├── Decision
+       ├── Movement
+       └── Combat
+10. Core
+
+O Core não deve conhecer detalhes específicos do Player.
+
+Exemplo:
+
+Core/
+├── GameManager.cs
+├── EventBus.cs
+├── GameEvents.cs
+├── SceneLoader.cs
+├── SaveSystem.cs
+└── GameSettings.cs
+
+Responsabilidades:
+
+inicialização;
+troca de cenas;
+eventos globais;
+configuração;
+save/load;
+debug;
+comunicação entre sistemas.
+11. EventBus
+
+A comunicação entre sistemas deverá utilizar eventos quando apropriado.
+
+Exemplo:
+
+Player
+   │
+   │ PlayerDamaged
+   ▼
+EventBus
+   │
+   ├── UI
+   ├── Audio
+   ├── Camera
+   └── Effects
+
+Isso evita:
+
+Player → UI
+Player → Audio
+Player → Weather
+Player → Camera
+
+diretamente.
+
+O Player deve conhecer somente aquilo que realmente precisa conhecer.
+
+12. Player
+
+O Player é uma das primeiras partes a serem migradas.
+
+Estrutura:
+
+Player/
+├── PlayerController.cs
+├── PlayerMovement.cs
+├── PlayerStateMachine.cs
+├── PlayerStats.cs
+├── PlayerCombat.cs
+├── PlayerAbilities.cs
+├── PlayerAnimator.cs
+└── States/
+    ├── PlayerIdleState.cs
+    ├── PlayerWalkState.cs
+    ├── PlayerRunState.cs
+    ├── PlayerJumpState.cs
+    ├── PlayerCrouchState.cs
+    ├── PlayerRollState.cs
+    ├── PlayerAttackState.cs
+    ├── PlayerDefenseState.cs
+    ├── PlayerFireState.cs
+    ├── PlayerChidoriState.cs
+    ├── PlayerChakraState.cs
+    ├── PlayerSummonState.cs
+    └── PlayerTeleportState.cs
+13. Máquina de estados do Player
+
+Os estados existentes no GameMaker serão documentados primeiro.
+
+Estados conhecidos:
+
+Idle
+Walk
+Run
+Jump
+Crouch
+Roll
+Attack
+Defense
+Fire
+Chidori
+Chakra
+Summon
+Teleport
+
+Fluxo:
+
+              ┌─────────┐
+              │  IDLE   │
+              └────┬────┘
+                   │
+          ┌────────┼────────┐
+          ▼        ▼        ▼
+        WALK      RUN     CROUCH
+          │        │
+          └───┬────┘
+              ▼
+             JUMP
+
+Combate:
+
+IDLE
+ │
+ ▼
+ATTACK
+ │
+ ├── HIT
+ ├── MISS
+ └── RECOVERY
+
+Defesa:
+
+IDLE
+ │
+ ▼
+DEFENSE
+ │
+ ├── BLOCK
+ ├── PERFECT BLOCK
+ └── DAMAGE
+
+A implementação Unity deve preservar o comportamento observado no GameMaker.
+
+14. Movimento
+
+Primeiro implementar somente:
+
+Idle
+Walk
+Run
+Jump
+Crouch
+Roll
+
+Não adicionar:
+
+combate;
+habilidades;
+partículas;
+clima;
+UI avançada.
+
+Enquanto o movimento não estiver correto, não avançar.
+
+15. Animação
+
+A animação será separada da lógica de movimento.
+
+PlayerController
+       │
+       ▼
+PlayerStateMachine
+       │
+       ▼
+PlayerAnimator
+       │
+       ▼
+Animator
+
+O código não deve depender diretamente de nomes específicos de sprites sempre que possível.
+
+16. Combate
+
+Depois que o movimento estiver funcionando:
+
+Combat/
+├── CombatController.cs
+├── Hitbox.cs
+├── Hurtbox.cs
+├── DamageReceiver.cs
+├── AttackController.cs
+└── DefenseController.cs
+
+O ataque deve possuir dados independentes.
+
+Exemplo:
+
+AttackData
+├── Damage
+├── Startup
+├── ActiveTime
+├── Recovery
+├── Knockback
+├── Range
+└── ChakraCost
+
+Esses dados poderão ser ScriptableObject.
+
+17. ScriptableObjects
+
+Usar ScriptableObjects para dados configuráveis.
+
+Exemplo:
+
+ScriptableObjects/
+├── Attacks/
+│   ├── BasicAttack.asset
+│   ├── HeavyAttack.asset
+│   └── Chidori.asset
+│
+├── Abilities/
+│   ├── Fire.asset
+│   ├── Chakra.asset
+│   ├── Summon.asset
+│   └── Teleport.asset
+│
+└── Enemies/
+    ├── EasyEnemy.asset
+    ├── MediumEnemy.asset
+    └── HardEnemy.asset
+
+Isso permitirá alterar valores sem modificar código.
+
+18. Chakra
+
+Criar:
+
+ChakraSystem.cs
+
+Responsabilidades:
+
+CurrentChakra
+MaxChakra
+Regeneration
+Consumption
+Recovery
+
+As habilidades consultam o sistema:
+
+Ability
+   │
+   ▼
+ChakraSystem
+   │
+   ├── suficiente → executar
+   │
+   └── insuficiente → cancelar
+19. Habilidades
+
+As habilidades existentes serão migradas individualmente:
+
+Fire
+Chidori
+Chakra
+Summon
+Teleport
+
+Cada habilidade deve ser independente.
+
+Exemplo:
+
+AbilityController
+       │
+       ├── FireAbility
+       ├── ChidoriAbility
+       ├── ChakraAbility
+       ├── SummonAbility
+       └── TeleportAbility
+20. Enemy AI
+
+A IA atual não será simplesmente descartada.
+
+O comportamento existente será analisado e reproduzido.
+
+Objetivo:
+
+comportamento aleatório, porém controlado pela dificuldade.
+
+Estrutura:
+
+AI/
+├── EnemyController.cs
+├── EnemyStateMachine.cs
+├── EnemyDecisionSystem.cs
+├── EnemyCombat.cs
+├── EnemyMovement.cs
+└── States/
+    ├── EnemyIdleState.cs
+    ├── EnemyChaseState.cs
+    ├── EnemyAttackState.cs
+    ├── EnemyDefenseState.cs
+    ├── EnemyDodgeState.cs
+    └── EnemyDeadState.cs
+21. Dificuldade
+
+A dificuldade não deve criar três IAs completamente diferentes.
+
+Em vez disso:
+
+Enemy AI
+   │
+   ├── Easy
+   ├── Medium
+   └── Hard
+
+alterará parâmetros como:
+
+ReactionTime
+AttackProbability
+DefenseProbability
+DodgeProbability
+Aggression
+DetectionRange
+DecisionInterval
+Accuracy
+
+Assim:
+
+Easy
+→ menos agressivo
+
+Medium
+→ comportamento equilibrado
+
+Hard
+→ mais rápido/agressivo
+
+Ainda deve ser possível acertar o inimigo.
+
+22. Ambiente
+
+O sistema ambiental será independente do gameplay.
+
+Estrutura:
+
+Environment/
+├── EnvironmentManager.cs
+├── LightingController.cs
+├── FogController.cs
+├── ParticleEnvironment.cs
+├── WindController.cs
+└── LightningController.cs
+23. Clima
+
+Criar:
+
+Weather/
+├── WeatherManager.cs
+├── WeatherState.cs
+├── RainSystem.cs
+├── SnowSystem.cs
+├── FogSystem.cs
+├── WindSystem.cs
+└── WeatherData.cs
+
+Estados:
+
+Clear
+Cloudy
+Rain
+Storm
+Snow
+
+O clima não deve controlar diretamente o Player.
+
+24. Atmosfera
+
+Os sistemas atuais de:
+
+chuva;
+neve;
+folhas;
+poeira;
+vento;
+neblina;
+iluminação;
+relâmpagos;
+
+serão tratados como sistemas ambientais.
+
+Exemplo:
+
+WeatherManager
+       │
+       ├── Rain
+       ├── Snow
+       ├── Wind
+       ├── Fog
+       └── Lightning
+25. Áudio
+
+Separar:
+
+Audio/
+├── AudioManager.cs
+├── MusicManager.cs
+├── SFXManager.cs
+└── AmbientManager.cs
+
+O clima poderá emitir eventos:
+
+WeatherChanged
+LightningStrike
+RainStarted
+RainStopped
+WindChanged
+
+O áudio reage a esses eventos.
+
+26. Menu
+
+O menu atual será reconstruído separadamente.
+
+Estrutura:
+
+Scenes/
+└── Menu/
+
+Sistemas:
+
+MenuController
+MenuAtmosphere
+MenuAudio
+MenuBackground
+
+Atmosfera:
+
+Background
++
+Rain
++
+Leaves
++
+Wind
++
+Ambient Audio
++
+Lighting
+
+O menu não deve depender do sistema de gameplay.
+
+27. UI
+
+Depois do gameplay básico:
+
+UI/
+├── HUDController.cs
+├── HealthBar.cs
+├── ChakraBar.cs
+├── AbilityUI.cs
+├── PauseMenu.cs
+└── DebugUI.cs
+28. Debug
+
+O sistema de debug existente no GameMaker servirá como referência.
+
+Criar:
+
+Debug/
+├── DebugManager.cs
+├── DebugOverlay.cs
+└── DebugCommands.cs
+
+Possíveis comandos:
+
+Weather
+Fog
+Rain
+Snow
+Wind
+Leaves
+Lightning
+Player
+Enemy
+Combat
+29. Ordem oficial da migração
+
+A ordem será:
+
+01. Git / Backup
+        ↓
+02. Documentação
+        ↓
+03. Projeto Unity
+        ↓
+04. Core
+        ↓
+05. Player Movement
+        ↓
+06. Player State Machine
+        ↓
+07. Animation
+        ↓
+08. Combat
+        ↓
+09. Chakra
+        ↓
+10. Abilities
+        ↓
+11. Enemy AI
+        ↓
+12. Environment
+        ↓
+13. Weather
+        ↓
+14. Audio
+        ↓
+15. UI
+        ↓
+16. Menu
+        ↓
+17. Save System
+        ↓
+18. Polish
+30. Regra de validação
+
+Cada sistema precisa passar por três etapas:
+
+IMPLEMENTAR
+    ↓
+TESTAR
+    ↓
+VALIDAR
+
+Somente depois:
+
+PRÓXIMO SISTEMA
+
+Exemplo:
+
+Player Movement
+      ↓
+Teste
+      ↓
+OK
+      ↓
+State Machine
+
+Não fazer:
+
+Player
++ Combat
++ AI
++ Weather
++ UI
++ Audio
+
+ao mesmo tempo.
+
+31. Critério de sucesso
+
+A migração será considerada correta quando a versão Unity reproduzir:
+
+Player
+andar;
+correr;
+pular;
+agachar;
+rolar;
+atacar;
+defender;
+usar fogo;
+usar Chidori;
+usar chakra;
+invocar;
+teleportar.
+Combate
+hitbox;
+hurtbox;
+dano;
+defesa;
+bloqueio;
+esquiva;
+knockback;
+recuperação.
+IA
+comportamento aleatório;
+ataque;
+defesa;
+esquiva;
+perseguição;
+dificuldade configurável.
+Ambiente
+iluminação;
+chuva;
+neve;
+vento;
+folhas;
+poeira;
+neblina;
+relâmpagos;
+efeitos atmosféricos.
+Áudio
+música;
+efeitos;
+ambiente;
+chuva;
+vento;
+combate.
+UI
+vida;
+chakra;
+habilidades;
+menus;
+debug.
+32. O que NÃO será migrado diretamente
+
+Não copiar diretamente:
+
+GML → C#
+
+Também não copiar:
+
+obj_xxx → MonoBehaviour
+
+automaticamente.
+
+Um objeto GameMaker que contém 2.000 linhas não precisa virar um script Unity de 2.000 linhas.
+
+A lógica deve ser dividida.
+
+Exemplo:
+
+GameMaker
+
+obj_player
+    ↓
+Unity
+
+PlayerController
+PlayerMovement
+PlayerStateMachine
+PlayerCombat
+PlayerAbilities
+PlayerAnimator
+PlayerStats
+33. Princípio arquitetural
+
+A nova implementação deve seguir:
+
+Alta coesão
++
+Baixo acoplamento
++
+Dados separados da lógica
++
+Sistemas testáveis
++
+Eventos para comunicação
+34. Estado do GameMaker durante a migração
+
+O GameMaker será considerado a:
+
+Referência de comportamento oficial.
+
+Caso exista dúvida sobre como determinada mecânica deve funcionar:
+
+consultar o GameMaker;
+testar o comportamento;
+documentar;
+implementar na Unity;
+comparar;
+somente então considerar migrado.
+35. Fases de desenvolvimento Unity
+Fase U1 — Fundação
+Unity
+Core
+GameManager
+EventBus
+SceneLoader
+Debug
+Fase U2 — Player
+Movement
+State Machine
+Animation
+Stats
+Fase U3 — Combat
+Attack
+Hitbox
+Hurtbox
+Damage
+Defense
+Fase U4 — Abilities
+Chakra
+Fire
+Chidori
+Summon
+Teleport
+Fase U5 — AI
+Enemy
+Decision
+Combat
+Difficulty
+Fase U6 — Environment
+Lighting
+Weather
+Fog
+Particles
+Wind
+Lightning
+Fase U7 — Audio
+Music
+SFX
+Ambient
+Dynamic Weather Audio
+Fase U8 — UI/Menu
+HUD
+Menus
+Debug
+Atmosphere
+Fase U9 — Integração
+Player
++
+Combat
++
+AI
++
+Abilities
++
+Environment
++
+Audio
++
+UI
+Fase U10 — Polish
+Performance
+Optimization
+Effects
+Balance
+UX
+Bug fixing
+36. Primeira milestone
+
+A primeira versão jogável da Unity não precisa ter o jogo inteiro.
+
+A primeira milestone será:
+
+Unity
+  │
+  └── Test Scene
+       │
+       └── Player
+            ├── Idle
+            ├── Walk
+            ├── Run
+            ├── Jump
+            ├── Crouch
+            └── Roll
+
+Se isso estiver funcionando corretamente, avançamos para combate.
+
+37. Segunda milestone
+Player
++
+Attack
++
+Defense
++
+Damage
+38. Terceira milestone
+Player
++
+Enemy
++
+Combat
++
+AI
+39. Quarta milestone
+Abilities
++
+Chakra
++
+Effects
+40. Quinta milestone
+Environment
++
+Weather
++
+Fog
++
+Particles
++
+Lightning
++
+Audio
+41. Sexta milestone
+UI
++
+Menu
++
+Save
++
+Settings
+42. Regra final
+
+Durante a migração:
+
+GameMaker é a referência. Unity é a implementação nova.
+
+Não estamos abandonando o trabalho feito.
+
+Estamos transformando o conhecimento acumulado no GameMaker em uma arquitetura C# mais modular e sustentável.
+
+43. Próximo passo
+
+Depois de salvar este documento, não comece ainda a escrever os scripts da Unity.
+
+A próxima tarefa é fazer o inventário real do GameMaker, sistema por sistema:
+
+GameMaker
+│
+├── Player
+├── Combat
+├── Enemy
+├── Abilities
+├── Chakra
+├── Weather
+├── Fog
+├── Particles
+├── Lighting
+├── Audio
+├── Menu
+├── UI
+└── Debug
+
+Para cada um vamos registrar:
+
+O que existe
+↓
+Onde está no código
+↓
+Como funciona
+↓
+O que precisa ser preservado
+↓
+Como será reconstruído em C#
+
+Esse inventário será o mapa técnico da migração.
