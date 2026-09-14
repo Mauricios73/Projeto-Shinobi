@@ -212,3 +212,31 @@ menu_dirty_timer = 0;
 scr_sync_menu_from_globals();
 
 // audio groups are loaded by obj_game_controller
+
+menu_title = "ULTIMO UCHIHA";
+menu_subtitle = "SHADOWS OF THE LEAF";
+
+menu_time = 0;
+menu_intro_alpha = 0;
+menu_selection_bump = 0;
+menu_transition_alpha = 0;
+
+menu_main_y = 0;
+menu_main_gap = 48;
+
+menu_title_scale = 1.55;
+menu_subtitle_scale = 0.72;
+menu_option_scale = 1.00;
+
+menu_selected_color = c_yellow;
+menu_normal_color = c_white;
+menu_shadow_color = c_black;
+
+menu_show_help = true;
+
+// Entrada visual
+menu_intro_alpha = 0;
+menu_selection_bump = 0;
+
+// Estado usado pelo Draw para manter a interface limpa.
+menu_last_page = page;

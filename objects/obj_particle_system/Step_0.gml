@@ -3,6 +3,21 @@
 /// FASE 4.5 - PARTÍCULAS AMBIENTAIS
 /// ========================================================
 
+var _rn_particle = room_get_name(room);
+
+if (_rn_particle == "rm_menu" || _rn_particle == "rm_init")
+{
+    global.wind = {
+        enabled: false,
+        current: 0,
+        target: 0,
+        gust: false,
+        gust_strength: 0
+    };
+
+    exit;
+}
+
 if (!particle_system_enabled)
     exit;
 

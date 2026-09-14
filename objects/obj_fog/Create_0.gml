@@ -1,18 +1,17 @@
 /// ========================================================
 /// OBJ_FOG
+/// CREATE
 /// FASE 4.6 - ATMOSFERA AVANÇADA
 /// ========================================================
 
 depth = -2000;
-
 
 // ========================================================
 // CONFIGURAÇÃO VISUAL
 // ========================================================
 
 fog_speed  = 0.0008;
-fog_layers = 4;
-
+fog_layers = 3;
 
 // ========================================================
 // DIMENSÕES DA INTERFACE
@@ -20,7 +19,6 @@ fog_layers = 4;
 
 guiW = display_get_gui_width();
 guiH = display_get_gui_height();
-
 
 // ========================================================
 // SURFACE DO FOG
@@ -30,41 +28,31 @@ surf_fog = -1;
 
 if (guiW > 0 && guiH > 0)
 {
-    surf_fog =
-        surface_create(
-            guiW,
-            guiH
-        );
+    surf_fog = surface_create(guiW, guiH);
 }
-
 
 // ========================================================
 // SISTEMA DE PARTÍCULAS
 // ========================================================
 
-fog_sys =
-    part_system_create();
+fog_sys = part_system_create();
 
 part_system_depth(
     fog_sys,
     depth
 );
 
-
 // ========================================================
 // TIPO DE PARTÍCULA
 // ========================================================
 
-fog_type =
-    part_type_create();
-
+fog_type = part_type_create();
 
 // Forma nativa de nuvem
 part_type_shape(
     fog_type,
     pt_shape_cloud
 );
-
 
 // Tamanho
 part_type_size(
@@ -75,7 +63,6 @@ part_type_size(
     0.02
 );
 
-
 // Escala horizontal
 part_type_scale(
     fog_type,
@@ -83,22 +70,19 @@ part_type_scale(
     0.5
 );
 
-
-// Alpha
+// Alpha muito mais suave
 part_type_alpha3(
     fog_type,
     0,
-    0.88,
+    0.35,
     0
 );
-
 
 // Cor
 part_type_color1(
     fog_type,
     c_white
 );
-
 
 // Movimento
 part_type_speed(
@@ -109,7 +93,6 @@ part_type_speed(
     0
 );
 
-
 part_type_direction(
     fog_type,
     0,
@@ -118,7 +101,6 @@ part_type_direction(
     2
 );
 
-
 // Vida
 part_type_life(
     fog_type,
@@ -126,16 +108,13 @@ part_type_life(
     700
 );
 
-
 // ========================================================
 // EMISSOR
 // ========================================================
 
-fog_emit =
-    part_emitter_create(
-        fog_sys
-    );
-
+fog_emit = part_emitter_create(
+    fog_sys
+);
 
 // ========================================================
 // ESTADO
@@ -143,34 +122,57 @@ fog_emit =
 
 is_fading_out = false;
 
-
 // ========================================================
-// FASE 4.6
-// ATMOSFERA AVANÇADA
+// ATMOSFERA
 // ========================================================
 
 atmosphere_enabled = true;
-
 
 // Intensidade
 atmosphere_amount = 0;
 atmosphere_target = 0;
 
-
 // Haze
 haze_amount = 0;
 haze_target = 0;
-
 
 // Profundidade
 depth_amount = 0;
 depth_target = 0;
 
-
 // Velocidade
 atmosphere_speed = 0.025;
 
-
 // Tempo interno
-atmosphere_time =
-    random(1000);
+atmosphere_time = random(1000);
+
+// ========================================================
+// NEVOEIRO MÓVEL
+// ========================================================
+
+mist_x = -350;
+mist_y = 0;
+mist_speed = 0;
+mist_alpha = 0;
+mist_target_alpha = 0.12;
+mist_scale_x = 2.5;
+mist_scale_y = 0.75;
+mist_timer = random_range(120, 300);
+mist_state = 0;
+mist_wave = random(1000);
+
+// ========================================================
+// VARIÁVEIS DE SEGURANÇA
+// ========================================================
+
+if (!variable_instance_exists(id, "fog_sys"))
+    fog_sys = -1;
+
+if (!variable_instance_exists(id, "fog_type"))
+    fog_type = -1;
+
+if (!variable_instance_exists(id, "fog_emit"))
+    fog_emit = -1;
+
+if (!variable_instance_exists(id, "surf_fog"))
+    surf_fog = -1;

@@ -18,3 +18,149 @@ mostra_estado = false;
 img_spd = 35;
 
 estado = "parado";
+
+/// ============================================================
+/// COLISÃO FÍSICA DO PLAYER
+/// ============================================================
+/// IMPORTANTE:
+/// Esta caixa NÃO muda conforme a animação.
+/// As sprites de ataque, pulo, wall jump etc.
+/// não devem controlar a colisão física.
+///
+/// Ajuste estes valores de acordo com o ponto de origem
+/// das sprites do player.
+/// ============================================================
+
+col_left   = -7;
+col_right  =  7;
+
+col_top    = -22;
+col_bottom =  10;
+
+
+// ============================================================
+// MOVIMENTO SUBPIXEL
+// ============================================================
+
+move_rem_x = 0;
+move_rem_y = 0;
+
+
+// ============================================================
+// CONTATOS COM O CENÁRIO
+// ============================================================
+
+on_ground   = false;
+hit_ceiling = false;
+
+wall_left  = false;
+wall_right = false;
+
+
+// ============================================================
+// SENSORES
+// ============================================================
+
+wall_probe    = 2;
+ground_probe = 2;
+ceiling_probe = 2;
+
+
+// ============================================================
+// ESTADO DO WALL SYSTEM
+// ============================================================
+
+wall_sliding = false;
+wall_grabbing = false;
+
+wall_jump_lock = 0;
+
+
+// ============================================================
+// FUNÇÃO DE COLISÃO FÍSICA
+// ============================================================
+
+collision_player = function(_px, _py)
+{
+    return collision_rectangle(
+        _px + col_left,
+        _py + col_top,
+        _px + col_right,
+        _py + col_bottom,
+        obj_block,
+        false,
+        true
+    ) != noone;
+};
+
+
+// ============================================================
+// SENSOR DE CHÃO
+// ============================================================
+
+player_on_ground = function(_px, _py)
+{
+    return collision_rectangle(
+        _px + col_left + 1,
+        _py + col_bottom,
+        _px + col_right - 1,
+        _py + col_bottom + ground_probe,
+        obj_block,
+        false,
+        true
+    ) != noone;
+};
+
+
+// ============================================================
+// SENSOR DE PAREDE ESQUERDA
+// ============================================================
+
+player_wall_left = function(_px, _py)
+{
+    return collision_rectangle(
+        _px + col_left - wall_probe,
+        _py + col_top + 3,
+        _px + col_left,
+        _py + col_bottom - 3,
+        obj_block,
+        false,
+        true
+    ) != noone;
+};
+
+
+// ============================================================
+// SENSOR DE PAREDE DIREITA
+// ============================================================
+
+player_wall_right = function(_px, _py)
+{
+    return collision_rectangle(
+        _px + col_right,
+        _py + col_top + 3,
+        _px + col_right + wall_probe,
+        _py + col_bottom - 3,
+        obj_block,
+        false,
+        true
+    ) != noone;
+};
+
+
+// ============================================================
+// SENSOR DE TETO
+// ============================================================
+
+player_hit_ceiling = function(_px, _py)
+{
+    return collision_rectangle(
+        _px + col_left + 1,
+        _py + col_top - ceiling_probe,
+        _px + col_right - 1,
+        _py + col_top,
+        obj_block,
+        false,
+        true
+    ) != noone;
+};

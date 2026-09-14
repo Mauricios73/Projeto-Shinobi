@@ -5,6 +5,7 @@ if (instance_number(obj_weather_manager) > 1) { instance_destroy(); exit; }
 if (!instance_exists(obj_environment_fx)) { instance_create_depth(0, 0, -5000, obj_environment_fx); }
 persistent = true;
 
+menu_profile_active = false;
 menu_rooms = ["rm_init", "rm_menu"];
 indoor_rooms = ["Room2"];
 fog_in_indoor = true;

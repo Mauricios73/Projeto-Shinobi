@@ -5,20 +5,148 @@ var is_menu = false;
 for (var i = 0; i < array_length(menu_rooms); i++) if (rn == menu_rooms[i]) { is_menu = true; break; }
 var dt = 1 / room_speed;
 
+var rn = room_get_name(room);
+var is_menu = false;
+
+for (var i = 0; i < array_length(menu_rooms); i++)
+{
+    if (rn == menu_rooms[i])
+    {
+        is_menu = true;
+        break;
+    }
+}
+
+var dt = 1 / room_speed;
+
+// ============================================================
+// PERFIL DO MENU
+// rm_init = limpo
+// rm_menu = chuva moderada permanente
+// ============================================================
 if (is_menu)
 {
-    weather_set_target(WEATHER_CLEAR, "MENU");
+    // --------------------------------------------------------
+    // rm_init continua sem clima.
+    // --------------------------------------------------------
+    if (rn == "rm_init")
+    {
+        menu_profile_active = false;
+
+        weather_auto = false;
+        weather_current = WEATHER_CLEAR;
+        weather_target = WEATHER_CLEAR;
+        weather_intensity = 0;
+        weather_target_intensity = 0;
+        weather_transitioning = false;
+
+        precip_mode = 0;
+        fog_on = false;
+
+        global.precip_mode = 0;
+
+        if (instance_exists(obj_chuva))
+            with (obj_chuva) instance_destroy();
+
+        if (instance_exists(obj_neve))
+            with (obj_neve) instance_destroy();
+
+        if (instance_exists(obj_environment_fx))
+            obj_environment_fx.depth = 60;
+
+        exit;
+    }
+
+    // --------------------------------------------------------
+    // rm_menu = perfil atmosferico fixo.
+    // --------------------------------------------------------
+    menu_profile_active = true;
+
     weather_auto = false;
+
+    weather_current = WEATHER_RAIN;
+    weather_target = WEATHER_RAIN;
+
+    weather_intensity = 0.12;
+    weather_target_intensity = 0.12;
+
+    weather_transitioning = false;
+    weather_event = "MENU_RAIN";
+
+    precip_mode = 3;
+    fog_on = false;
+
+    global.precip_mode = 3;
+
+    // Ambiente publico consumido por outros sistemas.
+    if (!variable_global_exists("environment"))
+        global.environment = {};
+
+    global.environment.weather = {
+        current: weather_current,
+        target: weather_target,
+        intensity: weather_intensity,
+        transitioning: false,
+        event: "MENU_RAIN",
+        name: "CHUVA",
+        target_name: "CHUVA",
+        auto: false,
+        indoor: false
+    };
+
+    // O menu usa a chuva existente do gameplay.
+    if (!instance_exists(obj_chuva))
+        instance_create_depth(0, 0, 40, obj_chuva);
+    else
+        obj_chuva.depth = 40;
+
+    // O FX atmosferico fica atras da interface.
+    if (instance_exists(obj_environment_fx))
+        obj_environment_fx.depth = 60;
+
+    // O sistema geral de particulas nao deve desenhar sobre o menu.
+    if (instance_exists(obj_particle_system))
+        with (obj_particle_system)
+            particle_system_enabled = false;
+
+    exit;
+}
+
+// ============================================================
+// SAIDA DO MENU
+// ============================================================
+if (menu_profile_active)
+{
+    menu_profile_active = false;
+
+    weather_auto = true;
+
+    weather_current = WEATHER_CLEAR;
+    weather_target = WEATHER_CLEAR;
+
+    weather_intensity = 0;
+    weather_target_intensity = 0;
+
+    weather_transitioning = false;
+    weather_event = "LEAVE_MENU";
+
     precip_mode = 0;
     fog_on = false;
+
     global.precip_mode = 0;
-    if (instance_exists(obj_chuva)) with (obj_chuva) instance_destroy();
-    if (instance_exists(obj_neve)) with (obj_neve) instance_destroy();
-    if (h_forest != -1) audio_sound_gain(h_forest, 0, rain_fade_ms);
-    if (h_heavy != -1) audio_sound_gain(h_heavy, 0, rain_fade_ms);
-    audio_env_timer = 5;
-    alarm[0] = 1;
-    exit;
+
+    if (instance_exists(obj_chuva))
+        with (obj_chuva) instance_destroy();
+
+    if (instance_exists(obj_neve))
+        with (obj_neve) instance_destroy();
+
+    if (instance_exists(obj_environment_fx))
+        obj_environment_fx.depth = -5000;
+
+    if (instance_exists(obj_particle_system))
+        with (obj_particle_system)
+            particle_system_enabled = true;
 }
 
 if (weather_auto)
