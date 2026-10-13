@@ -11,4 +11,4 @@ if (!scr_player_state_machine_pre_step()) {
 }
 
 scr_player_state_machine_step();
-scr_player_physics_apply_movement();
+//scr_player_physics_apply_movement();

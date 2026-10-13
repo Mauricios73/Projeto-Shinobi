@@ -98,6 +98,25 @@ velv = 0;
 mid_velh = 0;
 massa = 1;
 
+/// ============================================================
+/// WALL MOVEMENT
+/// ============================================================
+
+/// Velocidade normal de descida na parede.
+wall_slide_speed = 1.5;
+
+/// Força horizontal do Wall Jump.
+wall_jump_horizontal = 5;
+
+/// Força vertical do Wall Jump.
+wall_jump_vertical = 7;
+
+/// Pequeno afastamento da parede antes do Wall Jump.
+wall_jump_push = 3;
+
+/// Tempo de proteção contra reentrada imediata na parede.
+wall_jump_lock = 0;
+
 /// -----------------------------
 /// FSM internal
 /// -----------------------------

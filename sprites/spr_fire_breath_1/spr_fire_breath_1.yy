@@ -38,7 +38,7 @@
   "origin":9,
   "parent":{
     "name":"Poderes",
-    "path":"folders/Sprites/PrayerV2/Poderes.yy",
+    "path":"folders/Sprites/Add/Poderes.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

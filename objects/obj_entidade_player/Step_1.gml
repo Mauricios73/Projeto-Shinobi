@@ -1,7 +1,7 @@
 /// ============================================================
 /// OBJ_ENTIDADE_PLAYER
-/// STEP 2
-/// SISTEMA DE MOVIMENTO + COLISÃO
+/// STEP
+/// MOVIMENTO + COLISÃO + WALL SYSTEM
 /// ============================================================
 
 
@@ -17,7 +17,7 @@ wall_right = false;
 
 
 // ============================================================
-// LOCK DO WALL JUMP
+// WALL JUMP LOCK
 // ============================================================
 
 if (wall_jump_lock > 0)
@@ -33,7 +33,7 @@ if (wall_jump_lock > 0)
 move_rem_x += velh;
 
 
-// Quantidade inteira de pixels que precisamos mover
+// Quantidade inteira de pixels
 var _move_x = floor(abs(move_rem_x));
 
 
@@ -57,30 +57,37 @@ repeat (_move_x)
     }
     else
     {
+        // ----------------------------------------------------
         // Parede esquerda
+        // ----------------------------------------------------
+
         if (_dir_x < 0)
         {
             wall_left = true;
         }
 
+        // ----------------------------------------------------
         // Parede direita
+        // ----------------------------------------------------
+
         else
         {
             wall_right = true;
         }
 
 
-        // IMPORTANTE:
-        // somente o movimento horizontal é interrompido.
-        //
-        // NÃO zeramos velv.
+        // ----------------------------------------------------
+        // IMPORTANTE
+        // ----------------------------------------------------
+        // A colisão horizontal NÃO interfere na velocidade
+        // vertical.
         //
         // Isso permite:
-        // - pular contra paredes
-        // - deslizar
-        // - wall jump
-        // - wall climb
-        // - continuar caindo
+        // - queda junto da parede
+        // - Wall Slide
+        // - Wall Jump
+        // - Wall Climb
+        // ----------------------------------------------------
 
         velh = 0;
         move_rem_x = 0;
@@ -121,20 +128,26 @@ repeat (_move_y)
     }
     else
     {
+        // ----------------------------------------------------
         // Estamos descendo
+        // ----------------------------------------------------
+
         if (_dir_y > 0)
         {
             on_ground = true;
         }
 
+        // ----------------------------------------------------
         // Estamos subindo
+        // ----------------------------------------------------
+
         else
         {
             hit_ceiling = true;
         }
 
 
-        // Somente movimento vertical é parado
+        // Somente o movimento vertical é interrompido.
         velv = 0;
         move_rem_y = 0;
 
@@ -165,15 +178,6 @@ if (on_ground && velv > 0)
 }
 
 
-// ============================================================
-// WALL JUMP LOCK
-// ============================================================
-
-if (wall_jump_lock <= 0)
-{
-    wall_jump_lock = 0;
-}
-
 /// ============================================================
 /// WALL SYSTEM
 /// ============================================================
@@ -183,7 +187,7 @@ if (wall_jump_lock <= 0)
 // RESET
 // ============================================================
 
-wall_sliding = false;
+wall_sliding  = false;
 wall_grabbing = false;
 
 
@@ -193,7 +197,10 @@ wall_grabbing = false;
 
 if (!on_ground)
 {
-    // Existe parede ao lado
+    // ========================================================
+    // EXISTE UMA PAREDE AO LADO?
+    // ========================================================
+
     if (wall_left || wall_right)
     {
         // ====================================================
@@ -204,45 +211,154 @@ if (!on_ground)
         {
             wall_sliding = true;
 
-            // Limita velocidade de queda
-            velv = min(velv, 1.5);
+            // Limita a velocidade de queda.
+            velv = min(velv, wall_slide_speed);
         }
 
 
         // ====================================================
         // WALL JUMP
         // ====================================================
+        //
+        // Só pode executar se:
+        //
+        // 1. Está no ar
+        // 2. Está encostado em uma parede
+        // 3. Não está no lock de Wall Jump
+        // 4. O botão de pulo foi pressionado
+        //
+        // ====================================================
 
-        if (keyboard_check_pressed(vk_space))
+        if (
+            keyboard_check_pressed(vk_space)
+            &&
+            wall_jump_lock <= 0
+        )
         {
+            var _wall_jump_dir = 0;
+
+
+            // ------------------------------------------------
             // Parede esquerda
+            // ------------------------------------------------
+            // Player deve ser lançado para a direita.
+            // ------------------------------------------------
+
             if (wall_left)
             {
-                velh = 5;
+                _wall_jump_dir = 1;
             }
 
+
+            // ------------------------------------------------
             // Parede direita
+            // ------------------------------------------------
+            // Player deve ser lançado para a esquerda.
+            // ------------------------------------------------
+
             else if (wall_right)
             {
-                velh = -5;
+                _wall_jump_dir = -1;
             }
 
 
-            // Impulso vertical
-            velv = -7;
+            // =================================================
+            // EXISTE UMA DIREÇÃO VÁLIDA?
+            // =================================================
+
+            if (_wall_jump_dir != 0)
+            {
+                // ---------------------------------------------
+                // AFASTA O PLAYER DA PAREDE
+                // ---------------------------------------------
+                //
+                // Isso é fundamental.
+                //
+                // Sem este passo:
+                //
+                //     parede
+                //       │
+                //       │ PLAYER →→
+                //
+                // a próxima resolução de colisão pode anular
+                // imediatamente o impulso horizontal.
+                //
+                // ---------------------------------------------
+
+                repeat (wall_jump_push)
+                {
+                    if (!collision_player(
+                        x + _wall_jump_dir,
+                        y
+                    ))
+                    {
+                        x += _wall_jump_dir;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
 
 
-            // Remove resto acumulado
-            move_rem_x = 0;
-            move_rem_y = 0;
+                // ---------------------------------------------
+                // REMOVE RESTOS SUBPIXEL
+                // ---------------------------------------------
+
+                move_rem_x = 0;
+                move_rem_y = 0;
 
 
-            // Evita reencostar imediatamente
-            wall_jump_lock = 6;
+                // ---------------------------------------------
+                // IMPULSO HORIZONTAL
+                // ---------------------------------------------
+
+                velh = _wall_jump_dir * wall_jump_h;
 
 
-            // Estado visual/opcional
-            wall_sliding = false;
+                // ---------------------------------------------
+                // IMPULSO VERTICAL
+                // ---------------------------------------------
+
+                velv = -wall_jump_v;
+
+
+                // ---------------------------------------------
+                // ATIVA LOCK
+                // ---------------------------------------------
+
+                wall_jump_lock = 6;
+
+
+                // ---------------------------------------------
+                // SAI DO WALL SLIDE
+                // ---------------------------------------------
+
+                wall_sliding = false;
+                wall_grabbing = false;
+
+
+                // ---------------------------------------------
+                // ATUALIZA CONTATOS
+                // ---------------------------------------------
+
+                wall_left  = false;
+                wall_right = false;
+            }
         }
     }
+}
+
+
+// ============================================================
+// ESTADO FINAL DO WALL SLIDE
+// ============================================================
+//
+// Se acabou de executar Wall Jump, não queremos que o sistema
+// imediatamente volte para Wall Slide no mesmo frame.
+//
+
+if (wall_jump_lock > 0)
+{
+    wall_sliding = false;
 }

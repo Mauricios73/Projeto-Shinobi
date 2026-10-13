@@ -135,67 +135,84 @@ function scr_player_state_machine_step()
         }
         break;
     
-    case PST_JUMP:
+		case PST_JUMP:
+{
+    var _leap = (sprite_index == spr_player_leap);
+    var _leap_finished = false;
+
+    if (_leap)
+    {
+        image_speed = 1;
+
+        if (image_index < image_number - 1)
         {
-            // 1. Transição para agarrar na parede
-            if (!chao && ((parede_dir && right_held) || (parede_esq && left_held)))
-            {
-                player_set_state(PST_WALL);
-                break;
-            }
-    		
-            max_velh = run ? vel_sprint : (is_running ? vel_correr : vel_caminhar);
-            velh = (right_held - left_held) * max_velh * global.vel_mult;
-    		
-            // --- LÓGICA DO SALTO PARADO (LEAP) ---
-            var pode_aterissar = true; // Variável de controle para não cancelar o pulo
-    
-            if (sprite_index == spr_player_leap) 
-            {
-                image_speed = 1;
-                
-                // Bloqueia a aterrissagem enquanto prepara o pulo no chão
-                if (image_index < 5) 
-                {
-                    pode_aterissar = false; 
-                    velv = 0; 
-                    velh = 0; // Opcional: trava o movimento horizontal no "squat" do pulo
-                }
-                
-                // Frame 5: Momento do impulso físico
-                if (image_index >= 5 && image_index < 5.2 && velv == 0) 
-                {
-                    velv = -max_velv; 
-                }
-            }
-    
-            scr_player_apply_gravity();
-            scr_player_set_air_visual_from_velv();
-    
-            // 2. Landing (Tocar no chão)
-            // Só volta para IDLE se não estiver na fase de preparação do salto parado
-            if (chao && velv >= 0 && pode_aterissar)
-            {
-                velv = 0;
-                pode_duplo_salto = true;	
-                player_set_state((abs(velh) > 0.1) ? PST_RUN : PST_IDLE);
-                break;
-            }
-    		
-            // 3. Duplo Salto
-            if (jump && pode_duplo_salto)
-            {
-                velv = -max_velv;
-                pode_duplo_salto = false;
-                _air_phase = 0;
-                sprite_index = spr_player_jump; // Duplo salto usa sempre a sprite de movimento
-            }
-    
-            if (down && attack) { player_set_state(PST_GROUND_SLAM); break; }
-            if (attack) inicia_ataque(chao);
-            if (dash && dash_aereo == true) player_set_state(PST_DASH_AIR);
+            velv = 0;
+            velh = 0;
+            break;
         }
+
+        _leap_finished = true;
+        velv = -max_velv;
+        _air_phase = 0;
+        sprite_index = spr_player_jump;
+        image_index = 0;
+        image_speed = img_spd / room_speed * global.vel_mult;
+    }
+
+    max_velh = run ? vel_sprint : (is_running ? vel_correr : vel_caminhar);
+
+    if (!_leap_finished)
+        velh = (right_held - left_held) * max_velh * global.vel_mult;
+
+    if (!_leap)
+    {
+        if (wall_jump_lock <= 0 &&
+            !chao &&
+            ((parede_dir && right_held) || (parede_esq && left_held)))
+        {
+            velh = 0;
+            mid_velh = 0;
+            player_set_state(PST_WALL);
+            break;
+        }
+
+        velh = (right_held - left_held) * max_velh * global.vel_mult;
+
+        scr_player_apply_gravity();
+        scr_player_set_air_visual_from_velv();
+    }
+
+    if (chao && velv >= 0)
+    {
+        velv = 0;
+        pode_duplo_salto = true;
+        player_set_state((abs(velh) > 0.1) ? PST_RUN : PST_IDLE);
         break;
+    }
+
+    if (jump && pode_duplo_salto && !_leap)
+    {
+        velv = -max_velv;
+        pode_duplo_salto = false;
+        _air_phase = 0;
+        sprite_index = spr_player_jump;
+        image_index = 0;
+        image_speed = img_spd / room_speed * global.vel_mult;
+    }
+
+    if (down && attack)
+    {
+        player_set_state(PST_GROUND_SLAM);
+        break;
+    }
+
+    if (attack)
+        inicia_ataque(chao);
+
+    if (dash && dash_aereo)
+        player_set_state(PST_DASH_AIR);
+}
+break;
     	
     	case PST_CROUCH:
     	{
@@ -578,46 +595,92 @@ function scr_player_state_machine_step()
     	}
     	break;
     	
-    	case PST_WALL:
-        {
-            // 1. Condições de saída (Cair da parede ou tocar no chão)
-            if (!parede_dir && !parede_esq) // Se as paredes acabarem
-            {
-                player_set_state(PST_JUMP);
-                break;
-            }
-            if (chao) // Se escorregar até ao chão
-            {
-                player_set_state(PST_IDLE);
-                break;
-            }
-    
-            // 2. Orientação do Sprite (vê para que lado está a parede)
-            if (parede_dir) image_xscale = 1; // Vira para a direita
-            if (parede_esq) image_xscale = -1; // Vira para a esquerda
-    
-            // 3. Wall Climbing (Escalar)
-            // Desativamos a gravidade colocando o velh a zero, a menos que ele escale
-            velh = 0; 
-            velv = (down - up) * vel_escalar; // Sobe se pressionar 'up', desce se 'down'
-    
-            // 4. Wall Jump (Salto da parede)
-            if (jump)
-            {
-                // Impulso vertical
-                velv = -max_velv; 
-                
-                // Impulso horizontal para o lado oposto da parede usando o mid_velh
-                mid_velh = parede_dir ? -max_velh * 1.5 : max_velh * 1.5; 
-                
-                // Recarrega o duplo salto e o dash aéreo para ele poder usá-los a seguir!
-                pode_duplo_salto = true; 
-                dash_aereo = true;       
-                
-                player_set_state(PST_JUMP);
-            }
-        }
-        break;
+		case PST_WALL:
+		{
+			chao = place_meeting(x, y + 1, obj_block);
+			parede_dir = place_meeting(x + 1, y, obj_block);
+			parede_esq = place_meeting(x - 1, y, obj_block);
+
+			if (chao)
+			{
+			    velv = 0;
+			    velh = 0;
+			    mid_velh = 0;
+			    pode_duplo_salto = true;
+			    dash_aereo = true;
+			    player_set_state(PST_IDLE);
+			    break;
+			}
+
+			if (!parede_dir && !parede_esq)
+			{
+			    player_set_state(PST_JUMP);
+			    break;
+			}
+
+			velh = 0;
+			mid_velh = 0;
+
+			if (parede_dir)
+			{
+			    xscale = 1;
+			    image_xscale = 1;
+			}
+			else
+			{
+			    xscale = -1;
+			    image_xscale = -1;
+			}
+
+			if (sprite_index != Wall_Jump)
+			{
+			    sprite_index = Wall_Jump;
+			    image_index = 0;
+			}
+
+			image_speed = img_spd / room_speed * global.vel_mult;
+
+			if (jump && wall_jump_lock <= 0)
+			{
+			    var _wall_dir = parede_dir ? -1 : 1;
+
+			    repeat (wall_jump_push)
+			    {
+			        if (!place_meeting(x + _wall_dir, y, obj_block))
+			            x += _wall_dir;
+			        else
+			            break;
+			    }
+
+			    velh = _wall_dir * wall_jump_horizontal;
+			    velv = -wall_jump_vertical;
+			    mid_velh = 0;
+
+			    wall_jump_lock = 6;
+			    pode_duplo_salto = true;
+			    dash_aereo = true;
+
+			    player_set_state(PST_JUMP);
+			    break;
+			}
+
+			if (up)
+			{
+			    velv = -vel_escalar;
+			}
+			else if (down)
+			{
+			    velv = vel_escalar;
+			}
+			else
+			{
+			    scr_player_apply_gravity();
+
+			    if (velv > wall_slide_speed)
+			        velv = wall_slide_speed;
+			}
+		}
+		break;
     
         case PST_DASH:
         {

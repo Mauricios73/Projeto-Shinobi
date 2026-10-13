@@ -6,7 +6,7 @@
   "bbox_left":16,
   "bbox_right":76,
   "bbox_top":24,
-  "collisionKind":1,
+  "collisionKind":4,
   "collisionTolerance":0,
   "DynamicTexturePage":false,
   "edgeFiltering":false,
@@ -33,7 +33,7 @@
   "origin":7,
   "parent":{
     "name":"grupo1",
-    "path":"folders/Sprites/PrayerV2/grupo1.yy",
+    "path":"folders/Sprites/Add/grupo1.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",
