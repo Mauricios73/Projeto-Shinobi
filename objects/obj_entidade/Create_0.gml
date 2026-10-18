@@ -24,6 +24,7 @@
 #macro PST_SUMMON      18
 #macro PST_TELEPORT_OUT 19
 #macro PST_TELEPORT_IN  20
+#macro PST_RESTING      21
 
 // Status
 delay = 0;
