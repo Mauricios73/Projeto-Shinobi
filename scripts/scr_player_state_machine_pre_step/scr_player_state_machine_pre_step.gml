@@ -44,6 +44,18 @@ function scr_player_state_machine_step()
     {
         case PST_IDLE:
         {
+            var _idle_input = right_held || left_held || down || jump || attack || dash || roll || defend || fire || chidori || chakra;
+            if (chao && !_idle_input)
+            {
+                idle_timer++;
+                if (idle_timer >= resting_delay)
+                {
+                    player_set_state(PST_RESTING);
+                    break;
+                }
+            }
+            else idle_timer = 0;
+
             if (chao) dash_aereo = true;
     
             velh = (right_held - left_held) * max_velh * global.vel_mult;
@@ -86,6 +98,20 @@ function scr_player_state_machine_step()
         }
         break;
     
+        case PST_RESTING:
+        {
+            velh = 0;
+            if (!chao)
+            {
+                player_set_state(PST_JUMP);
+            }
+            else if (right_held || left_held || down || jump || attack || dash || roll || defend || fire || chidori || chakra)
+            {
+                player_set_state(PST_IDLE);
+            }
+        }
+        break;
+
         case PST_RUN:
         {
     		// <- NOVO: Controla a velocidade baseado na tecla Shift
