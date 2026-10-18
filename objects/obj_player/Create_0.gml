@@ -120,6 +120,8 @@ wall_jump_lock = 0;
 /// -----------------------------
 /// FSM internal
 /// -----------------------------
+idle_timer = 0;
+resting_delay = room_speed * 5;
 pstate = PST_IDLE;
 pstate_prev = PST_IDLE;
 
@@ -136,6 +138,7 @@ estado_to_pstate = function(_estado)
     switch (_estado)
     {
         case "parado":        return PST_IDLE;
+        case "resting":       return PST_RESTING;
         case "movendo":       return PST_RUN;
         case "pulando":       return PST_JUMP;
 		case "agachar":       return PST_CROUCH; // <- NOVO
@@ -165,6 +168,7 @@ pstate_to_estado = function(_ps)
     switch (_ps)
     {
         case PST_IDLE:			return "parado";
+        case PST_RESTING:      return "resting";
         case PST_RUN:			return "movendo";
         case PST_JUMP:			return "pulando";
 		case PST_CROUCH:		return "agachar"; // <- NOVO
@@ -245,6 +249,13 @@ _apply_state_visuals_enter = function(_ps)
         case PST_IDLE:
             sprite_index = spr_player_idle;
             image_index = 0;
+            image_speed = 1;
+        break;
+
+        case PST_RESTING:
+            sprite_index = spr_player_resting;
+            image_index = 0;
+            image_speed = 1;
         break;
 
         case PST_RUN:
@@ -461,6 +472,7 @@ player_set_state = function(_new)
     pstate_prev = pstate;
     pstate = _new;
     estado = pstate_to_estado(pstate);
+    idle_timer = 0;
 
     // enter
     _apply_state_visuals_enter(pstate);
